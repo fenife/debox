@@ -1,0 +1,66 @@
+basePath: /
+definitions:
+  renderx.Response:
+    properties:
+      data: {}
+      result:
+        $ref: '#/definitions/renderx.Result'
+    type: object
+  renderx.Result:
+    properties:
+      code:
+        type: integer
+      msg:
+        type: string
+    type: object
+  req.GetUserListReq:
+    properties:
+      name:
+        maxLength: 20
+        minLength: 3
+        type: string
+    required:
+    - name
+    type: object
+host: localhost:8030
+info:
+  contact: {}
+  description: yonder博客的后端API服务
+  termsOfService: https://github.com/swaggo/swag
+  title: yonder blog api aservice
+  version: "1.0"
+paths:
+  /api/v1/user/list:
+    get:
+      consumes:
+      - application/json
+      description: 获取用户列表
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/req.GetUserListReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/renderx.Response'
+      summary: 用户列表
+      tags:
+      - user
+  /ping:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/renderx.Response'
+      summary: ping,检查服务是否正常
+      tags:
+      - ping
+swagger: "2.0"
