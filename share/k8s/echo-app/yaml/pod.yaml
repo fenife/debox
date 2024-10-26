@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: echo-app
+spec:
+  containers:
+  - name: echo-app
+    image: echo-app:latest
+    imagePullPolicy: IfNotPresent
+    ports:
+    - containerPort: 6000

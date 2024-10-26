@@ -1,0 +1,32 @@
+
+# stop a program
+define _pstop
+	ps -ef | grep "$(1)" | grep -v grep 
+	@echo 
+	pid=$(shell ps -ef | grep "$(1)" | grep -v grep | awk '{print $$2}'); \
+	kill -9 $$pid; echo
+endef
+
+# start a program
+define _pstart
+	pid=$(shell ps -ef | grep "tcpdump" | grep -v grep | awk '{print $$2}'); \
+	if [[ "" ==  "$$pid" ]]; \
+	then \
+        echo "start to run ..."; \
+    else	\
+        echo "already exist at: $$pid"; \
+    fi
+endef
+
+# set shell var example
+define _echo 
+	id=1; \
+	echo $$id
+endef
+
+
+pstop:		## stop
+	$(call _stopp,tcpdump)
+
+echo:	## echo
+	$(call _echo)

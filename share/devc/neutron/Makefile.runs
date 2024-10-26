@@ -1,0 +1,24 @@
+
+include $(INC_DIR)/Makefile.common
+
+NEUTRON_CODE_DIR=/wine/code/neutron
+
+WITH_CONFIG_FILE=--config-file $(NEUTRON_CODE_DIR)/etc/neutron.conf \
+			     --config-dir $(NEUTRON_CODE_DIR)/etc
+
+cd:		## cd code dir
+	cd $(NEUTRON_CODE_DIR)	
+
+setup:	## python setup
+	cd $(NEUTRON_CODE_DIR); \
+	python2 ./setup.py develop
+
+start: setup		## start neutron service
+	python2 /usr/bin/neutron-server $(WITH_CONFIG_FILE)
+
+db-migrate: 		## db migrate data
+	python2 /usr/bin/neutron-db-manage $(WITH_CONFIG_FILE) current
+
+db-upgrade:			## db migrate data to heads
+	python2 /usr/bin/neutron-db-manage $(WITH_CONFIG_FILE) upgrade heads
+

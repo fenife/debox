@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: echo-svc-ingress
+spec:
+  ingressClassName: nginx-example
+  rules:
+  - host: echo.dev.local 
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: echo-svc-nodeport
+            port:
+              number: 6000

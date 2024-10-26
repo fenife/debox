@@ -1,0 +1,28 @@
+
+VENV_DIR=/wine/venv
+
+mkdir:		## mkdir venv
+	mkdir -p $(VENV_DIR)
+
+# virtualenv $(VENV_ICODE) -p python3
+
+VENV_ICODE=$(VENV_DIR)/icode
+venv-icode-py37:	## icode for python3.7
+	python3.7 -m venv $(VENV_ICODE) 
+	@echo
+	ls $(VENV_DIR)
+	$(VENV_ICODE)/bin/pip install fabric==3.2.2 nicegui==1.2.24 python-socketio==5.9.0 
+
+venv-icode-py310: ## icode for python3.10
+	python3.10 -m venv $(VENV_ICODE) 
+	@echo
+	ls $(VENV_DIR)
+	$(VENV_ICODE)/bin/pip install fabric nicegui 
+# pip install python-socketio==5.10.0
+
+venv-icode-py312: ## icode for python3.12
+	python3.12 -m venv $(VENV_ICODE) 
+	@echo
+	ls $(VENV_DIR)
+	$(VENV_ICODE)/bin/pip install fabric==3.2.2 nicegui==1.4.36 
+	$(VENV_ICODE)/bin/pip install python-socketio==5.11.3

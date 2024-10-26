@@ -1,0 +1,53 @@
+
+include $(INC_DIR)/Makefile.common
+
+NS1 := ns1
+NS2 := ns2
+
+define _ns_info
+	ip netns exec $(1) ip addr
+	@echo
+	ip netns exec $(1) route -n
+	@echo
+	ip netns exec $(1) netstat -nat
+	@echo
+	conntrack -L
+endef
+
+ns1:	## ns1 info
+	$(call _ns_info, $(NS1))
+
+ns2:	## ns2 info
+	$(call _ns_info, $(NS2))
+
+ping1:	## ping ns1 to ns2
+	ip netns exec ns1 ping 192.168.2.10 -W1 -c1
+
+ping2:  ## ping ns2 to ns1
+	ip netns exec ns2 ping 192.168.1.10 -W1 -c1
+
+# pd1:
+# 	tcpdump -i peer1 -nvv -U -w /tmp/peer1.pcap &
+# sleep 1  
+# ip netns exec ns1 ping 192.168.2.10 -W1 -c1
+# sleep 1
+# $(call _stopp,tcpdump)
+# sleep 1
+# tcpdump -nvv -r /tmp/peer1.pcap
+
+
+
+# ID=1
+# echo:
+# 	ID=2; echo $$ID
+
+# function pd1() {
+#     tcpdump -i $Veth_Peer1 -nvv -U -w $tcp_cap_file &
+#     sleep 1
+#     ping1
+#     sleep 1
+#     _stop_program tcpdump
+#     sleep 1
+#     tcpdump -nvv -r $tcp_cap_file
+# }
+
