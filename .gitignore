@@ -1,0 +1,14 @@
+
+build/repo
+
+**/tmp/*
+**/log/*
+
+*.log
+
+.vscode
+.idea
+
+.local
+.dev
+.test
