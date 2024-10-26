@@ -1,0 +1,33 @@
+FROM ubuntu:24.04
+
+# 时区
+ENV TZ "Asia/Shanghai"
+# 禁用交互式提示
+ENV DEBIAN_FRONTEND noninteractive
+# terminal colors with xterm
+ENV TERM xterm
+ENV HOME_DIR /root
+
+#------------------------------------------------------------
+# repo and base softwares
+RUN apt update \
+    && apt install -y tzdata ca-certificates \
+    && apt clean
+
+RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak
+COPY libos/ubuntu24/repo/sources.list /etc/apt/sources.list
+RUN apt update 
+RUN apt install -y wget curl git vim tar bzip2 unzip tree rsync htop
+RUN apt install -y gcc g++ make automake cmake 
+RUN apt install -y openssh-client psmisc sysstat strace lsof hostname 
+RUN apt install -y iproute2 net-tools telnet ncat tcpdump ethtool 
+RUN apt install -y mysql-client redis 
+
+#------------------------------------------------------------
+# golang
+RUN apt install -y golang-go
+RUN go env -w GOPROXY=https://goproxy.cn,direct \
+    && go env -w GO111MODULE=on \
+    && go env -w GOSUMDB='off'
+ 
+CMD ["/bin/bash"]

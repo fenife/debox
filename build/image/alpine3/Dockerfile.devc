@@ -1,0 +1,4 @@
+FROM base-alpine-3.20:latest
+
+CMD [ "/bin/bash" ]
+

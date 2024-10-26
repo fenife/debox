@@ -1,0 +1,12 @@
+{
+  "registry-mirrors": [
+    "https://dockerproxy.com",
+    "https://hub-mirror.c.163.com",
+    "https://mirror.baidubce.com",
+    "https://ccr.ccs.tencentyun.com"
+  ],
+  "insecure-registries": [
+    "register.dev.local:5000"
+  ]
+}
+

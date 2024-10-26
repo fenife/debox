@@ -1,0 +1,62 @@
+FROM base-ubuntu-24.04:latest AS builder
+
+#------------------------------------------------------------ 
+# golang
+RUN go install golang.org/x/tools/gopls@v0.15.3 \
+    && go install github.com/go-delve/delve/cmd/dlv@v1.22.1 \
+    && go install honnef.co/go/tools/cmd/staticcheck@v0.4.7 
+
+############################################################
+# image
+############################################################
+
+FROM base-ubuntu-24.04:latest
+
+RUN apt install -y passwd sudo man-db tig openssh-server
+RUN apt install -y iptables ipset iproute2 bridge-utils traceroute
+ 
+#------------------------------------------------------------ 
+# install zsh
+RUN apt install -y zsh
+# install oh my zsh 
+COPY lib/zsh/ohmyzsh-master.zip /tmp/
+RUN cd /tmp \
+    && unzip -q ohmyzsh-master.zip \
+    && mv ohmyzsh-master ${HOME_DIR}/.oh-my-zsh \
+    && cp ${HOME_DIR}/.oh-my-zsh/templates/zshrc.zsh-template ${HOME_DIR}/.zshrc \
+    && rm -rf /tmp/ohmyzsh-*
+
+#------------------------------------------------------------ 
+# golang
+COPY --from=builder ${HOME_DIR}/go ${HOME_DIR}/
+
+# install etcd
+
+#------------------------------------------------------------ 
+# configs
+
+ENV WINE_OPT_DIR=/wine/devbox/opt
+
+# zsh config
+# 自动补全
+ENV ZSH_CUSTOM=${HOME_DIR}/.oh-my-zsh/custom
+COPY lib/zsh/incr-0.2.zsh ${ZSH_CUSTOM}/plugins/incr/incr.zsh
+# zshr配置
+RUN echo >> ${HOME_DIR}/.zshrc \
+    && echo "# source ${WINE_OPT_DIR}/rc/ext.zsh" >> ${HOME_DIR}/.zshrc \
+    && sed -i "s/robbyrussell/ys/" ${HOME_DIR}/.zshrc 
+# 切换shell
+RUN chsh -s $(which zsh) 
+
+# git config
+COPY lib/conf/.gitconfig /${HOME_DIR}/.gitconfig
+# pip config
+COPY lib/conf/pip.conf ${HOME_DIR}/.pip/pip.conf
+# tmux
+COPY lib/conf/tmux.conf ${HOME_DIR}/.tmux.conf
+
+# # 设置编码，解决zsh下中文乱码问题
+# ENV LC_ALL=en_US.UTF-8  
+# ENV LANG=en_US.UTF-8
+
+CMD ["/bin/zsh"]
