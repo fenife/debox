@@ -1,0 +1,31 @@
+version: '3.7'
+services:
+  mysql-confluence:
+    image: fenife/mysql:5.7.30-confluence
+    container_name: mysql-confluence
+    ports:
+      - 3308:3306
+    volumes:
+      - /wine/var/lib/cfn/mysql:/var/lib/mysql
+    security_opt: 
+      - seccomp:unconfined
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: 'root'
+    command: --default-authentication-plugin=mysql_native_password --lower-case-table-names=1
+
+  confluence:
+    image: fenife/confluence:7.9.3-agented
+    container_name: confluence
+    environment:
+      TZ: Asia/Shanghai
+    ports:
+      - 8090:8090
+    volumes:
+      - /wine/var/lib/cfn/confluence:/var/atlassian/confluence
+
+networks:
+  mynet1:
+    ipam:
+      config:
+        - subnet: 172.28.0.0/24
