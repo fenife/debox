@@ -20,7 +20,7 @@ RUN yum install -y kernel-debug-devel libtool python-twisted-core
 RUN yum install -y python-zope-interface PyQt4 desktop-file-utils libcap-ng-devel groff 
 RUN yum install -y checkpolicy selinux-policy-devel sphinx-build-3
 
-COPY lib/src/openvswitch-2.13.0.tar.gz ${HOME_DIR}/rpmbuild/SOURCES/
+COPY repo/src/openvswitch-2.13.0.tar.gz ${HOME_DIR}/rpmbuild/SOURCES/
 RUN set -eux; \
     cd ${HOME_DIR}/rpmbuild/SOURCES \
     && tar -xzf openvswitch-*.tar.gz \
@@ -28,7 +28,7 @@ RUN set -eux; \
 
 #------------------------------------------------------------
 FROM builder-base as builder-openssl
-COPY lib/src/openssl-1.1.1w.tar.gz /tmp/
+COPY repo/src/openssl-1.1.1w.tar.gz /tmp/
 RUN cd /tmp/ \
     && tar -xzf openssl-1.1.1w.tar.gz \
     && cd openssl-1.1.1w  \
@@ -44,7 +44,7 @@ RUN ln -sf /usr/local/openssl/bin/openssl /usr/bin/openssl \
 
 #------------------------------------------------------------
 FROM builder-openssl as builder-python3.12
-COPY lib/src/Python-3.12.0.tgz /tmp/
+COPY repo/src/Python-3.12.0.tgz /tmp/
 RUN cd /tmp/ \
     && tar -xzf Python-3.12.0.tgz \
     && cd Python-3.12.0 \
@@ -55,7 +55,7 @@ RUN cd /tmp/ \
     && rm -rf /tmp/Python-*
 
 FROM builder-openssl as builder-python3.7
-COPY lib/src/Python-3.7.8.tgz /tmp/
+COPY repo/src/Python-3.7.8.tgz /tmp/
 RUN cd /tmp/ \
     && tar -xzf Python-3.7.8.tgz \
     && cd Python-3.7.8 \
@@ -66,7 +66,7 @@ RUN cd /tmp/ \
     && rm -rf /tmp/Python-*
 
 FROM builder-openssl as builder-python3.10
-COPY lib/src/Python-3.10.12.tgz /tmp/
+COPY repo/src/Python-3.10.12.tgz /tmp/
 RUN cd /tmp/ \
     && tar -xzf Python-3.10.12.tgz \
     && cd Python-3.10.12 \
@@ -78,7 +78,7 @@ RUN cd /tmp/ \
 
 #------------------------------------------------------------
 FROM builder-base as builder-git
-COPY lib/src/git-2.30.0.tar.gz /tmp/
+COPY repo/src/git-2.30.0.tar.gz /tmp/
 RUN set -eux; \
     rm /usr/bin/git \
     && cd /tmp \
@@ -92,7 +92,7 @@ RUN set -eux; \
 
 #------------------------------------------------------------
 FROM builder-base as builder-zsh
-COPY lib/src/zsh-5.8.tar.xz /tmp/
+COPY repo/src/zsh-5.8.tar.xz /tmp/
 RUN cd /tmp \
     && tar -xf zsh-5.8.tar.xz \
     && cd zsh-5.8 \
@@ -117,15 +117,15 @@ FROM builder-base as builder-vscode-py37
 ENV VSCODE_ID=8b3775030ed1a69b13e4f4c628c612102e30a681
 ENV VSCODE_BIN_DIR=${HOME_DIR}/.vscode-server/bin/${VSCODE_ID}
 ENV VSCODE_BIN=${VSCODE_BIN_DIR}/bin/code-server
-COPY lib/vscode/vscode-server-* /tmp/vscode/
+COPY repo/vscode/vscode-server-* /tmp/vscode/
 RUN mkdir -p ${VSCODE_BIN_DIR} \
     && tar -xzf /tmp/vscode/vscode-server-linux-x64-1.85.2.tar.gz -C ${VSCODE_BIN_DIR} --strip 1 
 # 传入 code-server 执行文件的路径，在脚本里遍历安装扩展文件
 # ~/.vscode-server/bin/8b3775030ed1a69b13e4f4c628c612102e30a681/bin/code-server 
-COPY lib/vscode/ext/ /tmp/vscode/ext/
+COPY repo/vscode/ext/ /tmp/vscode/ext/
 RUN cd /tmp/vscode/ext \
     && ./install.sh ${VSCODE_BIN} 
-COPY lib/vscode/py37/ /tmp/vscode/py37
+COPY repo/vscode/py37/ /tmp/vscode/py37
 RUN cd /tmp/vscode/py37 \
     && ./install.sh ${VSCODE_BIN} 
 
@@ -139,15 +139,15 @@ FROM builder-base as builder-vscode-py27
 ENV VSCODE_ID=8b3775030ed1a69b13e4f4c628c612102e30a681
 ENV VSCODE_BIN_DIR=${HOME_DIR}/.vscode-server/bin/${VSCODE_ID}
 ENV VSCODE_BIN=${VSCODE_BIN_DIR}/bin/code-server
-COPY lib/vscode/vscode-server-* /tmp/vscode/
+COPY repo/vscode/vscode-server-* /tmp/vscode/
 RUN mkdir -p ${VSCODE_BIN_DIR} \
     && tar -xzf /tmp/vscode/vscode-server-linux-x64-1.85.2.tar.gz -C ${VSCODE_BIN_DIR} --strip 1 
 # 传入 code-server 执行文件的路径，在脚本里遍历安装扩展文件
 # ~/.vscode-server/bin/8b3775030ed1a69b13e4f4c628c612102e30a681/bin/code-server 
-COPY lib/vscode/ext/ /tmp/vscode/ext/
+COPY repo/vscode/ext/ /tmp/vscode/ext/
 RUN cd /tmp/vscode/ext \
     && ./install.sh ${VSCODE_BIN} 
-COPY lib/vscode/py27/ /tmp/vscode/py27
+COPY repo/vscode/py27/ /tmp/vscode/py27
 RUN cd /tmp/vscode/py27 \
     && ./install.sh ${VSCODE_BIN} 
 
@@ -183,7 +183,7 @@ COPY --from=builder-zsh /usr/local/zsh /usr/local/zsh
 RUN ln -s /usr/local/zsh/bin/zsh /bin/zsh \
     && echo "/bin/zsh" >> /etc/shells
 # 安装 oh my zsh 
-COPY lib/zsh/ohmyzsh-master.zip /tmp/
+COPY repo/src/ohmyzsh-master.zip /tmp/
 RUN cd /tmp \
     && unzip -q ohmyzsh-master.zip \
     && mv ohmyzsh-master ${HOME_DIR}/.oh-my-zsh \
@@ -214,7 +214,7 @@ ENV SHARE_DIR=/wine/devbox/share
 # zsh config
 # 自动补全
 ENV ZSH_CUSTOM=${HOME_DIR}/.oh-my-zsh/custom
-COPY lib/zsh/incr-0.2.zsh ${ZSH_CUSTOM}/plugins/incr/incr.zsh
+COPY etc/zsh/incr-0.2.zsh ${ZSH_CUSTOM}/plugins/incr/incr.zsh
 # zshr配置
 RUN echo >> ${HOME_DIR}/.zshrc \
     && echo "source ${SHARE_DIR}/rc/ext.zshrc" >> ${HOME_DIR}/.zshrc \
@@ -223,13 +223,13 @@ RUN echo >> ${HOME_DIR}/.zshrc \
 RUN chsh -s $(which zsh) 
 
 # git config
-COPY lib/conf/.gitconfig /${HOME_DIR}/.gitconfig
+COPY etc/conf/.gitconfig /${HOME_DIR}/.gitconfig
 # pip config
-COPY lib/conf/pip.conf ${HOME_DIR}/.pip/pip.conf
+COPY etc/conf/pip.conf ${HOME_DIR}/.pip/pip.conf
 # tmux
-COPY lib/conf/tmux.conf ${HOME_DIR}/.tmux.conf
+COPY etc/conf/tmux.conf ${HOME_DIR}/.tmux.conf
 # docker proxy
-# COPY lib/docker/daemon.json /etc/docker/
+# COPY etc/docker/daemon.json /etc/docker/
 # COPY docker/docker.service.lib /usr/lib/systemd/system/docker.service
 # /usr/lib/systemd/system/docker.service
 
@@ -237,7 +237,7 @@ COPY lib/conf/tmux.conf ${HOME_DIR}/.tmux.conf
 RUN sed -i 's/#PermitRootLogin yes/PermitRootLogin yes/g' /etc/ssh/sshd_config
 RUN sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/g' /etc/ssh/sshd_config
 EXPOSE 22   
-COPY lib/conf/ssh/*.pub /tmp/ssh/
+COPY etc/conf/ssh/*.pub /tmp/ssh/
 RUN mkdir -p ${HOME_DIR}/.ssh \
     && cat /tmp/ssh/*.pub > ${HOME_DIR}/.ssh/authorized_keys
 RUN echo r123 | passwd --stdin root

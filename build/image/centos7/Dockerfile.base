@@ -15,8 +15,8 @@ ENV HOME_DIR /root
 #------------------------------------------------------------
 # base softwares
 # repo
-ADD libos/centos7/repo/centos-base-ali.repo /etc/yum.repos.d/CentOS-Base.repo
-ADD libos/centos7/repo/centos-epel-ali.repo /etc/yum.repos.d/epel.repo
+COPY etc/centos7/repo/centos-base-ali.repo /etc/yum.repos.d/CentOS-Base.repo
+COPY etc/centos7/repo/centos-epel-ali.repo /etc/yum.repos.d/epel.repo
 
 # 基础工具下载
 RUN yum install -y curl wget tar bzip2 unzip vim tree rsync git htop \
@@ -42,10 +42,8 @@ RUN go env -w GOPROXY=https://goproxy.cn,direct \
 # config
 
 # git config
-COPY lib/conf/.gitconfig /${HOME_DIR}/.gitconfig
+COPY etc/conf/.gitconfig /${HOME_DIR}/.gitconfig
 # pip config
-COPY lib/conf/pip.conf ${HOME_DIR}/.pip/pip.conf
-# tmux
-COPY lib/conf/tmux.conf ${HOME_DIR}/.tmux.conf
+COPY etc/conf/pip.conf ${HOME_DIR}/.pip/pip.conf
 
 CMD ["/bin/bash"]

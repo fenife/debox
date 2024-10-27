@@ -9,7 +9,7 @@ BASE_IMAGE_CENTOS=base-centos-7.9:latest
 BASE_NAME_CENTOS=base-centos7
 
 build-base: 
-	docker build -f ./Dockerfile.base -t $(BASE_IMAGE_CENTOS) $(IMAGE_BUILD_DIR)
+	docker build -f ./Dockerfile.base --progress=plain -t $(BASE_IMAGE_CENTOS) $(BUILD_DIR)
 
 start-base: 
 	docker run --rm -it --privileged \
@@ -32,7 +32,7 @@ DEVC_IMAGE_CENTOS=devc-centos-7.9:latest
 DEVC_NAME_CENTOS=centos7
 
 build: 
-	docker build -f ./Dockerfile.devc --progress=plain -t $(DEVC_IMAGE_CENTOS) $(IMAGE_BUILD_DIR)
+	docker build -f ./Dockerfile.devc --progress=plain -t $(DEVC_IMAGE_CENTOS) $(BUILD_DIR)
 
 start: 
 	docker run $(DEVC_WITH_OPTIONS) \
