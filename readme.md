@@ -1,4 +1,4 @@
-# devbox
+# debox
 
 some tools and project examples for development.
 
@@ -13,6 +13,16 @@ some tools and project examples for development.
 
 - rinp: run in pod (docker, container)
 
+
+- stable: 稳定版
+- release: 发布
+
+- hub: 中心
+- public: 公共
+- private: 私有
+- repo: repository, 仓库
+- lab: laboratory, 实验
+- app: application, 应用
 
 ## layer
 - layer1: base

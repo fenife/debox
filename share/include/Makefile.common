@@ -10,8 +10,8 @@
 # env
 ############################################################
 
-BASE_DIR=/wine/devbox
-IMAGE_BUILD_DIR=$(BASE_DIR)/build
+BASE_DIR=/wine/debox
+BUILD_DIR=$(BASE_DIR)/build
 IMAGE_SAVE_DIR=$(BASE_DIR)/images
 ICODE_DIR=$(BASE_DIR)/icode
 SHARE_DIR=$(BASE_DIR)/share

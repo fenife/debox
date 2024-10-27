@@ -2,7 +2,7 @@
 
 ROOT_DIR=/wine
 OPT_DIR=/wine/devbox/opt
-IMAGE_BUILD_DIR=/wine/devbox/build
+BUILD_DIR=/wine/devbox/build
 IMAGE_SAVE_DIR=/wine/devbox/images
 
 NOW_DT=`date '+%Y-%m-%d %H:%M:%S'`
