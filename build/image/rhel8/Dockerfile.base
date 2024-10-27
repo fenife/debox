@@ -1,0 +1,84 @@
+FROM redhat/ubi8:8.4 as builder-base
+
+# 禁用交互式提示
+ENV DEBIAN_FRONTEND noninteractive
+
+#------------------------------------------------------------
+# base softwares
+# repo
+ADD etc/rhel8/repo/base.repo /etc/yum.repos.d/
+ADD etc/rhel8/repo/epel.repo /etc/yum.repos.d/
+
+# 基础工具下载
+RUN yum install -y curl wget tar bzip2 unzip vim tree rsync git htop 
+RUN yum install -y gcc gcc-c++ make automake cmake 
+RUN yum install -y iproute hostname net-tools telnet nc tcpdump 
+RUN yum install -y psmisc sysstat strace lsof ethtool 
+RUN yum install -y mysql redis
+RUN yum clean all
+
+#------------------------------------------------------------
+# openssl
+FROM builder-base as builder-openssl
+RUN yum install -y perl-core zlib-devel
+
+COPY repo/src/openssl-1.1.1w.tar.gz /tmp/
+RUN cd /tmp/ \
+    && tar -xzf openssl-1.1.1w.tar.gz \
+    && cd openssl-1.1.1w  \
+    && ./config --prefix=/usr/local/openssl --openssldir=/usr/local/openssl -fPIC -shared \
+    && make \
+    && make install_sw install_ssldirs \
+    && rm -rf /tmp/openssl-*
+
+#------------------------------------------------------------
+# python3.12
+FROM builder-openssl as builder-python3.12
+RUN  yum install -y openssl-devel bzip2-devel libffi-devel sqlite-devel 
+
+COPY repo/src/Python-3.12.0.tgz /tmp/
+RUN cd /tmp/ \
+    && tar -xzf Python-3.12.0.tgz \
+    && cd Python-3.12.0 \
+    && ./configure --prefix=/usr/local/python3.12 --with-openssl=/usr/local/openssl \
+    --with-openssl-rpath=auto \
+    && make \
+    && make install \
+    && rm -rf /tmp/Python-*
+
+#------------------------------------------------------------
+FROM builder-base
+
+# python
+COPY --from=builder-python3.12 /usr/local/python3.12/ /usr/local/python3.12/
+RUN ln -s /usr/local/python3.12/bin/python3.12 /usr/bin/python3.12 \
+    && ln -s /usr/local/python3.12/bin/pip3.12 /usr/bin/pip3.12
+
+# golang
+COPY repo/linux/go1.22.3.linux-amd64.tar.gz /tmp/
+RUN cd /tmp \
+    && tar -zxf go1.22.3.linux-amd64.tar.gz -C /usr/local \
+    && rm -rf /tmp/go*
+ENV PATH="$PATH:/usr/local/go/bin"
+# RUN go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/ \
+RUN go env -w GOPROXY=https://goproxy.cn,direct \
+    && go env -w GO111MODULE=on \
+    && go env -w GOSUMDB='off'
+
+# config
+# 设置编码，解决zsh下中文乱码问题
+ENV LC_ALL=en_US.UTF-8  
+ENV LANG=en_US.UTF-8
+# terminal colors with xterm
+ENV TERM xterm
+# home dir
+ENV HOME_DIR /root
+# 时区
+ENV TZ "Asia/Shanghai"
+
+# git config
+COPY etc/conf/.gitconfig /${HOME_DIR}/.gitconfig
+# pip config
+COPY etc/conf/pip.conf ${HOME_DIR}/.pip/pip.conf
+
+CMD ["/bin/bash"]
