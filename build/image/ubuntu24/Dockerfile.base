@@ -10,13 +10,12 @@ ENV HOME_DIR /root
 
 #------------------------------------------------------------
 # repo and base softwares
-RUN apt update \
-    && apt install -y tzdata ca-certificates \
-    && apt clean
+RUN mv /etc/apt/sources.list /tmp/ \
+    && mv /etc/apt/sources.list.d/* /tmp/
+COPY etc/ubuntu24/repo/sources.list /etc/apt/
+RUN apt -o Acquire::Check-Valid-Until=false -o Acquire::Check-Date=false update 
 
-RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak
-COPY libos/ubuntu24/repo/sources.list /etc/apt/sources.list
-RUN apt update 
+RUN apt install -y tzdata ca-certificates 
 RUN apt install -y wget curl git vim tar bzip2 unzip tree rsync htop
 RUN apt install -y gcc g++ make automake cmake 
 RUN apt install -y openssh-client psmisc sysstat strace lsof hostname 
@@ -29,5 +28,10 @@ RUN apt install -y golang-go
 RUN go env -w GOPROXY=https://goproxy.cn,direct \
     && go env -w GO111MODULE=on \
     && go env -w GOSUMDB='off'
+
+# git config
+COPY etc/conf/.gitconfig /${HOME_DIR}/.gitconfig
+# pip config
+COPY etc/conf/pip.conf ${HOME_DIR}/.pip/pip.conf
  
 CMD ["/bin/bash"]

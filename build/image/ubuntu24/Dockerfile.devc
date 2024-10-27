@@ -19,7 +19,7 @@ RUN apt install -y iptables ipset iproute2 bridge-utils traceroute
 # install zsh
 RUN apt install -y zsh
 # install oh my zsh 
-COPY lib/zsh/ohmyzsh-master.zip /tmp/
+COPY repo/src/ohmyzsh-master.zip /tmp/
 RUN cd /tmp \
     && unzip -q ohmyzsh-master.zip \
     && mv ohmyzsh-master ${HOME_DIR}/.oh-my-zsh \
@@ -35,12 +35,12 @@ COPY --from=builder ${HOME_DIR}/go ${HOME_DIR}/
 #------------------------------------------------------------ 
 # configs
 
-ENV WINE_OPT_DIR=/wine/devbox/opt
+ENV WINE_OPT_DIR=/wine/debox/opt
 
 # zsh config
 # 自动补全
 ENV ZSH_CUSTOM=${HOME_DIR}/.oh-my-zsh/custom
-COPY lib/zsh/incr-0.2.zsh ${ZSH_CUSTOM}/plugins/incr/incr.zsh
+COPY etc/zsh/incr-0.2.zsh ${ZSH_CUSTOM}/plugins/incr/incr.zsh
 # zshr配置
 RUN echo >> ${HOME_DIR}/.zshrc \
     && echo "# source ${WINE_OPT_DIR}/rc/ext.zsh" >> ${HOME_DIR}/.zshrc \
@@ -49,11 +49,11 @@ RUN echo >> ${HOME_DIR}/.zshrc \
 RUN chsh -s $(which zsh) 
 
 # git config
-COPY lib/conf/.gitconfig /${HOME_DIR}/.gitconfig
+COPY etc/conf/.gitconfig /${HOME_DIR}/.gitconfig
 # pip config
-COPY lib/conf/pip.conf ${HOME_DIR}/.pip/pip.conf
+COPY etc/conf/pip.conf ${HOME_DIR}/.pip/pip.conf
 # tmux
-COPY lib/conf/tmux.conf ${HOME_DIR}/.tmux.conf
+COPY etc/conf/tmux.conf ${HOME_DIR}/.tmux.conf
 
 # # 设置编码，解决zsh下中文乱码问题
 # ENV LC_ALL=en_US.UTF-8  
