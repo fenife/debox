@@ -7,21 +7,25 @@ import (
 
 func TestLog(t *testing.T) {
 
-	Debugf("debug msg")
+	Debugf("t1")
 
 	ctx := context.Background()
-	Ctx(ctx).Infof("info msg")
+	Ctx(ctx).Infof("t2")
 
-	Ctx(ctx).With("a", 1).With("b", 2).Warnf("warn msg")
-	Ctx(ctx).With("a", 1, "b", 2).Warnf("warn msg2")
+	Ctx(ctx).With("a", 1).With("b", 2).Warnf("t3")
+	Ctx(ctx).With("a", 1, "b", 2).Warnf("t4")
 
 	ctx = context.WithValue(ctx, keyReqId, "req-id-123")
 	ctx = context.WithValue(ctx, keyTraceId, "trace-id-123")
-	Ctx(ctx).With("c", 3).Errorf("error msg")
+	l := Ctx(ctx).With("a", 2)
+	l.Infof("t5")
+	l.With("b", 3).Warnf("t6")
 
-	Debugf("hello %d", 1)
-	Ctx(ctx).Infof("hello %d", 2)
-	Warnf("hello %d", 3)
-	Infof("")
-	Errorf("", 1, 2, 3)
+	Debugf("t7 %d", 1)
+	Ctx(ctx).Infof("t8 %d", 2)
+	Warnf("t9 %d", 3)
+	With("t10", "a").Infof("")
+	Infof("", 1, "a", "b")
+	Infof("", 1, 2)
+	Errorf("t12 %d %d %d", 1, 2, 3)
 }
