@@ -4,21 +4,28 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
-const ctxKeyReqId = "request_id"
-const ctxKeyTraceId = "trace_id"
+const keyReqId = "request_id"
+const keyTraceId = "trace_id"
+const keyGoid = "goid"
+const keyStack = "stack"
 
 type InnerLogger struct {
 	opt       *LogOptions
 	zapLogger *zap.Logger
 	ctx       context.Context
 	fields    []interface{}
+	extras    map[string]interface{}
 }
+
+// var prefixKeyOrders = []string{keyGoid, keyStack, keyReqId, keyTraceId}
+var prefixKeyOrders = []string{keyGoid, keyReqId, keyTraceId, keyStack}
 
 func (l *InnerLogger) NewWithCtx(ctx context.Context) *InnerLogger {
 	return &InnerLogger{
@@ -26,6 +33,7 @@ func (l *InnerLogger) NewWithCtx(ctx context.Context) *InnerLogger {
 		zapLogger: l.zapLogger,
 		ctx:       ctx,
 		fields:    make([]interface{}, 0),
+		extras:    make(map[string]interface{}, 0),
 	}
 }
 
@@ -73,7 +81,74 @@ func NewInnerLogger(opts ...OptFunc) *InnerLogger {
 		opt:       opt,
 		zapLogger: zapLogger,
 		fields:    make([]interface{}, 0),
+		extras:    make(map[string]interface{}, 0),
 	}
+}
+
+// 公共字段（一个logger的一次context中共用）
+func (l *InnerLogger) buildExtras() {
+	if l.ctx != nil {
+		if val := l.ctx.Value(keyReqId); val != nil {
+			l.extras[keyReqId] = val
+		}
+		if val := l.ctx.Value(keyTraceId); val != nil {
+			l.extras[keyTraceId] = val
+		}
+	}
+	if l.opt.addGoId {
+		l.extras[keyGoid] = GetGoid()
+	}
+	if l.opt.addCaller {
+		callerStart := 4
+		callerEnd := callerStart + l.opt.callerCount
+		l.extras[keyStack] = GetCallerStackStr(callerStart, callerEnd)
+	}
+}
+
+func (l *InnerLogger) extraToSlices(withKey bool) []interface{} {
+	fields := make([]interface{}, 0)
+	for _, k := range prefixKeyOrders {
+		if v, ok := l.extras[k]; ok {
+			if withKey {
+				fields = append(fields, k, v)
+			} else {
+				fields = append(fields, v)
+			}
+		}
+	}
+	return fields
+}
+
+func (l *InnerLogger) extraToPrefixStr() string {
+	extras := l.extraToSlices(false)
+	prefixFields := make([]string, 0)
+	for _, field := range extras {
+		prefixFields = append(prefixFields, fmt.Sprintf("[%v]", field))
+	}
+	prefixFields = append(prefixFields, "-- ")
+	prefixStr := strings.Join(prefixFields, " ")
+	return prefixStr
+}
+
+func (l *InnerLogger) logJson(lvl Level, msg string, args ...interface{}) {
+	zapLevel := toZapLevel(lvl)
+	extras := l.extraToSlices(true)
+	fields := append(extras, l.fields...)
+	l.zapLogger.Sugar().With(fields...).Logf(zapLevel, msg, args...)
+}
+
+func (l *InnerLogger) log(lvl Level, args ...interface{}) {
+	zapLevel := toZapLevel(lvl)
+	prefixStr := l.extraToPrefixStr()
+	newArgs := append([]interface{}{prefixStr}, args...)
+	l.zapLogger.Sugar().With(l.fields...).Log(zapLevel, newArgs...)
+}
+
+func (l *InnerLogger) logf(lvl Level, msg string, args ...interface{}) {
+	zapLevel := toZapLevel(lvl)
+	prefixStr := l.extraToPrefixStr()
+	msg = prefixStr + msg
+	l.zapLogger.Sugar().With(l.fields...).Logf(zapLevel, msg, args...)
 }
 
 func (l *InnerLogger) Ctx(ctx context.Context) Loggerx {
@@ -86,45 +161,16 @@ func (l *InnerLogger) With(keyAndValues ...interface{}) Loggerx {
 	return l
 }
 
-// 公共字段（一个logger的一次context中共用）
-func (l *InnerLogger) buildFields() []interface{} {
-	if l.ctx == nil {
-		return l.fields
-	}
-	if val := l.ctx.Value(ctxKeyReqId); val != nil {
-		l.fields = append(l.fields, ctxKeyReqId, val)
-	}
-	if val := l.ctx.Value(ctxKeyTraceId); val != nil {
-		l.fields = append(l.fields, ctxKeyTraceId, val)
-	}
-	return l.fields
-}
-
 func (l *InnerLogger) Logf(lvl Level, msg string, args ...interface{}) {
-	zapLevel := toZapLevel(lvl)
-	fields := l.buildFields()
-
-	// 加入caller，goid，trace_id 等信息
-	callerStart := 3
-	callerEnd := callerStart + l.opt.callerCount
-	stackStr := GetCallerStackStr(callerStart, callerEnd)
+	l.buildExtras()
 	if l.opt.isEncodeJson {
-		if l.opt.addCaller {
-			fields = append(fields, "stack", stackStr)
-		}
+		l.logJson(lvl, msg, args...)
+		return
+	} else if msg == "" {
+		l.log(lvl, args...)
 	} else {
-		if l.opt.addCaller {
-			prefix := fmt.Sprintf("[%s] -- ", stackStr)
-			if msg == "" {
-				args = append([]interface{}{prefix}, args...)
-			} else {
-				msg = prefix + msg
-			}
-		}
+		l.logf(lvl, msg, args...)
 	}
-
-	// 输出日志
-	l.zapLogger.Sugar().With(fields...).Logf(zapLevel, msg, args...)
 }
 
 func (l *InnerLogger) Debugf(msg string, args ...interface{}) {

@@ -5,6 +5,8 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+
+	"github.com/petermattis/goid"
 )
 
 type Stack struct {
@@ -89,4 +91,8 @@ func GetCallerStackStr(start, end int) string {
 	stack := GetCallerStack(start, end)
 	s := stack.Format()
 	return s
+}
+
+func GetGoid() int64 {
+	return goid.Get()
 }

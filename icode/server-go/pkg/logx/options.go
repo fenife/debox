@@ -8,6 +8,7 @@ type LogOptions struct {
 	isEncodePlain bool   // plain格式记录日志，跟isEncodeJson只能二选一
 	addCaller     bool   // 是否需要打印调用者信息
 	callerCount   int    // 打印多少个调用者信息
+	addGoId       bool
 }
 
 func NewDefaultLogOptions() *LogOptions {
@@ -18,6 +19,7 @@ func NewDefaultLogOptions() *LogOptions {
 		isEncodePlain: true,
 		addCaller:     false,
 		callerCount:   1,
+		addGoId:       false,
 	}
 }
 
@@ -57,5 +59,11 @@ func WithCaller() OptFunc {
 func WithCallerCount(count int) OptFunc {
 	return func(o *LogOptions) {
 		o.callerCount = count
+	}
+}
+
+func WithGoid() OptFunc {
+	return func(o *LogOptions) {
+		o.addGoId = true
 	}
 }

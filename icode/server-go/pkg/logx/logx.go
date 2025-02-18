@@ -85,9 +85,10 @@ func Fatalf(msg string, args ...interface{}) {
 
 func init() {
 	InitLogger(
-		// WithLevel(InfoLevel),
+		WithLevel(DebugLevel),
 		// WithEncodeJson(),
 		WithCaller(),
 		WithCallerCount(3),
+		WithGoid(),
 	)
 }
