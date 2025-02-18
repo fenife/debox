@@ -2,6 +2,10 @@ package logx
 
 import (
 	"context"
+	"fmt"
+	"os"
+
+	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -14,7 +18,49 @@ type InnerLogger struct {
 	fields    []interface{}
 }
 
-func NewInnerLogger() *InnerLogger {
+func NewInnerLogger(logFile string) *InnerLogger {
+	writers := []zapcore.WriteSyncer{zapcore.AddSync(os.Stdout)}
+	if logFile != "" {
+		fileWriter := zapcore.AddSync(&lumberjack.Logger{
+			Filename:   logFile, // 文件位置
+			MaxSize:    100,     // 日志文件的最大大小(MB为单位)
+			MaxAge:     10,      // 保留旧文件的最大天数
+			MaxBackups: 10,      // 保留旧文件的最大个数
+			Compress:   false,   // 是否压缩/归档旧文件
+		})
+		writers = append(writers, zapcore.AddSync(fileWriter))
+	}
+
+	encodeConfig := zapcore.EncoderConfig{
+		TimeKey:        "ts",
+		LevelKey:       "level",
+		NameKey:        "logger",
+		CallerKey:      "caller",
+		FunctionKey:    zapcore.OmitKey,
+		MessageKey:     "msg",
+		StacktraceKey:  "stacktrace",
+		LineEnding:     zapcore.DefaultLineEnding,
+		EncodeLevel:    zapcore.LowercaseLevelEncoder,
+		EncodeTime:     zapcore.TimeEncoderOfLayout("2006-01-02 15:05:05.000"),
+		EncodeDuration: zapcore.SecondsDurationEncoder,
+		EncodeCaller:   zapcore.ShortCallerEncoder,
+	}
+
+	core := zapcore.NewCore(
+		// zapcore.NewJSONEncoder(encodeConfig),
+		zapcore.NewConsoleEncoder(encodeConfig),
+		zapcore.NewMultiWriteSyncer(writers...),
+		zap.DebugLevel,
+	)
+	// zapLogger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(2))
+	zapLogger := zap.New(core)
+	return &InnerLogger{
+		zapLogger: zapLogger,
+		fields:    make([]interface{}, 0),
+	}
+}
+
+func newInnerLogger() *InnerLogger {
 	config := zap.NewProductionConfig()
 	config.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout("2006-01-02 15:05:05.000")
 	config.Level = zap.NewAtomicLevelAt(zap.DebugLevel)
@@ -57,49 +103,40 @@ func (l *InnerLogger) buildFields() []interface{} {
 	return l.fields
 }
 
-func (l *InnerLogger) Debugf(msg string, args ...interface{}) {
-	fields := l.buildFields()
-	if len(fields) > 0 {
-		l.zapLogger.Sugar().With(fields...).Debugf(msg, args...)
+func (l *InnerLogger) buildExtras(msg string, args ...interface{}) (string, []interface{}) {
+	callerStackStr := GetCallerStackStr(4, 7)
+	prefix := fmt.Sprintf("[%s] -- ", callerStackStr)
+	if msg == "" && len(args) != 0 {
+		args = append([]interface{}{prefix}, args...)
 	} else {
-		l.zapLogger.Sugar().Debugf(msg, args...)
+		msg = prefix + msg
 	}
+	return msg, args
+}
+
+func (l *InnerLogger) Logf(lvl Level, msg string, args ...interface{}) {
+	zapLevel := toZapLevel(lvl)
+	fields := l.buildFields()
+	msg, args = l.buildExtras(msg, args...)
+	l.zapLogger.Sugar().With(fields...).Logf(zapLevel, msg, args...)
+}
+
+func (l *InnerLogger) Debugf(msg string, args ...interface{}) {
+	l.Logf(DebugLevel, msg, args...)
 }
 
 func (l *InnerLogger) Infof(msg string, args ...interface{}) {
-	fields := l.buildFields()
-	if len(fields) > 0 {
-		l.zapLogger.Sugar().With(fields...).Infof(msg, args...)
-	} else {
-		l.zapLogger.Sugar().Infof(msg, args...)
-	}
+	l.Logf(InfoLevel, msg, args...)
 }
 
 func (l *InnerLogger) Warnf(msg string, args ...interface{}) {
-	fields := l.buildFields()
-	if len(fields) > 0 {
-		l.zapLogger.Sugar().With(fields...).Warnf(msg, args...)
-	} else {
-		l.zapLogger.Sugar().Warnf(msg, args...)
-	}
+	l.Logf(WarnLevel, msg, args...)
 }
 
 func (l *InnerLogger) Errorf(msg string, args ...interface{}) {
-	//l.zapLogger.Sugar().With(l.buildFields()).Errorf(msg, args...)
-	fields := l.buildFields()
-	if len(fields) > 0 {
-		l.zapLogger.Sugar().With(fields...).Errorf(msg, args...)
-	} else {
-		l.zapLogger.Sugar().Errorf(msg, args...)
-	}
+	l.Logf(ErrorLevel, msg, args...)
 }
 
 func (l *InnerLogger) Fatalf(msg string, args ...interface{}) {
-	//l.zapLogger.Sugar().With(l.buildFields()).Panicf(msg, args...)
-	fields := l.buildFields()
-	if len(fields) > 0 {
-		l.zapLogger.Sugar().With(fields...).Panicf(msg, args...)
-	} else {
-		l.zapLogger.Sugar().Panicf(msg, args...)
-	}
+	l.Logf(FatalLevel, msg, args...)
 }
