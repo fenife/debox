@@ -45,26 +45,18 @@ func toZapLevel(lvl Level) zapcore.Level {
 	return zapLevel
 }
 
-func InitLogger() {
-	innerLogger = NewInnerLogger("")
+func InitLogger(opts ...OptFunc) {
+	innerLogger = NewInnerLogger(opts...)
 }
 
 func Ctx(ctx context.Context) Loggerx {
-	l := &InnerLogger{
-		zapLogger: innerLogger.zapLogger,
-		ctx:       ctx,
-		fields:    make([]interface{}, 0),
-	}
-	return l
+	newLogger := innerLogger.NewWithCtx(ctx)
+	return newLogger
 }
 
 func EmptyCtx() Loggerx {
-	l := &InnerLogger{
-		zapLogger: innerLogger.zapLogger,
-		ctx:       context.Background(),
-		fields:    make([]interface{}, 0),
-	}
-	return l
+	newLogger := innerLogger.NewWithCtx(context.Background())
+	return newLogger
 }
 
 func With(keyAndValues ...interface{}) Loggerx {
@@ -92,5 +84,10 @@ func Fatalf(msg string, args ...interface{}) {
 }
 
 func init() {
-	InitLogger()
+	InitLogger(
+		// WithLevel(InfoLevel),
+		// WithEncodeJson(),
+		WithCaller(),
+		WithCallerCount(3),
+	)
 }

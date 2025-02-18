@@ -34,9 +34,9 @@ func (stack *Stack) formatFrame(frame runtime.Frame) string {
 	var buf bytes.Buffer
 	buf.WriteString(stack.shortFileName(frame.File))
 	buf.WriteByte(':')
-	buf.WriteString(stack.shortFuncName(frame.Function))
-	buf.WriteByte(':')
 	buf.WriteString(strconv.Itoa(frame.Line))
+	buf.WriteByte(':')
+	buf.WriteString(stack.shortFuncName(frame.Function))
 	return buf.String()
 }
 
@@ -56,14 +56,14 @@ func (stack *Stack) shortFuncName(funcname string) string {
 	return funcname[idx+1:]
 }
 
-// GetCallerFrames 获取指定范围的调用栈帧信息
+// GetCallerStack 获取指定范围的调用栈帧信息
 func GetCallerStack(start, end int) *Stack {
 	stack := &Stack{
 		frames: nil,
 	}
 	var frames []runtime.Frame
 	pcs := make([]uintptr, 10)
-	// 跳过前 2 帧（runtime.Callers 和 getCallerFrames 本身）
+	// 跳过前 2 帧（runtime.Callers 和 GetCallerStack 本身）
 	n := runtime.Callers(2, pcs)
 	if n == 0 {
 		return stack

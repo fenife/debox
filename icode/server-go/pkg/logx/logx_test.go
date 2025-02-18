@@ -20,5 +20,6 @@ func TestLog(t *testing.T) {
 	Debugf("hello %d", 1)
 	Ctx(ctx).Infof("hello %d", 2)
 	Warnf("hello %d", 3)
-	Errorf("")
+	Infof("")
+	Errorf("", 1, 2, 3)
 }
