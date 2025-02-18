@@ -16,6 +16,29 @@ const (
 	FatalLevel Level = "fatal"
 )
 
+func (lvl Level) toZapLevel() zapcore.Level {
+	zapLevel := zapcore.InfoLevel
+	switch lvl {
+	case DebugLevel:
+		zapLevel = zapcore.DebugLevel
+	case InfoLevel:
+		zapLevel = zapcore.InfoLevel
+	case WarnLevel:
+		zapLevel = zapcore.WarnLevel
+	case ErrorLevel:
+		zapLevel = zapcore.ErrorLevel
+	case FatalLevel:
+		zapLevel = zapcore.FatalLevel
+	default:
+		zapLevel = zapcore.InfoLevel
+	}
+	return zapLevel
+}
+
+func toZapLevel(lvl Level) zapcore.Level {
+	return lvl.toZapLevel()
+}
+
 type Loggerx interface {
 	Ctx(ctx context.Context) Loggerx
 	With(keyAndValues ...interface{}) Loggerx
@@ -28,22 +51,6 @@ type Loggerx interface {
 }
 
 var innerLogger *InnerLogger
-
-func toZapLevel(lvl Level) zapcore.Level {
-	levelMaps := map[Level]zapcore.Level{
-		DebugLevel: zapcore.DebugLevel,
-		InfoLevel:  zapcore.InfoLevel,
-		WarnLevel:  zapcore.WarnLevel,
-		ErrorLevel: zapcore.ErrorLevel,
-		FatalLevel: zapcore.FatalLevel,
-	}
-	zapLevel := zapcore.InfoLevel
-	level, ok := levelMaps[lvl]
-	if ok {
-		zapLevel = level
-	}
-	return zapLevel
-}
 
 func InitLogger(opts ...OptFunc) {
 	innerLogger = NewInnerLogger(opts...)

@@ -27,16 +27,6 @@ type InnerLogger struct {
 // var prefixKeyOrders = []string{keyGoid, keyStack, keyReqId, keyTraceId}
 var prefixKeyOrders = []string{keyGoid, keyReqId, keyTraceId, keyStack}
 
-func (l *InnerLogger) NewWithCtx(ctx context.Context) *InnerLogger {
-	return &InnerLogger{
-		opt:       l.opt,
-		zapLogger: l.zapLogger,
-		ctx:       ctx,
-		fields:    make([]interface{}, 0),
-		extras:    make(map[string]interface{}, 0),
-	}
-}
-
 func NewInnerLogger(opts ...OptFunc) *InnerLogger {
 	opt := NewDefaultLogOptions()
 	for _, optFunc := range opts {
@@ -70,7 +60,7 @@ func NewInnerLogger(opts ...OptFunc) *InnerLogger {
 		EncodeCaller:   zapcore.ShortCallerEncoder,
 	}
 
-	zapLevel := toZapLevel(Level(opt.level))
+	zapLevel := toZapLevel(opt.level)
 	enc := zapcore.NewConsoleEncoder(encodeConfig)
 	if opt.isEncodeJson {
 		enc = zapcore.NewJSONEncoder(encodeConfig)
@@ -80,6 +70,16 @@ func NewInnerLogger(opts ...OptFunc) *InnerLogger {
 	return &InnerLogger{
 		opt:       opt,
 		zapLogger: zapLogger,
+		fields:    make([]interface{}, 0),
+		extras:    make(map[string]interface{}, 0),
+	}
+}
+
+func (l *InnerLogger) NewWithCtx(ctx context.Context) *InnerLogger {
+	return &InnerLogger{
+		opt:       l.opt,
+		zapLogger: l.zapLogger,
+		ctx:       ctx,
 		fields:    make([]interface{}, 0),
 		extras:    make(map[string]interface{}, 0),
 	}
@@ -107,6 +107,9 @@ func (l *InnerLogger) buildExtras() {
 
 func (l *InnerLogger) extraToSlices(withKey bool) []interface{} {
 	fields := make([]interface{}, 0)
+	if len(l.extras) == 0 {
+		return fields
+	}
 	for _, k := range prefixKeyOrders {
 		if v, ok := l.extras[k]; ok {
 			if withKey {
@@ -119,6 +122,7 @@ func (l *InnerLogger) extraToSlices(withKey bool) []interface{} {
 	return fields
 }
 
+// 构造log前缀，类似："[6] [logx_test.go:10:TestLog] -- "
 func (l *InnerLogger) extraToPrefixStr() string {
 	extras := l.extraToSlices(false)
 	prefixFields := make([]string, 0)
@@ -165,7 +169,6 @@ func (l *InnerLogger) Logf(lvl Level, msg string, args ...interface{}) {
 	l.buildExtras()
 	if l.opt.isEncodeJson {
 		l.logJson(lvl, msg, args...)
-		return
 	} else if msg == "" {
 		l.log(lvl, args...)
 	} else {
