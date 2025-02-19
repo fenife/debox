@@ -75,7 +75,7 @@ func NewInnerLogger(opts ...OptFunc) *InnerLogger {
 	}
 }
 
-func (l *InnerLogger) NewWithCtx(ctx context.Context) *InnerLogger {
+func (l *InnerLogger) Clone(ctx context.Context) *InnerLogger {
 	return &InnerLogger{
 		opt:       l.opt,
 		zapLogger: l.zapLogger,

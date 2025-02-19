@@ -56,38 +56,41 @@ func InitLogger(opts ...OptFunc) {
 	innerLogger = NewInnerLogger(opts...)
 }
 
-func Ctx(ctx context.Context) Loggerx {
-	newLogger := innerLogger.NewWithCtx(ctx)
+func ctxLogger(ctx context.Context) Loggerx {
+	newLogger := innerLogger.Clone(ctx)
 	return newLogger
 }
 
-func EmptyCtx() Loggerx {
-	newLogger := innerLogger.NewWithCtx(context.Background())
-	return newLogger
+func emptyCtxLogger() Loggerx {
+	return ctxLogger(context.Background())
+}
+
+func Ctx(ctx context.Context) Loggerx {
+	return ctxLogger(ctx)
 }
 
 func With(keyAndValues ...interface{}) Loggerx {
-	return Ctx(context.Background()).With(keyAndValues...)
+	return emptyCtxLogger().With(keyAndValues...)
 }
 
 func Debugf(msg string, args ...interface{}) {
-	EmptyCtx().Logf(DebugLevel, msg, args...)
+	emptyCtxLogger().Logf(DebugLevel, msg, args...)
 }
 
 func Infof(msg string, args ...interface{}) {
-	EmptyCtx().Logf(InfoLevel, msg, args...)
+	emptyCtxLogger().Logf(InfoLevel, msg, args...)
 }
 
 func Warnf(msg string, args ...interface{}) {
-	EmptyCtx().Logf(WarnLevel, msg, args...)
+	emptyCtxLogger().Logf(WarnLevel, msg, args...)
 }
 
 func Errorf(msg string, args ...interface{}) {
-	EmptyCtx().Logf(ErrorLevel, msg, args...)
+	emptyCtxLogger().Logf(ErrorLevel, msg, args...)
 }
 
 func Fatalf(msg string, args ...interface{}) {
-	EmptyCtx().Logf(FatalLevel, msg, args...)
+	emptyCtxLogger().Logf(FatalLevel, msg, args...)
 }
 
 func init() {
