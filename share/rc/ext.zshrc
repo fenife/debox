@@ -1,6 +1,6 @@
 
 # Incremental completion on zsh: 实时补全
-source $ZSH_CUSTOM/plugins/incr/incr.zsh
+# source $ZSH_CUSTOM/plugins/incr/incr.zsh
 
 # 关闭自动更新
 zstyle ':omz:update' mode disabled
