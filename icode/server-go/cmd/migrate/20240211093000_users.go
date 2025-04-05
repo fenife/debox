@@ -1,11 +1,19 @@
 package main
 
 import (
-	"server-go/domain/entity"
-
 	"github.com/go-gormigrate/gormigrate/v2"
 	"gorm.io/gorm"
+	"server-go/config"
+	"server-go/domain/entity"
 )
+
+func newAdminUser(adminConf *config.AdminUser) *entity.User {
+	admin := entity.User{
+		Name: adminConf.Username,
+	}
+	admin.PasswordHash = admin.GenPasswordHash(adminConf.Password)
+	return &admin
+}
 
 func init() {
 	migrations = append(migrations, &gormigrate.Migration{
@@ -20,7 +28,9 @@ func init() {
 				return err
 			}
 
-			return nil
+			// 创建管理员
+			admin := newAdminUser(&config.Conf.Admin)
+			return tx.Create(admin).Error
 		},
 		Rollback: func(tx *gorm.DB) error {
 			return tx.Migrator().DropTable("users")

@@ -4,8 +4,13 @@
 migrate:
 	go run ./cmd/migrate
 
+run: swag
+	go run .
+
 swag:
 	swag init
 
-run: swag
-	go run .
+md2html:
+	#go run ./cmd/md2html_test
+	cd ./cmd/md2html_test && go run .
+

@@ -32,10 +32,15 @@ const (
 	// 文章分类 13-xx-xx
 	errCodeCategoryNotFound  = 151101
 	errCodeGetCateListFailed = 131102
+	errCodeCreateCateFailed  = 131103
+	errCodeCategoryExisted   = 131104
+	errCodeCateUpdateFailed  = 131105
 
 	// 文章 15-xx-xx
 	errCodePostNotFound      = 151101
 	errCodeGetPostListFailed = 151102
+	errCodeCreatePostFailed  = 151103
+	errCodePostExisted       = 151104
 )
 
 var (
@@ -62,10 +67,14 @@ var (
 	//PermitDeny = renderx.NewRender(http.StatusOK, ErrCodePermitDeny, "user permission deny")
 
 	// 文章分类
-	CategoryNotFound = renderx.NewRender(http.StatusOK, errCodeCategoryNotFound, "category not found")
-	CateListFailed   = renderx.NewRender(http.StatusOK, errCodeGetCateListFailed, "get category list failed")
+	CategoryNotFound     = renderx.NewRender(http.StatusOK, errCodeCategoryNotFound, "category not found")
+	CateListFailed       = renderx.NewRender(http.StatusOK, errCodeGetCateListFailed, "get category list failed")
+	CreateCategoryFailed = renderx.NewRender(http.StatusOK, errCodeCreateCateFailed, "create category failed")
+	CategoryExisted      = renderx.NewRender(http.StatusOK, errCodeCategoryExisted, "category existed")
 
 	// 文章
-	PostNotFound   = renderx.NewRender(http.StatusOK, errCodePostNotFound, "post not found")
-	PostListFailed = renderx.NewRender(http.StatusOK, errCodeGetPostListFailed, "get post list failed")
+	PostNotFound     = renderx.NewRender(http.StatusOK, errCodePostNotFound, "post not found")
+	PostListFailed   = renderx.NewRender(http.StatusOK, errCodeGetPostListFailed, "get post list failed")
+	CreatePostFailed = renderx.NewRender(http.StatusOK, errCodeCreatePostFailed, "create post failed")
+	PostExisted      = renderx.NewRender(http.StatusOK, errCodePostExisted, "post existed")
 )

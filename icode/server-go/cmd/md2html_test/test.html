@@ -1,0 +1,73 @@
+<nav>
+
+<ul>
+<li>
+<ul>
+<li><a href="#toc_0">冒泡排序</a></li>
+
+<li><a href="#toc_1">table</a></li>
+
+<li><a href="#toc_2">参考</a></li>
+</ul></li>
+</ul>
+
+</nav>
+
+<h2 id="toc_0">冒泡排序</h2>
+
+<p>比较相邻的元素，如果前面的比后面的大，则交换。
+假设数组长度为n，对第0个到第n-1个做同样的操作。</p>
+
+<pre><code class="language-python">def bubble_sort(lst: list):
+    &quot;&quot;&quot;冒泡排序&quot;&quot;&quot;
+
+    # 获取数组长度
+    n = len(lst)
+
+    # 重复n次
+    for i in range(n):
+        # 每一轮都比较相邻的元素，'冒泡'找到最大的元素
+        for j in range(0, n-i-1):
+            if lst[j] &gt; lst[j+1]:
+                # 交换
+                lst[j], lst[j+1] = lst[j+1], lst[j]
+
+    return lst
+</code></pre>
+
+<p>复杂度分析：</p>
+
+<ul>
+<li>时间复杂度：O(n^2)</li>
+<li>空间复杂度：O(1)</li>
+<li>稳定性：稳定</li>
+</ul>
+
+<h2 id="toc_1">table</h2>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Age</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Bob</td>
+<td>27</td>
+</tr>
+
+<tr>
+<td>Alice</td>
+<td>23</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="toc_2">参考</h2>
+
+<ol>
+<li><a href="https://cloud.tencent.com/developer/article/2117904" target="_blank">python排序算法</a></li>
+</ol>

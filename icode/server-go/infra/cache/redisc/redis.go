@@ -1,15 +1,15 @@
 package redisc
 
 import (
+	"github.com/redis/go-redis/v9"
 	"server-go/config"
 	"server-go/domain/cache"
-
-	"github.com/redis/go-redis/v9"
 )
 
 type Caches struct {
-	rds      *redis.Client
-	ApiCache cache.IApiCache
+	rds       *redis.Client
+	UserCache cache.IUserCache
+	ApiCache  cache.IApiCache
 }
 
 func NewCaches(redisConf *config.RedisConfig) (*Caches, error) {
@@ -20,7 +20,8 @@ func NewCaches(redisConf *config.RedisConfig) (*Caches, error) {
 	})
 
 	return &Caches{
-		rds:      rds,
-		ApiCache: NewApiCache(rds),
+		rds:       rds,
+		UserCache: NewUserCache(rds),
+		ApiCache:  NewApiCache(rds),
 	}, nil
 }

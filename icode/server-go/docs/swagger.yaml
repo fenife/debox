@@ -1,5 +1,98 @@
 basePath: /
 definitions:
+  do.CategoryTiny:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  do.PostDetail:
+    properties:
+      cate_id:
+        type: integer
+      category:
+        $ref: '#/definitions/do.CategoryTiny'
+      content:
+        description: 文章详情
+        type: string
+      created_at:
+        description: '"2006-01-02 15:05:05"'
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+      title_en:
+        type: string
+      updated_at:
+        description: 同上
+        type: string
+      user:
+        $ref: '#/definitions/do.UserTiny'
+      user_id:
+        type: integer
+    type: object
+  do.UserTiny:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  dto.CategoryListItem:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      post_count:
+        description: 该分类下的文章数
+        type: integer
+    type: object
+  dto.PostArchiveItem:
+    properties:
+      count:
+        description: 文章数目
+        type: integer
+      post_list:
+        description: 文章列表，文章内容为""，不需要展示
+        items:
+          $ref: '#/definitions/do.PostDetail'
+        type: array
+      year:
+        description: 创建年份
+        type: integer
+    type: object
+  dto.PostDetail:
+    properties:
+      cate_id:
+        type: integer
+      category:
+        $ref: '#/definitions/do.CategoryTiny'
+      content:
+        description: 文章详情
+        type: string
+      created_at:
+        description: '"2006-01-02 15:05:05"'
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+      title_en:
+        type: string
+      toc:
+        description: markdown的目录
+        type: string
+      updated_at:
+        description: 同上
+        type: string
+      user:
+        $ref: '#/definitions/do.UserTiny'
+      user_id:
+        type: integer
+    type: object
   renderx.Response:
     properties:
       data: {}
@@ -13,14 +106,105 @@ definitions:
       msg:
         type: string
     type: object
-  req.GetUserListReq:
+  req.CreateCategoryReq:
+    properties:
+      name:
+        maxLength: 20
+        minLength: 1
+        type: string
+    required:
+    - name
+    type: object
+  req.CreatePostReq:
+    properties:
+      cate_id:
+        minimum: 1
+        type: integer
+      content:
+        type: string
+      title:
+        type: string
+      title_en:
+        type: string
+      user_id:
+        minimum: 1
+        type: integer
+    required:
+    - cate_id
+    - content
+    - title
+    - title_en
+    - user_id
+    type: object
+  req.SignInReq:
     properties:
       name:
         maxLength: 20
         minLength: 3
         type: string
+      password:
+        maxLength: 32
+        minLength: 3
+        type: string
     required:
     - name
+    - password
+    type: object
+  req.SignupReq:
+    properties:
+      name:
+        maxLength: 20
+        minLength: 3
+        type: string
+      password:
+        maxLength: 32
+        minLength: 3
+        type: string
+    required:
+    - name
+    - password
+    type: object
+  resp.CategoryListResp:
+    properties:
+      cate_list:
+        items:
+          $ref: '#/definitions/dto.CategoryListItem'
+        type: array
+      total:
+        description: 文章分类的总数目
+        type: integer
+    type: object
+  resp.PostArchiveResp:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/dto.PostArchiveItem'
+        type: array
+    type: object
+  resp.PostDetailResp:
+    properties:
+      next:
+        $ref: '#/definitions/do.PostDetail'
+      post:
+        $ref: '#/definitions/dto.PostDetail'
+      pre:
+        $ref: '#/definitions/do.PostDetail'
+    type: object
+  resp.PostListResp:
+    properties:
+      post_list:
+        items:
+          $ref: '#/definitions/do.PostDetail'
+        type: array
+      total:
+        type: integer
+    type: object
+  resp.SignInResp:
+    properties:
+      user_token:
+        type: string
+      username:
+        type: string
     type: object
 host: localhost:8030
 info:
@@ -30,17 +214,17 @@ info:
   title: yonder blog api aservice
   version: "1.0"
 paths:
-  /api/v1/user/list:
-    get:
+  /api/v1/category:
+    post:
       consumes:
       - application/json
-      description: 获取用户列表
+      description: 新增分类
       parameters:
-      - description: 查询参数
+      - description: 参数
         in: body
         name: object
         schema:
-          $ref: '#/definitions/req.GetUserListReq'
+          $ref: '#/definitions/req.CreateCategoryReq'
       produces:
       - application/json
       responses:
@@ -48,7 +232,227 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/renderx.Response'
-      summary: 用户列表
+      summary: 新增分类
+      tags:
+      - category
+  /api/v1/category/list:
+    get:
+      consumes:
+      - application/json
+      description: 获取文章分类列表，包含了该分类下文章的统计数目
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.CategoryListResp'
+      summary: 分类列表
+      tags:
+      - category
+  /api/v1/post:
+    post:
+      consumes:
+      - application/json
+      description: 新增文章
+      parameters:
+      - description: 参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/req.CreatePostReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/renderx.Response'
+      summary: 新增文章
+      tags:
+      - post
+  /api/v1/post/about:
+    get:
+      consumes:
+      - application/json
+      description: 获取about文章详情，用于about页面展示
+      parameters:
+      - enum:
+        - html
+        - md
+        in: query
+        name: ct
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.PostDetailResp'
+      summary: about文章内容
+      tags:
+      - post
+  /api/v1/post/archive:
+    get:
+      consumes:
+      - application/json
+      description: 获取文章归档列表，包括用户和分类信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.PostArchiveResp'
+      summary: 文章归档列表
+      tags:
+      - post
+  /api/v1/post/detail:
+    get:
+      consumes:
+      - application/json
+      description: 获取文章详情，包括用户和分类信息
+      parameters:
+      - description: 文章内容类型，html或者markdown
+        enum:
+        - html
+        - md
+        in: query
+        name: ct
+        type: string
+      - description: 文章id
+        in: query
+        name: post_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.PostDetailResp'
+      summary: 文章详情
+      tags:
+      - post
+  /api/v1/post/list:
+    get:
+      consumes:
+      - application/json
+      description: 获取文章列表，支持分页，可按分类id进行查询
+      parameters:
+      - description: 分类id
+        in: query
+        minimum: 1
+        name: cate_id
+        type: integer
+      - in: query
+        minimum: 1
+        name: limit
+        type: integer
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.PostListResp'
+      summary: 文章列表
+      tags:
+      - post
+  /api/v1/post/search:
+    get:
+      consumes:
+      - application/json
+      description: 根据标题搜索文章列表
+      parameters:
+      - description: 搜索关键字
+        in: query
+        name: kw
+        required: true
+        type: string
+      - in: query
+        minimum: 1
+        name: limit
+        type: integer
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.PostListResp'
+      summary: 文章搜索
+      tags:
+      - post
+  /api/v1/user/signin:
+    post:
+      consumes:
+      - application/json
+      description: 检查用户是否存在，密码是否正确，如果正常，返回用户token
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/req.SignInReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.SignInResp'
+        "111001":
+          description: 参数错误
+          schema:
+            type: integer
+      summary: 用户登陆
+      tags:
+      - user
+  /api/v1/user/signout:
+    post:
+      consumes:
+      - application/json
+      description: 用户退出登陆，需要在header中附带x-user-token参数
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/renderx.Response'
+      summary: 用户退出
+      tags:
+      - user
+  /api/v1/user/signup:
+    post:
+      consumes:
+      - application/json
+      description: 创建新用户
+      parameters:
+      - description: 查询参数
+        in: body
+        name: object
+        schema:
+          $ref: '#/definitions/req.SignupReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/renderx.Response'
+      summary: 用户注册
       tags:
       - user
   /ping:

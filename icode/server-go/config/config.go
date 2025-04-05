@@ -50,6 +50,7 @@ type Config struct {
 	Server ServerConfig `json:"server"`
 	Mysql  MysqlConfig  `json:"mysql"`
 	Redis  RedisConfig  `json:"redis"`
+	Admin  AdminUser    `json:"admin"`
 }
 
 var Conf Config

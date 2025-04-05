@@ -1,0 +1,24 @@
+{
+  "env": "dev",
+  "server": {
+    "host": "0.0.0.0",
+    "port": 8020
+  },
+  "mysql": {
+    "host": "mysql",
+    "port": 3306,
+    "user": "test",
+    "password": "test",
+    "database": "test",
+    "charset": "utf8mb4"
+  },
+  "redis": {
+    "host": "redis",
+    "port": 6379
+  },
+  "admin": {
+    "username": "admin",
+    "password": "admin"
+  }
+}
+
