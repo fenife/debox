@@ -21,6 +21,7 @@ alias jshare="cd $SHARE_DIR"
 alias japp="cd $APP_DIR" 
 alias jk8s="cd $K8S_DIR" 
 alias jicode="cd $ICODE_DIR" 
+alias jinfra="cd $LOCAL_DIR/infra"
 
 ############################################################
 # export
@@ -60,4 +61,8 @@ fi
 VENV_DIR=/wine/venv
 
 alias sicode="source $VENV_DIR/icode/bin/activate"
+
+############################################################
+# run service
+alias rswebox="make -f $APP_DIR/webox/Makefile"
 

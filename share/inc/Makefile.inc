@@ -42,10 +42,7 @@ HOST_IP=$(shell ifconfig  | grep $(ETH_NAME) -A 2 | grep inet | head -1 | awk '{
 HOST_NAME=$(shell hostname)
 
 DEVC_WITH_OPTIONS = --rm -it --privileged \
-	--add-host="$(HOST_NAME):$(HOST_IP)"  \
-	--add-host="mysql:$(HOST_IP)"  \
-	--add-host="redis:$(HOST_IP)"  \
-	--add-host="rabbitmq:$(HOST_IP)" \
+	--add-host="dev.local:$(HOST_IP)"  \
 	-v $(SHARE_DIR):$(SHARE_DIR) \
 	-v $(ICODE_DIR):$(ICODE_DIR) 
 
