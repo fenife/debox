@@ -1,3 +1,3 @@
 
-include $(INC_DIR)/Makefile.common
+include $(INC_DIR)/Makefile.inc
 
