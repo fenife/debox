@@ -1,9 +1,9 @@
 
-include $(INC_DIR)/Makefile.common
+include $(INC_DIR)/Makefile.inc
 
-REDIS_IMAGE=redis:7.0
-REDIS_NAME=redis
-REDIS_DATA_DIR=$(ROOT_DIR)/var/redis
+REDIS_IMAGE=$(REGISTRY_URL)/redis:7.0
+REDIS_NAME=redis7.0
+REDIS_DATA_DIR=/wine/var/redis
 
 .PHONY: start stop
 

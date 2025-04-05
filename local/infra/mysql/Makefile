@@ -1,36 +1,33 @@
+include $(INC_DIR)/Makefile.inc
 
-include $(INC_DIR)/Makefile.common
-
-MYSQL_IMAGE=mysql:5.7
-MYSQL_NAME=mysql
-MYSQL_DATA_DIR=$(ROOT_DIR)/var/mysql
+MYSQL_IMAGE=$(REGISTRY_URL)/mysql:5.7
+MYSQL_NAME=mysql5.7
+MYSQL_DATA_DIR=/wine/var/mysql
 MYSQL_ROOT_PASSWORD=root
 
-.PHONY: start stop
-
-pull:
+pull:		## pull mysql
 	docker pull $(MYSQL_IMAGE)
 
-start:
+start:		## start mysql
 	docker run -d -p 3306:3306 --name $(MYSQL_NAME) \
 	-v $(MYSQL_DATA_DIR):/var/lib/mysql \
 	-e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) \
 	$(MYSQL_IMAGE) 
 
-stop:
+stop:		## stop mysql
 	docker stop $(MYSQL_NAME)
 	docker rm $(MYSQL_NAME)
 
-restart:
+restart:	## restart mysql
 	docker restart $(MYSQL_NAME)
 
-enter:
+at:		## enter mysql
 	docker exec -it $(MYSQL_NAME) bash
 
-root:
+root:	## connect to mysql by root
 	mysql -h127.0.0.1 -P3306 -uroot -p$(MYSQL_ROOT_PASSWORD)
 
-test:
+test:	## connect to mysql by test
 	mysql -h127.0.0.1 -P3306 -utest -ptest
 
 # 创建用户
