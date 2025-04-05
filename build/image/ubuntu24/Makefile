@@ -37,6 +37,7 @@ build:
 start: 
 	docker run --rm -it --privileged \
 	--name $(UBUNTU_NAME) --hostname $(UBUNTU_NAME) \
+	-v $(SHARE_DIR):$(SHARE_DIR) \
 	$(UBUNTU_IMAGE)
 
 stop:

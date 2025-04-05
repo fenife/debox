@@ -1,10 +1,11 @@
 
-# enable bash completion in interactive shells
-if ! shopt -oq posix; then
-  if [ -f /usr/share/bash-completion/bash_completion ]; then
-    . /usr/share/bash-completion/bash_completion
-  elif [ -f /etc/bash_completion ]; then
-    . /etc/bash_completion
-  fi
+RC_DIR=/wine/debox/share/rc
+
+# source bashrc and zshrc
+if [ -f $RC_DIR/ext.bashrc ]; then
+  source $RC_DIR/ext.bashrc
 fi
 
+if [ -x "$(command -v zsh)" && -f $RC_DIR/ext.zshrc ]; then
+  source $RC_DIR/ext.zshrc
+fi
