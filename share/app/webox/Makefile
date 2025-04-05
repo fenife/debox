@@ -1,8 +1,15 @@
 include $(INC_DIR)/Makefile.inc
 
-CODE_DIR=$(ICODE_DIR)/webox
-LOG_DIR=/wine/var/log/webox
-VENV_DIR=/wine/venv/icode
+WEBOX_IMAGE=$(IMAGE_ME_NS)/webox:latest
+WEBOX_NAME=webox
+WEBOX_CODE_DIR=$(ICODE_DIR)/webox
+WEBOX_LOG_DIR=/webox/var/log/webox
+WEBOX_VENV_DIR=/wine/venv/icode
+
+
+############################################################
+# venv and prepare
+############################################################
 
 venv:	## create venv dir
 	python3.12 -m venv $(VENV_DIR)
@@ -13,8 +20,37 @@ pip:	## install requirements
 pre:	## prepare
 	mkdir -p $(LOG_DIR)
 
-start: 		## start service
-	cd $(CODE_DIR); \
-	$(VENV_DIR)/bin/python3.12 -m streamlit \
+############################################################
+# build
+############################################################
+
+build: 		## docker build image
+	docker build -f ./Dockerfile \
+	-t $(WEBOX_IMAGE) $(WEBOX_CODE_DIR)
+
+start: 		## docker start container
+	docker run --rm -it \
+	--name $(WEBOX_NAME) --hostname $(WEBOX_NAME) \
+	--add-host="dev.local:$(HOST_IP)"  \
+	-p 8010:8010 \
+	-v $(SHARE_DIR):$(SHARE_DIR) \
+	-v $(ICODE_DIR):$(ICODE_DIR) \
+	-v $(VENV_DIR):$(VENV_DIR) \
+	$(WEBOX_IMAGE)
+
+stop:		## docker stop container
+	docker stop $(WEBOX_NAME)
+	docker rm $(WEBOX_NAME)
+
+at:		## attach to container
+	docker exec -it $(WEBOX_NAME) zsh
+
+############################################################
+# service
+############################################################
+
+dev: 		## start service
+	cd $(WEBOX_CODE_DIR); \
+	$(WEBOX_VENV_DIR)/bin/python3.12 -m streamlit \
 	run main.py --server.port 8010
 

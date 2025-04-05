@@ -16,6 +16,8 @@ IMAGE_SAVE_DIR=$(BASE_DIR)/images
 ICODE_DIR=$(BASE_DIR)/icode
 SHARE_DIR=$(BASE_DIR)/share
 
+VENV_DIR=/wine/venv
+
 INC_DIR=$(SHARE_DIR)/inc
 INC_SH_DIR=$(INC_DIR)/sh
 
