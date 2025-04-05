@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM stg-registry.me:8810/ubuntu:24.10
 
 # 时区
 ENV TZ "Asia/Shanghai"

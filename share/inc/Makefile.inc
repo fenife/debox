@@ -29,6 +29,8 @@ EXEC_DIR = $(shell basename $(EXEC_MAKEFILE_PATH))
 FILE_SERVER_URL = stg-fileserver.me:8800
 REGISTRY_URL = stg-registry.me:8810
 
+IMAGE_ME_NS = $(REGISTRY_URL)/fenife
+
 # time
 NOW = $(shell date '+%Y-%m-%d %H:%M:%S')
 NOW_TS = $(shell date '+%s')

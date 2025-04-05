@@ -1,11 +1,11 @@
 
-include $(INC_DIR)/Makefile.common
+include $(INC_DIR)/Makefile.inc
 
 ############################################################
 # base 
 ############################################################
 
-UBUNTU_IMAGE=base-ubuntu-24.04:latest
+UBUNTU_IMAGE=$(IMAGE_ME_NS)/base-ubuntu-24.10:latest
 UBUNTU_NAME=base-ubuntu24
 
 build-base: 
@@ -27,7 +27,7 @@ enter-base:
 # devc
 ############################################################
 
-DEVC_IMAGE_UBUNTU=devc-ubuntu-24.04:latest
+DEVC_IMAGE_UBUNTU=devc-ubuntu-24.10:latest
 DEVC_NAME_UBUNTU=ubuntu24
 
 build: 
