@@ -12,24 +12,32 @@ include $(INC_DIR)/Makefile.inc
 # IMAGE := kindest/node:v1.25.8
 # IMAGE := registry:2.8
 # IMAGE := kindest/node:v1.25.16
-# IMAGE := kindest/node:v1.27.0
+IMAGE := kindest/node:v1.27.0
 # IMAGE := redhat/ubi8:8.4
 # IMAGE := nginx:1.27.2
 # IMAGE := mysql:5.7
-IMAGE := redis:7.0
+# IMAGE := redis:7.0
 # IMAGE := cptactionhank/atlassian-confluence:7.9.3
 # IMAGE = klausmeyer/docker-registry-browser:1.7.5
 
-# DOCKER_PROXY := m.daocloud.io/docker.io
-DOCKER_PROXY := docker.1ms.run
+DOCKER_PROXY := m.daocloud.io/docker.io
+# DOCKER_PROXY := docker.1ms.run
 
 DOCKER_PROXY_IMAGE := $(DOCKER_PROXY)/$(IMAGE)
 REGISTRY_IMAGE := $(REGISTRY_URL)/$(IMAGE)
 
-pull:
+build:		## download origin image and tag
 	docker pull $(DOCKER_PROXY_IMAGE)
 	docker tag $(DOCKER_PROXY_IMAGE) $(REGISTRY_IMAGE)
 	docker rmi $(DOCKER_PROXY_IMAGE)
 
-push:
+push: 		## push image to registry
 	docker push $(REGISTRY_IMAGE)
+
+pull:		## pull image from registry
+	docker pull $(REGISTRY_IMAGE)
+
+check:		## check registry
+	curl http://$(REGISTRY_URL)/v2/_catalog
+
+all: build push check
