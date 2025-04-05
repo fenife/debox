@@ -5,11 +5,11 @@ include $(INC_DIR)/Makefile.inc
 # base 
 ############################################################
 
-UBUNTU_IMAGE=$(IMAGE_ME_NS)/base-ubuntu-24.10:latest
+UBUNTU_IMAGE=$(IMAGE_ME_NS)/base-ubuntu-24.04:latest
 UBUNTU_NAME=base-ubuntu24
 
 build-base: 
-	docker build -f ./Dockerfile.base --progress=plain -t $(UBUNTU_IMAGE) $(BUILD_DIR)
+	docker build -f ./Dockerfile.base -t $(UBUNTU_IMAGE) $(BUILD_DIR)
 
 start-base: 
 	docker run --rm -it \
@@ -21,13 +21,13 @@ stop-base:
 	docker rm $(UBUNTU_NAME)
 
 enter-base:
-	docker exec -it $(UBUNTU_NAME) zsh
+	docker exec -it $(UBUNTU_NAME) bash
 
 ############################################################
 # devc
 ############################################################
 
-DEVC_IMAGE_UBUNTU=devc-ubuntu-24.10:latest
+DEVC_IMAGE_UBUNTU=devc-ubuntu-24.04:latest
 DEVC_NAME_UBUNTU=ubuntu24
 
 build: 
