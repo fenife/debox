@@ -24,6 +24,9 @@ stop:		## stop registry
 rm:			## rm registry
 	docker rm $(REGISTRY_NAME)
 
+restart:
+	docker restart $(REGISTRY_NAME)
+
 check:		## check registry
 	curl http://$(REGISTRY_URL)/v2/_catalog
 
@@ -41,3 +44,6 @@ ui-stop:		## start registry ui
 
 ui-rm:			## rm registry ui
 	docker rm $(REGISTRY_UI_NAME)
+
+ui-restart:
+	docker restart $(REGISTRY_UI_NAME)
