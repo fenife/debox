@@ -166,6 +166,7 @@ build/repo
 .idea
 
 .local
+.beta
 .dev
 .test
 

@@ -1,4 +1,7 @@
-FROM base-ubuntu-24.04:latest AS builder
+FROM stg-registry.me:8810/fenife/base-ubuntu-24.04:latest AS builder-base
+
+
+FROM builder-base AS builder-go
 
 #------------------------------------------------------------ 
 # golang
@@ -10,16 +13,14 @@ RUN go install golang.org/x/tools/gopls@v0.15.3 \
 # image
 ############################################################
 
-FROM base-ubuntu-24.04:latest
+FROM builder-base
 
-RUN apt install -y passwd sudo man-db tig openssh-server
-RUN apt install -y iptables ipset iproute2 bridge-utils traceroute
+RUN apt install -y bridge-utils traceroute openssh-server
  
 #------------------------------------------------------------ 
 # install zsh
-RUN apt install -y zsh
 # install oh my zsh 
-COPY repo/src/ohmyzsh-master.zip /tmp/
+COPY repo/zsh/ohmyzsh-master.zip /tmp/
 RUN cd /tmp \
     && unzip -q ohmyzsh-master.zip \
     && mv ohmyzsh-master ${HOME_DIR}/.oh-my-zsh \
@@ -28,35 +29,21 @@ RUN cd /tmp \
 
 #------------------------------------------------------------ 
 # golang
-COPY --from=builder ${HOME_DIR}/go ${HOME_DIR}/
-
-# install etcd
+COPY --from=builder-go ${HOME_DIR}/go ${HOME_DIR}/
 
 #------------------------------------------------------------ 
 # configs
 
-ENV WINE_OPT_DIR=/wine/debox/opt
-
 # zsh config
 # 自动补全
 ENV ZSH_CUSTOM=${HOME_DIR}/.oh-my-zsh/custom
-COPY etc/zsh/incr-0.2.zsh ${ZSH_CUSTOM}/plugins/incr/incr.zsh
+COPY repo/zsh/incr-0.2.zsh ${ZSH_CUSTOM}/plugins/incr/incr.zsh
 # zshr配置
 RUN echo >> ${HOME_DIR}/.zshrc \
-    && echo "# source ${WINE_OPT_DIR}/rc/ext.zsh" >> ${HOME_DIR}/.zshrc \
+    && echo "# source /wine/debox/share/rc/ext.bashrc" >> ${HOME_DIR}/.zshrc \
+    && echo "# source /wine/debox/share/rc/ext.zshrc" >> ${HOME_DIR}/.zshrc \
     && sed -i "s/robbyrussell/ys/" ${HOME_DIR}/.zshrc 
 # 切换shell
 RUN chsh -s $(which zsh) 
-
-# git config
-COPY etc/conf/.gitconfig /${HOME_DIR}/.gitconfig
-# pip config
-COPY etc/conf/pip.conf ${HOME_DIR}/.pip/pip.conf
-# tmux
-COPY etc/conf/tmux.conf ${HOME_DIR}/.tmux.conf
-
-# # 设置编码，解决zsh下中文乱码问题
-# ENV LC_ALL=en_US.UTF-8  
-# ENV LANG=en_US.UTF-8
 
 CMD ["/bin/zsh"]

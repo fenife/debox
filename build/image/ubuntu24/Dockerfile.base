@@ -18,14 +18,15 @@ RUN apt -o Acquire::Check-Valid-Until=false -o Acquire::Check-Date=false update
 RUN apt install -y tzdata ca-certificates
 
 RUN apt install -y wget curl git vim tar bzip2 unzip tree rsync htop
+RUN apt install -y passwd sudo man-db tig 
 RUN apt install -y gcc g++ make automake cmake 
 RUN apt install -y openssh-client psmisc sysstat strace lsof hostname 
 RUN apt install -y iproute2 net-tools telnet ncat tcpdump ethtool 
-RUN apt install -y mysql-client redis 
+RUN apt install -y mysql-client redis golang-go
+RUN apt install -y iptables ipset zsh
 
 #------------------------------------------------------------
 # golang
-RUN apt install -y golang-go
 RUN go env -w GOPROXY=https://goproxy.cn,direct \
     && go env -w GO111MODULE=on \
     && go env -w GOSUMDB='off'

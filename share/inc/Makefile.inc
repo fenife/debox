@@ -73,6 +73,7 @@ sys: ## print system info
 	@echo
 	@echo "-------------------- system info --------------------"
 	-cat /etc/centos-release
+	-cat /etc/lsb-release
 	@echo
 	cat /proc/version
 	@echo
