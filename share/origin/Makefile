@@ -1,3 +1,4 @@
+include $(INC_DIR)/Makefile.inc
 
 # IMAGE := b3log/siyuan:v3.0.17
 # IMAGE := ubuntu:20.04
@@ -14,17 +15,21 @@
 # IMAGE := kindest/node:v1.27.0
 # IMAGE := redhat/ubi8:8.4
 # IMAGE := nginx:1.27.2
-IMAGE := mysql:5.7
-# IMAGE := redis:7.0
+# IMAGE := mysql:5.7
+IMAGE := redis:7.0
 # IMAGE := cptactionhank/atlassian-confluence:7.9.3
+# IMAGE = klausmeyer/docker-registry-browser:1.7.5
 
-DOCKER_PROXY := m.daocloud.io/docker.io
-# DOCKER_PROXY := docker.rainbond.cc
+# DOCKER_PROXY := m.daocloud.io/docker.io
+DOCKER_PROXY := docker.1ms.run
 
 DOCKER_PROXY_IMAGE := $(DOCKER_PROXY)/$(IMAGE)
-REGISTRY_IMAGE := $(DOCKER_PROXY)/$(IMAGE)
+REGISTRY_IMAGE := $(REGISTRY_URL)/$(IMAGE)
 
 pull:
 	docker pull $(DOCKER_PROXY_IMAGE)
-	docker tag $(DOCKER_PROXY_IMAGE) $(IMAGE)
+	docker tag $(DOCKER_PROXY_IMAGE) $(REGISTRY_IMAGE)
 	docker rmi $(DOCKER_PROXY_IMAGE)
+
+push:
+	docker push $(REGISTRY_IMAGE)

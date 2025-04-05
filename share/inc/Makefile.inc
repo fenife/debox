@@ -16,7 +16,7 @@ IMAGE_SAVE_DIR=$(BASE_DIR)/images
 ICODE_DIR=$(BASE_DIR)/icode
 SHARE_DIR=$(BASE_DIR)/share
 
-INC_DIR=$(SHARE_DIR)/include
+INC_DIR=$(SHARE_DIR)/inc
 INC_SH_DIR=$(INC_DIR)/sh
 
 # 执行的makefile文件
@@ -25,6 +25,9 @@ EXEC_MAKEFILE = $(abspath $(firstword $(MAKEFILE_LIST)))
 EXEC_MAKEFILE_PATH = $(dir $(EXEC_MAKEFILE))
 # 执行的makefile所在的文件夹
 EXEC_DIR = $(shell basename $(EXEC_MAKEFILE_PATH))
+
+FILE_SERVER_URL = stg-fileserver.me:8800
+REGISTRY_URL = stg-registry.me:8810
 
 # time
 NOW = $(shell date '+%Y-%m-%d %H:%M:%S')
@@ -67,7 +70,7 @@ sys: ## print system info
 	@echo "exec dir:             $(EXEC_DIR)"
 	@echo
 	@echo "-------------------- system info --------------------"
-	cat /etc/centos-release
+	-cat /etc/centos-release
 	@echo
 	cat /proc/version
 	@echo
