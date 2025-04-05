@@ -9,13 +9,13 @@ import (
 	"server-go/infra/persistence"
 
 	"github.com/gin-gonic/gin"
-	// swaggerFiles "github.com/swaggo/files"
-	// ginSwagger "github.com/swaggo/gin-swagger"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func AddRouter(engine *gin.Engine) {
 	// swag文档
-	// engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// 资源初始化
 	repos, err := persistence.NewRepos(&config.Conf.Mysql)
@@ -31,16 +31,16 @@ func AddRouter(engine *gin.Engine) {
 	hdr := handler.NewHandlers(apps.UserApp)
 
 	// 匹配所有路由
-	engine.GET("/*any", hdr.PingHandler.Ping)
+	// engine.GET("/*any", hdr.PingHandler.Ping)
 
 	// 添加路由
-	// engine.GET("/ping", hdr.PingHandler.Ping)
+	engine.GET("/ping", hdr.PingHandler.Ping)
 
-	// apiV1 := engine.Group("/api/v1")
-	// {
-	// 	user := apiV1.Group("user")
-	// 	{
-	// 		user.GET("/list", hdr.UserHandler.GetUserList)
-	// 	}
-	// }
+	apiV1 := engine.Group("/api/v1")
+	{
+		user := apiV1.Group("user")
+		{
+			user.GET("/list", hdr.UserHandler.GetUserList)
+		}
+	}
 }

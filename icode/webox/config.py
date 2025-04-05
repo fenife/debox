@@ -4,11 +4,11 @@
 class Config(object):
 
     class db(object):
-        host = "feng-dev"
+        host = "dev.local"
         port = 3306
         user = "test"
         passwd = "test"
-        database = "yonder"
+        database = "test"
         charset = "utf8mb4"
 
     class yonder(object):
