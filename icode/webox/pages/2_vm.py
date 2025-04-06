@@ -5,10 +5,12 @@ import numpy as np
 from engine.shell import CmdResult
 from view import vm_viewer
 from vm import vm
-from state.state import state
+from state import sess_state as ss
 
 
 st.set_page_config(layout="wide")
+
+ss.init_states()
 
 
 with st.sidebar:
@@ -16,7 +18,7 @@ with st.sidebar:
 
     clear = st.button("clear shell")
     if clear:
-        state.clear_shells()
+        ss.Shell.clear_all()
 
 
 # ------------------------------------------------------------

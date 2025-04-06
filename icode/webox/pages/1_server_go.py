@@ -6,17 +6,19 @@ import streamlit as st
 from engine.db import DBClient, DBResult
 from engine.http import HttpClient
 from config import Config
-from state.state import state
+from state import sess_state as ss
 from view import viewer
 
 
 st.set_page_config(layout="wide")
 
+ss.init_states()
+
 
 with st.sidebar:
     st.markdown("# Yonder page")
     if st.button("clear data"):
-        state.clear_db_datas()
+        ss.clear_states()
 
 # ------------------------------------------------------------
 
