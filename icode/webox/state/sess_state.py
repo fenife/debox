@@ -2,6 +2,12 @@ import streamlit as st
 from libx.utils import EnumBase
 
 
+def get(k):
+    return st.session_state[k]
+
+def set(k, v):
+    st.session_state[k] = v
+
 class StateBase(EnumBase):
     _default_vals = {}
 
@@ -43,18 +49,30 @@ class Shell(StateBase):
     }
 
 
-def get(k):
-    return st.session_state[k]
+class Env(StateBase):
+    Env = "env"
+    # Local = "local"
+    # Dev = "dev"
 
-def set(k, v):
-    st.session_state[k] = v
+    @classmethod
+    def get_env(cls):
+        env = get(cls.Env)
+        if not env:
+            env = "local"
+        return env
+
+    @classmethod
+    def set_env(cls, env):
+        set(cls.Env, env)
+
 
 def init_states():
     Bos.init_all()
     Shell.init_all()
+    Env.init_all()
 
 def clear_states():
     Bos.clear_all()
-    Shell.clear_all()
+    Env.clear_all()
 
 

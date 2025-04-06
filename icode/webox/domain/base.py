@@ -14,6 +14,7 @@ def get_db_conn_str(dbConf: dict):
     )
     return s
 
+
 class BaseDomainService(object):
     def __init__(self) -> None:
         self._db_clients = {}
@@ -21,7 +22,7 @@ class BaseDomainService(object):
 
     @property
     def db(self):
-        env = "local"
+        env = ss.Env.get_env()
         dbCli = self._db_clients.get(env, None)
         if dbCli:
             return dbCli
@@ -33,7 +34,7 @@ class BaseDomainService(object):
 
     @property
     def http(self):
-        env = "local"
+        env = ss.Env.get_env()
         httpCli = self._http_clients.get(env, None)
         if httpCli:
             return httpCli
