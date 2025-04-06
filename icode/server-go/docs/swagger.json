@@ -1,13 +1,13 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "yonder博客的后端API服务",
+        "description": "后端API服务",
         "title": "yonder blog api aservice",
         "termsOfService": "https://github.com/swaggo/swag",
         "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:8030",
+    "host": "localhost:8020",
     "basePath": "/",
     "paths": {
         "/api/v1/category": {

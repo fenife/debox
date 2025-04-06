@@ -206,10 +206,10 @@ definitions:
       username:
         type: string
     type: object
-host: localhost:8030
+host: localhost:8020
 info:
   contact: {}
-  description: yonder博客的后端API服务
+  description: 后端API服务
   termsOfService: https://github.com/swaggo/swag
   title: yonder blog api aservice
   version: "1.0"

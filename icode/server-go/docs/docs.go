@@ -716,11 +716,11 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8030",
+	Host:             "localhost:8020",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "yonder blog api aservice",
-	Description:      "yonder博客的后端API服务",
+	Description:      "后端API服务",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",
