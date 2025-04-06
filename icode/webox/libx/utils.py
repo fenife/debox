@@ -1,6 +1,14 @@
 import inspect
 
 
+def is_hashable(obj):
+    try:
+        hash(obj)
+        return True
+    except TypeError:
+        return False
+
+
 class EnumBase(object):
 
     @classmethod
@@ -15,10 +23,11 @@ class EnumBase(object):
             if inspect.isfunction(attr_value) or \
                 isinstance(attr_value, (classmethod, staticmethod)):
                 continue
-            # 可选：排除以双下划线包围的特殊属性（如__module__）
+            # 排除以双下划线包围的特殊属性（如__module__）
             if attr_name.startswith('__') or attr_name.endswith('__'):
                 continue
-            if not isinstance(attr_value, (str, bool, int, float)):
+            # 跳过不可哈希的值
+            if not is_hashable(attr_value):
                 continue
             attributes.append(attr_value)
         return attributes
