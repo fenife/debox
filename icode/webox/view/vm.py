@@ -5,14 +5,14 @@ import numpy as np
 from engine.shell import CmdResult
 import view
 from vm import vm
-from state.state import state
+from state import sess_state as ss
 
 
 # ------------------------------------------------------------
 
 _label_to_state_shell_key = {
-    vm.VM_LABEL_LOCAL: state.local_shells,
-    vm.VM_LABEL_VMC1: state.vmc1_shells,
+    vm.VM_LABEL_LOCAL: ss.Shell.local_shells,
+    vm.VM_LABEL_VMC1: ss.Shell.vmc1_shells,
 }
 
 
@@ -44,7 +44,7 @@ class VmShellViewer(object):
                                      placeholder="grep",
                                      label_visibility="collapsed")
             if c_clear.button("clear", key=f"cmd:button:clear:{label}"):
-                state.set(sk, [])
+                ss.set(sk, [])
 
             if btn_cmd and grep:
                 btn_cmd += f" | grep -v grep | grep {grep}"

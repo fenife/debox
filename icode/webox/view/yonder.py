@@ -7,7 +7,7 @@ from domain.yonder import PostDomain
 from engine.db import DBClient, DBResult
 from engine.http import HttpClient
 from config import Config
-from state.state import state
+from state import sess_state as ss
 from view.base import BaseViewer
 from domain import yds
 
@@ -21,11 +21,11 @@ class UserViewer(BaseViewer):
 
     def view_users(self):
         self.view_user_buttons()
-        self.view_dataframe(state.get(state.users))
+        self.view_dataframe(ss.get(ss.Bos.Users))
 
     def get_users(self):
         users = yds.get_users()
-        state.set(state.users, users)
+        ss.set(ss.Bos.Users, users)
 
     def view_user_buttons(self):
         with st.container(border=True):
@@ -37,7 +37,7 @@ class UserViewer(BaseViewer):
             if cols[1].button("add user"):
                 self.create_user()
 
-    @st.dialog("dialog:create_user")
+    @st.dialog("dialog:create_user", width="large")
     def create_user(self):
         with st.form("form:create_user"):
             username = st.text_input(label="username")
@@ -53,11 +53,11 @@ class CateViewer(BaseViewer):
 
     def view_cates(self):
         self.view_cate_buttons()
-        self.view_dataframe(state.get(state.cates))
+        self.view_dataframe(ss.get(ss.Bos.Users))
 
     def get_cates(self):
         cates = yds.get_cates()
-        state.set(state.cates, cates)
+        ss.set(ss.Bos.Cates, cates)
 
     def view_cate_buttons(self):
         with st.container(border=True):
@@ -68,7 +68,7 @@ class CateViewer(BaseViewer):
             if cols[1].button("add category"):
                 self.create_category()
 
-    @st.dialog("dialog:create_category")
+    @st.dialog("dialog:create_category", width="large")
     def create_category(self):
         with st.form("form:create_category"):
             cate_name = st.text_input(label="category name")
@@ -83,11 +83,11 @@ class PostViewer(BaseViewer):
 
     def view_posts(self):
         self.view_post_buttons()
-        self.view_dataframe(state.get(state.posts))
+        self.view_dataframe(ss.get(ss.Bos.Posts))
 
     def get_posts(self):
         posts = yds.get_posts()
-        state.set(state.posts, posts)
+        ss.set(ss.Bos.Posts, posts)
 
     def view_post_buttons(self):
         with st.container(border=True):
@@ -98,7 +98,7 @@ class PostViewer(BaseViewer):
             if cols[1].button("add post"):
                 self.create_post()
 
-    @st.dialog("dialog:create_post")
+    @st.dialog("dialog:create_post", width="large")
     def create_post(self):
         with st.form("form:create_post"):
             title = st.text_input(label="title")

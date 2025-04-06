@@ -12,7 +12,7 @@ class Config(object):
         charset = "utf8mb4"
 
     class yonder(object):
-        host = "feng-dev"
+        host = "dev.local"
         port = 8020
 
     @classmethod
