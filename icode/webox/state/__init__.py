@@ -1,5 +1,6 @@
 
-from state.state import state
+from state import sess_state as ss
 
-state.init_all()
+ss.init_states()
+
 
