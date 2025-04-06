@@ -4,7 +4,6 @@ from pandas.core.arrays.categorical import contains
 import streamlit as st
 from engine.db import DBClient, DBResult
 from engine.http import HttpClient, HttpResult
-from config import Config
 
 
 class BaseViewer(object):
