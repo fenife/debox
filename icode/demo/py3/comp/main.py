@@ -3,6 +3,7 @@ import csv
 import os
 from loguru import logger
 from prettytable import PrettyTable
+import uuid
 
 
 def create_path(file_path):
@@ -23,15 +24,15 @@ def create_demo_data():
 
     # 要写入的数据（字典格式）
     data1 = [
-        {'id': 1, 'name': 'Alice', 'age': 30, 'city': 'New York'},
-        {'id': 2, 'name': 'Bob', 'age': 25, 'city': 'London'},
-        {'id': 4, 'name': 'Charlie', 'age': 35, 'city': 'Paris'}
+        {'id': 1, 'name': 'Alice', 'age': 15, 'city': 'New York'},
+        {'id': 2, 'name': 'Bob', 'age': 15, 'city': 'London'},
+        {'id': 4, 'name': 'Charlie', 'age': 15, 'city': 'Paris'}
     ]
 
     data2 = [
-        {'id': 1, 'name': 'Alice', 'age': 30, 'city': 'New York'},
-        {'id': 3, 'name': 'John', 'age': 28, 'city': 'London'},
-        {'id': 4, 'name': 'Charlie', 'age': 36, 'city': 'paris'}
+        {'id': 1, 'name': 'Alice', 'age': 15, 'city': 'New York'},
+        {'id': 3, 'name': 'John', 'age': 16, 'city': 'London'},
+        {'id': 4, 'name': 'Charlie', 'age': 16, 'city': 'paris'}
     ]
 
     write_csv_data('./data/data1.csv', data1)
@@ -125,16 +126,51 @@ class RecordAuditor(object):
         mod_len = len(modified_ids)
         print(f"rows len: {len(table.rows)} = add ({add_len}) + del ({del_len}) + mod ({mod_len}) * 2")
 
-    def start(self):
+    def audit(self):
         result = self.compare_data()
         self.print_pretty_result(result)
+        return result
+
+
+class AuditHandler(object):
+    def __init__(self, dict_rows1, dict_rows2, result):
+        self.data1_dict = {str(item['id']): item for item in dict_rows1}
+        self.data2_dict = {str(item['id']): item for item in dict_rows2}
+        self.result = result
+    
+    def add_record(self):
+        # 删除
+        pass
+
+    def add_record_rollback(self):
+        pass
+
+    def delete_record(self):
+        # 补录
+        pass
+
+    def delete_record_rollback(self):
+        pass
+
+    def update_record(self):
+        # 更新
+        pass
+
+    def update_record_rollback(self):
+        pass
+
+    def handle(self):
+        pass
+
 
 def main():
     create_demo_data()
     dict_rows1 = read_csv_data('./data/data1.csv')
     dict_rows2 = read_csv_data('./data/data2.csv')
     auditor = RecordAuditor(dict_rows1, dict_rows2)
-    auditor.start()
+    result = auditor.audit()
+
+    handler = AuditHandler(dict_rows1, dict_rows2, result)
 
 
 if __name__ == "__main__":
