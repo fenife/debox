@@ -12,13 +12,15 @@ include $(INC_DIR)/Makefile.inc
 # IMAGE := kindest/node:v1.25.8
 # IMAGE := registry:2.8
 # IMAGE := kindest/node:v1.25.16
-IMAGE := kindest/node:v1.27.0
+# IMAGE := kindest/node:v1.27.0
 # IMAGE := redhat/ubi8:8.4
 # IMAGE := nginx:1.27.2
 # IMAGE := mysql:5.7
 # IMAGE := redis:7.0
 # IMAGE := cptactionhank/atlassian-confluence:7.9.3
 # IMAGE = klausmeyer/docker-registry-browser:1.7.5
+# IMAGE = quay.io/coreos/etcd:v3.4.32
+IMAGE = bitnami/etcd:3.5
 
 DOCKER_PROXY := m.daocloud.io/docker.io
 # DOCKER_PROXY := docker.1ms.run
