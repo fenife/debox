@@ -18,6 +18,11 @@ class User(Base):
     age = sa.Column(sa.Integer)
     city = sa.Column(sa.String(100), default="Unknown")  # 默认值
 
+data = [
+    {'id': 1, 'name': 'Alice', 'age': 15, 'city': 'New York'},
+    {'id': 2, 'name': 'Bob', 'age': 15, 'city': 'London'},
+    {'id': 4, 'name': 'Charlie', 'age': 15, 'city': 'Paris'}
+]
 
 def compile_stmt_sql(stmt):
     stmt_sql = stmt.compile(
