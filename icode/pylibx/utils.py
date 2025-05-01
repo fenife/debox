@@ -8,6 +8,8 @@ from datetime import datetime
 LOG_FORMAT = "[%(asctime)s] [%(levelname)4s] [%(name)s:%(lineno)s] -- %(message)s"
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
+logger = logging.getLogger(__name__)
+
 
 def log_base_config():
     logging.basicConfig(
