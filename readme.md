@@ -47,13 +47,9 @@ debox
         image
             alpine
             centos7
-            rhel8  
-                dev
-                local
             python
-                dev
-                    python3.12-rhel8.4
             golang
+            ubuntu24
         etc
             conf
                 git
@@ -83,8 +79,39 @@ debox
         ilab
         app
         bin
-        include
+        inc
         rc
         work
         tmp
+```
+
+## vscode
+### launch.json
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: 当前文件",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+        },
+        {
+            "name": "python test",
+            "type": "debugpy",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "module": "pytest",
+            "args": [
+                "test_db_util.py",
+                "-v",
+            ],
+            "cwd": "${workspaceFolder}/icode/pylibx/tests",
+            "justMyCode": false,
+        },
+    ]
+}
 ```

@@ -33,6 +33,8 @@ export INC_DIR=$INC_DIR
 
 export PATH=$PATH:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/go/bin:${HOME}/.local/bin:${HOME}/go/bin:${SHARE_DIR}/bin
 
+export PYTHONPATH=$PYTHONPATH:$ICODE_DIR
+
 ############################################################
 # alias
 alias dps="docker ps -a --format 'table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'"
