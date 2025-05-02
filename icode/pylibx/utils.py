@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 from datetime import datetime
 
-LOG_FORMAT = "[%(asctime)s] [%(levelname)4s] [%(name)s:%(lineno)s] -- %(message)s"
+LOG_FORMAT = "[%(asctime)s.%(msecs)03d] [%(levelname)4s] [%(name)s:%(lineno)s] -- %(message)s"
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 logger = logging.getLogger(__name__)
