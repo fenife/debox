@@ -26,7 +26,7 @@ def setup_database():
     # 添加测试数据
     user1 = User(id=1, name='Alice', age=25, is_active=1, status="active")
     user2 = User(id=2, name='Bob', age=30, is_active=0, status="inactive")
-    user3 = User(id=3, name='Charlie', age=35, is_active=1, status='active')
+    user3 = User(id=3, name='Charlie', age=35, is_active=1, status="active")
 
     cat1 = Category(id=1, name='Tech')
     cat2 = Category(id=2, name='Science')
@@ -168,14 +168,13 @@ class TestDBClientQuery(object):
 
     def test_query_isnull_condition(self, _db_cli):
         """测试空值判断"""
-        # 添加一个没有status的用户
+        # 添加一个字段为空的用户
         with _db_cli.session() as session:
-            session.add(User(id=4, name='David', age=40,
-                        is_active=1, status=None))
+            session.add(User(id=4, name='David', age=28, is_active=None))
             session.commit()
 
         results = _db_cli.query(User, filters={
-            'status__isnull': True
+            'is_active__isnull': True
         })
         assert any(u.name == 'David' for u in results)
 
