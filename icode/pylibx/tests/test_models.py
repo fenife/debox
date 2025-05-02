@@ -1,4 +1,4 @@
-# models.py
+from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime, Float, ForeignKey
 from sqlalchemy.orm import relationship, declarative_base
 
@@ -9,7 +9,9 @@ class User(Base):
     
     id = Column(Integer, primary_key=True)
     name = Column(String(50))
-    created_at = Column(DateTime)
+    age = Column(Integer)
+    is_active = Column(Integer, default=1)
+    created_at = Column(DateTime, default=datetime.now)
     status = Column(String(20))
     
     # 一对多关系：User -> Article
@@ -23,9 +25,10 @@ class Article(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String(100))
     content = Column(String)
-    created_at = Column(DateTime)
+    created_at = Column(DateTime, default=datetime.now)
     user_id = Column(Integer, ForeignKey('users.id'))
     category_id = Column(Integer, ForeignKey('categories.id'))
+    status = Column(String(20))
     
     # 多对一关系：Article -> User
     author = relationship("User", back_populates="articles")
@@ -37,7 +40,7 @@ class Category(Base):
     
     id = Column(Integer, primary_key=True)
     name = Column(String(50))
-    created_at = Column(DateTime)
+    created_at = Column(DateTime, default=datetime.now)
     user_id = Column(Integer, ForeignKey('users.id'))
     
     # 一对多关系：Category -> Article
