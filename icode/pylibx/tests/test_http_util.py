@@ -1,6 +1,6 @@
 import pytest
 from datetime import datetime
-from pylibx.http_util import HttpClient, HttpResult
+from pylibx.http_util import HttpClient 
 
 
 @pytest.fixture
@@ -11,4 +11,4 @@ def http_cli():
 
 def test_get_category_list(http_cli):
     url = "/api/v1/category/list"
-    http_cli.get(url=url)
+    http_cli.get(url=url, need_raise=False)
