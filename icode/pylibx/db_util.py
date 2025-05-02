@@ -47,17 +47,17 @@ def dict_to_sa_filter(
         # 处理逻辑运算符
         if key_lower == "or":
             if not isinstance(value, list):
-                raise ValueError("OR 条件需要数组格式")
+                raise ValueError("OR condition need array")
             return or_(*[dict_to_sa_filter(model, sub) for sub in value])
 
         elif key_lower == "and":
             if not isinstance(value, list):
-                raise ValueError("AND 条件需要数组格式")
+                raise ValueError("AND condition need array")
             return and_(*[dict_to_sa_filter(model, sub) for sub in value])
 
         elif key_lower == "not":
             if not isinstance(value, dict):
-                raise ValueError("NOT 条件需要字典格式")
+                raise ValueError("NOT condition need dict")
             return not_(dict_to_sa_filter(model, value))
 
         # 处理字段条件
@@ -69,7 +69,7 @@ def dict_to_sa_filter(
 
             column = getattr(model, field_name, None)
             if not column:
-                raise AttributeError(f"模型 {model} 没有字段 {field_name}")
+                raise AttributeError(f"'{field_name}' not in model: {model}")
 
             # 扩展操作符映射
             if operator == "eq":
@@ -95,7 +95,7 @@ def dict_to_sa_filter(
                 elif value is False:
                     clauses.append(column.isnot(None))
                 else:
-                    raise ValueError("isnull 只接受布尔值 True/False")
+                    raise ValueError("isnull condition need True/False")
             elif operator == "not":
                 # 处理字段级 NOT 操作
                 if isinstance(value, dict) and len(value) == 1:
@@ -107,9 +107,9 @@ def dict_to_sa_filter(
                     )
                     clauses.append(cond)
                 else:
-                    raise ValueError("NOT 操作符需要单个条件字典")
+                    raise ValueError("NOT condition need only on dict")
             else:
-                raise ValueError(f"不支持的运算符: {operator}")
+                raise ValueError(f"operator not support: {operator}")
 
     return and_(*clauses) if clauses else None
 
@@ -201,7 +201,7 @@ class DBClient(object):
                 # logger.info("query: %s" % str(q))
                 result = q.all()
         except Exception as e:
-            logger.exception("query failed: %s", e)
+            logger.error("query failed: %s", e)
 
         result_len = len(result) if result else 0
         logger.info("row count: %s", result_len)

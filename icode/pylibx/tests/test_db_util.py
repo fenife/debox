@@ -198,7 +198,7 @@ class TestDBClientQuery(object):
         """测试无效字段"""
         # with pytest.raises(AttributeError):
         result = _db_cli.query(User, filters={'invalid_field__eq': 'value'})
-        assert "AttributeError" in caplog.text
+        assert "invalid_field" in caplog.text
 
     def test_query_error_handling(self, _db_cli, caplog):
         """测试错误处理"""
