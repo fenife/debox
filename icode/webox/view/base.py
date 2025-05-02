@@ -1,4 +1,5 @@
 import inspect
+import json
 from loguru import logger
 from pandas.core.arrays.categorical import contains
 import streamlit as st
@@ -65,7 +66,9 @@ class BaseViewer(object):
             st.write("request:")
             st.code(r.curl(), wrap_lines=True)
             st.write("response:")
-            st.json(r.json())
+            # st.code(json.dumps(r.json()), wrap_lines=True)
+            st.code(json.dumps(r.resp_body(), indent=2), wrap_lines=True)
+
 
     # def select_cur_cate(self):
     #     with st.container(border=True):

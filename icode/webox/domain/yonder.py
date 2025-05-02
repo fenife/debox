@@ -51,6 +51,10 @@ class CateDomain(BaseDomainService):
         resp = self.http.post(url, body=body)
         return resp
 
+    def get_categories(self):
+        url = "/api/v1/category/list"
+        resp = self.http.get(url)
+        return resp
 
 class PostDomain(BaseDomainService):
 

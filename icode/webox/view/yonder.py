@@ -52,7 +52,7 @@ class CateViewer(BaseViewer):
 
     def view_cates(self):
         self.view_cate_buttons()
-        self.view_dataframe(ss.get(ss.Bos.Users))
+        self.view_dataframe(ss.get(ss.Bos.Cates))
 
     def get_cates(self):
         cates = yds.get_cates()
@@ -63,9 +63,10 @@ class CateViewer(BaseViewer):
             cols = st.columns(7)
             if cols[0].button("categories (db)"):
                 self.get_cates()
-
             if cols[1].button("add category"):
                 self.create_category()
+            if cols[2].button("get cates"):
+                self.get_categories()
 
     @st.dialog("dialog:create_category", width="large")
     def create_category(self):
@@ -75,6 +76,16 @@ class CateViewer(BaseViewer):
             if not submitted:
                 return
             result = yds.create_category(cate_name)
+            self.view_http_result(result)
+    
+    @st.dialog("dialog:get_categories", width="large")
+    def get_categories(self):
+        with st.form("form:get_categories"):
+            cate_name = st.text_input(label="category name")
+            submitted = st.form_submit_button("Submit")
+            if not submitted:
+                return
+            result = yds.get_categories()
             self.view_http_result(result)
 
 

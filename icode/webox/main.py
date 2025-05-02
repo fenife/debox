@@ -21,4 +21,7 @@ if env:
     ss.Env.set_env(env)
 
 env_configs = conf.get_env_configs(ss.Env.get_env())
-st.code(json.dumps(env_configs, indent=2), wrap_lines=True)
+st.text(f"current env: [ {ss.Env.get_env()} ]")
+with st.expander(label="env configs", expanded=True):
+    st.code(json.dumps(env_configs, indent=2), wrap_lines=True)
+
