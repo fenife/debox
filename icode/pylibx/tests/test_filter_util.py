@@ -110,7 +110,7 @@ def test_complex_conditions(sample_data):
             {
                 "and": [
                     {"email__like": "%example.net"},
-                    {"name__contains": "arl"}  # 注意: 我们实现了like但没有实现contains
+                    {"name__contains": "arl"}
                 ]
             }
         ]

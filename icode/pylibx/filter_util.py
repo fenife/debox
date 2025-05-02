@@ -78,6 +78,8 @@ def filter_dict_list(
                     field_name, operator = key, "eq"
 
                 # 获取字段值，需要判断是否过滤的值，不是条件中的值
+                if field_name not in item:
+                    return False
                 field_value = item.get(field_name)
 
                 # 处理大小写不敏感
