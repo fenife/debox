@@ -3,23 +3,17 @@ from datetime import datetime
 import re
 
 
-def filter_dict_list(
-    data: List[Dict[str, Any]],
-    filters: Dict[str, Any],
-    case_sensitive: bool = True
-) -> List[Dict[str, Any]]:
+def dict_validate(item: Dict[str, Any], condition: Dict[str, Any]) -> bool:
     """
-    通用字典列表过滤函数
+    判断dict的值是否满足条件
 
     参数:
-        data: 要过滤的字典列表
-        filters: 过滤条件字典
-        case_sensitive: 是否区分大小写(默认True)
-
+        item: 要校验的字典
+        condition: 校验条件
     返回:
-        过滤后的字典列表
+        是否满足条件
 
-    过滤条件语法:
+    条件语法:
     {
         "field1__op": value,          # 基本条件
         "and": [                       # AND条件
@@ -50,97 +44,112 @@ def filter_dict_list(
     - endswith: 以...结尾
     """
 
-    def evaluate(item: Dict[str, Any], condition: Dict[str, Any]) -> bool:
-        for key, value in condition.items():
-            key_lower = key.lower()
+    for key, value in condition.items():
+        key_lower = key.lower()
 
-            # 处理逻辑运算符
-            if key_lower == "and":
-                if not isinstance(value, list):
-                    raise ValueError("AND条件需要数组格式")
-                return all(evaluate(item, cond) for cond in value)
+        # 处理逻辑运算符
+        if key_lower == "and":
+            if not isinstance(value, list):
+                raise ValueError("AND条件需要数组格式")
+            return all(dict_validate(item, cond) for cond in value)
 
-            elif key_lower == "or":
-                if not isinstance(value, list):
-                    raise ValueError("OR条件需要数组格式")
-                return any(evaluate(item, cond) for cond in value)
+        elif key_lower == "or":
+            if not isinstance(value, list):
+                raise ValueError("OR条件需要数组格式")
+            return any(dict_validate(item, cond) for cond in value)
 
-            elif key_lower == "not":
-                if not isinstance(value, dict):
-                    raise ValueError("NOT条件需要字典格式")
-                return not evaluate(item, value)
+        elif key_lower == "not":
+            if not isinstance(value, dict):
+                raise ValueError("NOT条件需要字典格式")
+            return not dict_validate(item, value)
 
-            # 处理字段条件
+        # 处理字段条件
+        else:
+            if "__" in key:
+                field_name, operator = key.rsplit("__", 1)
             else:
-                if "__" in key:
-                    field_name, operator = key.rsplit("__", 1)
-                else:
-                    field_name, operator = key, "eq"
+                field_name, operator = key, "eq"
 
-                # 获取字段值，需要判断是否过滤的值，不是条件中的值
-                if field_name not in item:
+            # 获取字段值，需要判断是否过滤的值，不是条件中的值
+            if field_name not in item:
+                return False
+            field_value = item.get(field_name)
+
+            # 大小写不敏感
+            if isinstance(field_value, str):
+                field_value = field_value.lower()
+                if isinstance(value, str):
+                    value = value.lower()
+
+            # 应用操作符
+            if operator == "eq":
+                return field_value == value
+            elif operator == "ne":
+                return field_value != value
+            elif operator == "gt":
+                return field_value is not None and value is not None and field_value > value
+            elif operator == "lt":
+                return field_value is not None and value is not None and field_value < value
+            elif operator == "ge":
+                return field_value is not None and value is not None and field_value >= value
+            elif operator == "le":
+                return field_value is not None and value is not None and field_value <= value
+            elif operator == "contains":
+                if isinstance(field_value, str):
+                    return value in field_value
+                elif isinstance(field_value, (list, tuple, set)):
+                    return value in set(field_value)
+                return False
+            elif operator == "startswith":
+                if not isinstance(field_value, str):
                     return False
-                field_value = item.get(field_name)
-
-                # 处理大小写不敏感
-                if not case_sensitive and isinstance(field_value, str):
-                    field_value = field_value.lower()
-                    if isinstance(value, str):
-                        value = value.lower()
-
-                # 应用操作符
-                if operator == "eq":
-                    return field_value == value
-                elif operator == "ne":
-                    return field_value != value
-                elif operator == "gt":
-                    return field_value is not None and value is not None and field_value > value
-                elif operator == "lt":
-                    return field_value is not None and value is not None and field_value < value
-                elif operator == "ge":
-                    return field_value is not None and value is not None and field_value >= value
-                elif operator == "le":
-                    return field_value is not None and value is not None and field_value <= value
-                elif operator == "contains":
-                    if isinstance(field_value, str):
-                        return value in field_value
-                    elif isinstance(field_value, (list, tuple, set)):
-                        return value in set(field_value)
+                return field_value.startswith(value)
+            elif operator == "endswith":
+                if not isinstance(field_value, str):
                     return False
-                elif operator == "startswith":
-                    if not isinstance(field_value, str):
-                        return False
-                    return field_value.startswith(value)
-                elif operator == "endswith":
-                    if not isinstance(field_value, str):
-                        return False
-                    return field_value.endswith(value)
-                elif operator == "in":
-                    if not isinstance(value, (list, tuple, set)):
-                        value = [value]
-                    return field_value in value
-                elif operator == "like":
-                    if not isinstance(field_value, str) or not isinstance(value, str):
-                        return False
-                    # 将SQL LIKE模式转换为正则表达式
-                    pattern = value.replace('%', '.*').replace('_', '.')
-                    return re.fullmatch(pattern, field_value) is not None
-                elif operator == "isnull":
-                    if value is True:
-                        return field_value is None
-                    elif value is False:
-                        return field_value is not None
-                    else:
-                        raise ValueError("isnull操作符需要布尔值True/False")
+                return field_value.endswith(value)
+            elif operator == "in":
+                if not isinstance(value, (list, tuple, set)):
+                    value = [value]
+                return field_value in value
+            elif operator == "like":
+                if not isinstance(field_value, str) or not isinstance(value, str):
+                    return False
+                # 将SQL LIKE模式转换为正则表达式
+                pattern = value.replace('%', '.*').replace('_', '.')
+                return re.fullmatch(pattern, field_value) is not None
+            elif operator == "isnull":
+                if value is True:
+                    return field_value is None
+                elif value is False:
+                    return field_value is not None
                 else:
-                    raise ValueError(f"不支持的操作符: {operator}")
+                    raise ValueError("isnull操作符需要布尔值True/False")
+            else:
+                raise ValueError(f"不支持的操作符: {operator}")
 
-        return True
+    return True
 
+
+def filter_dict_list(
+    data: List[Dict[str, Any]],
+    filters: Dict[str, Any],
+    case_sensitive: bool = True
+) -> List[Dict[str, Any]]:
+    """
+    通用字典列表过滤函数
+
+    参数:
+        data: 要过滤的字典列表
+        filters: 过滤条件字典
+        case_sensitive: 是否区分大小写(暂时不支持)
+
+    返回:
+        过滤后的字典列表
+    """
     if not filters:
         return data.copy()
-
-    return [item for item in data if evaluate(item, filters)]
+    return [item for item in data if dict_validate(item, filters)]
 
 
 def dict_compare(dict1, dict2, include_keys=None, exclude_keys=None):
