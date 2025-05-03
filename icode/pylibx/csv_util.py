@@ -118,5 +118,18 @@ def read_csv_to_dict_list(file_path):
                 result.append(row)
         return result
     except Exception as e:
-        print(f"读取文件时出现错误: {e}")
+        logger.error("read csv %s failed: %s", file_path, e)
         return []
+
+
+def clear_csv_file(file_path):
+    """
+    清除指定 CSV 文件的内容
+    :param file_path: 要清除内容的 CSV 文件的路径
+    """
+    try:
+        with open(file_path, 'w', encoding='utf-8') as file:
+            # 以写入模式打开文件，不写入任何内容，即可清空文件
+            pass
+    except Exception as e:
+        logger.error("clear csv %s failed: %s", file_path, e)

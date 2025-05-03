@@ -3,7 +3,8 @@ import os
 import pytest
 from tempfile import NamedTemporaryFile
 from pylibx import csv_util
-from pylibx.csv_util import write_dict_list_to_csv, read_csv_to_dict_list
+from pylibx.csv_util import write_dict_list_to_csv, read_csv_to_dict_list, \
+    clear_csv_file
 
 class TestCsvUtilLastLine(object):
     def test_normal_csv(self):
@@ -116,3 +117,24 @@ class TestReadCSVToDictList:
             for i in range(len(result)):
                 for key in result[i].keys():
                     assert result[i][key] == sample_data[i][key]
+
+
+class TestClearCSVFile:
+    @pytest.fixture
+    def sample_csv_content(self):
+        return "name,age,city\nAlice,25,New York\nBob,30,Los Angeles\nCharlie,35,Chicago"
+
+    def test_clear_csv_file(self, sample_csv_content):
+        with NamedTemporaryFile(mode='w+', encoding='utf-8', delete=True) as f:
+            # 写入示例内容
+            f.write(sample_csv_content)
+            f.seek(0)
+            # 验证文件有内容
+            assert len(f.read()) > 0
+
+            # 清除文件内容
+            clear_csv_file(f.name)
+
+            # 验证文件内容已被清除
+            f.seek(0)
+            assert len(f.read()) == 0
