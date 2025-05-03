@@ -6,15 +6,209 @@ import logging
 import pandas as pd
 from prettytable import PrettyTable
 from collections import OrderedDict
-from typing import NamedTuple, List, Dict, Any, Union
+from typing import NamedTuple, List, Dict, Any, Union, Type, TypeVar, \
+    Optional, Set, Callable
 import sqlalchemy as sa
 from sqlalchemy import create_engine, Engine, Connection, text
-from sqlalchemy.orm import sessionmaker, Session, Query
+from sqlalchemy.orm import sessionmaker, Session, Query, class_mapper, \
+    relationship, declarative_base, Mapper, RelationshipProperty
 from sqlalchemy.engine import ResultProxy
 from sqlalchemy import or_, and_, not_, ColumnElement
 
 
 logger = logging.getLogger(__name__)
+
+Base = declarative_base()
+
+DATE_FORMAT = '%Y-%m-%d'
+DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+
+
+_g_format_types = {
+    datetime.date: lambda x: x.strftime(DATE_FORMAT) if x else None,
+    datetime.datetime: lambda x: x.strftime(DATETIME_FORMAT) if x else None,
+}
+
+_g_type_converters = {
+    sa.String: lambda x: x.strip() if isinstance(x, str) else x,
+    sa.DATE: lambda x: datetime.datetime.strptime(x, DATE_FORMAT)
+    if isinstance(x, str) else x,
+    sa.DateTime: lambda x: datetime.datetime.strptime(x, DATETIME_FORMAT)
+    if isinstance(x, str) else x,
+}
+
+
+class ModelConverterMixin(object):
+
+    def to_dict(
+        self,
+        exclude: Set[str] = None,
+        format_types: Dict[Type, Callable[[Any], Any]] = None,
+        visited: Set[int] = None
+    ) -> Dict[str, Any]:
+        """
+        将 ORM 模型实例转换为字典
+
+        Args:
+            exclude: 要排除的属性名集合
+            format_types: 类型格式化函数字典,
+            visited: 防止循环引用的已访问对象集合（内部使用）
+
+        Returns:
+            转换后的字典
+        """
+        if exclude is None:
+            exclude = set()
+
+        if format_types is None:
+            format_types = _g_format_types
+
+        # 防止循环引用
+        if visited is None:
+            visited = set()
+
+        instance_id = id(self)
+        if instance_id in visited:
+            return None
+        visited.add(instance_id)
+
+        # mapper: Mapper = inspect(self.__class__)
+        mapper = class_mapper(self.__class__)
+        result = {}
+
+        # 处理普通列
+        for column in mapper.columns:
+            if column.key in exclude:
+                continue
+            value = getattr(self, column.key)
+            # # 应用类型格式化
+            formatter = format_types.get(type(value))
+            if formatter:
+                value = formatter(value)
+            # for type_, formatter in format_types.items():
+            #     if isinstance(value, type_):
+            #         value = formatter(value)
+            #         break
+            result[column.key] = value
+
+        # 处理关系属性
+        for rel in mapper.relationships:
+            if rel.key in exclude:
+                continue
+
+            related_obj = getattr(self, rel.key)
+
+            if related_obj is None:
+                result[rel.key] = None
+            elif isinstance(rel, RelationshipProperty):
+                if rel.uselist:  # 一对多或多对多关系
+                    result[rel.key] = [
+                        child.to_dict(
+                            exclude=exclude,
+                            format_types=format_types,
+                            visited=visited.copy()
+                        )
+                        for child in related_obj
+                    ]
+                else:  # 多对一或一对一关系
+                    result[rel.key] = related_obj.to_dict(
+                        exclude=exclude,
+                        format_types=format_types,
+                        visited=visited.copy()
+                    )
+
+        return result
+
+    @classmethod
+    def from_dict(
+        cls: Any,
+        data: Dict[str, Any],
+        exclude: Set[str] = None,
+        type_converters: Dict[Type, Callable[[Any], Any]] = None,
+        visited: Set[int] = None
+    ):
+        """
+        从字典创建 ORM 模型实例
+
+        Args:
+            data: 要转换的字典数据
+            exclude: 要排除的属性名集合
+            type_converters: 类型转换函数字典，如 {str: lambda x: x.strip()}
+            visited: 防止循环引用的已访问对象集合（内部使用）
+
+        Returns:
+            创建的 ORM 模型实例
+        """
+        if exclude is None:
+            exclude = set()
+
+        if type_converters is None:
+            type_converters = _g_type_converters
+
+        if visited is None:
+            visited = set()
+
+        # mapper: Mapper = inspect(cls)
+        mapper = class_mapper(cls)
+        kwargs = {}
+
+        # 处理普通列
+        for column in mapper.columns:
+            if column.key in exclude or column.key not in data:
+                continue
+
+            # 应用类型转换
+            value = data[column.key]
+            converter = type_converters.get(type(column.type))
+            if converter:
+                value = converter(value)
+            # for type_, converter in type_converters.items():
+            #     if isinstance(column.type, type_):
+            #         value = converter(value)
+            #         break
+            kwargs[column.key] = value
+
+        # 处理关系属性
+        for rel in mapper.relationships:
+            if rel.key in exclude or rel.key not in data:
+                continue
+
+            rel_data = data[rel.key]
+
+            if rel_data is None:
+                kwargs[rel.key] = None
+            elif isinstance(rel, RelationshipProperty):
+                if rel.uselist:  # 一对多或多对多关系
+                    kwargs[rel.key] = [
+                        rel.mapper.class_.from_dict(
+                            item_data,
+                            exclude=exclude,
+                            type_converters=type_converters,
+                            visited=visited.copy()
+                        )
+                        for item_data in rel_data
+                    ]
+                else:  # 多对一或一对一关系
+                    kwargs[rel.key] = rel.mapper.class_.from_dict(
+                        rel_data,
+                        exclude=exclude,
+                        type_converters=type_converters,
+                        visited=visited.copy()
+                    )
+
+        # 创建实例
+        instance = cls(**kwargs)
+        return instance
+
+
+class ModelBase(Base, ModelConverterMixin):
+    __abstract__ = True
+
+    id = sa.Column(sa.Integer, primary_key=True)
+    created_at = sa.Column(sa.DateTime, default=datetime.datetime.now)
+    updated_at = sa.Column(
+        sa.DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
+
 
 _negated_op = {
     "eq": "ne",

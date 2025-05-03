@@ -3,10 +3,11 @@ import pandas as pd
 from datetime import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from test_models import Base, User, Article, Category
 
 from pylibx import db_util
 from pylibx.db_util import dict_to_sa_filter, build_query
-from test_models import User, Article, Category, Base
+from test_models import User, Article, Category
 
 # 测试用的内存SQLite数据库
 TEST_DB_URL = "sqlite:///:memory:"
@@ -44,9 +45,9 @@ def setup_database():
                      article1, article2, article3])
         sess.commit()
 
-        all_users = sess.query(User).all()
-        for user in all_users:
-            print(user.name)
+        # all_users = sess.query(User).all()
+        # for user in all_users:
+        #     print(user.name)
 
     yield _db_cli
 
@@ -233,3 +234,99 @@ def test_in_operator(_db_cli):
     result = _db_cli.session().query(User).filter(condition).all()
     assert len(result) == 2
     assert {u.name for u in result} == {'Alice', 'Bob'}
+
+
+class TestModelConverterMixin:
+    
+    def test_to_dict(self, _db_cli):
+        session = _db_cli.session()
+        user = User(name='John Doe', age=30, email='john@example.com', is_active=True, status='active')
+        session.add(user)
+        session.commit()
+
+        user_dict = user.to_dict()
+        assert isinstance(user_dict, dict)
+        assert user_dict['name'] == 'John Doe'
+        assert user_dict['age'] == 30
+        assert user_dict['email'] == 'john@example.com'
+        assert user_dict['is_active']
+        assert user_dict['status'] == 'active'
+        assert isinstance(user_dict['created_at'], str)
+        assert isinstance(user_dict['updated_at'], str)
+
+    def test_from_dict(self, _db_cli):
+        session = _db_cli.session()
+        user_dict = {
+            'name': 'Jane Smith',
+            'age': 25,
+            'email': 'jane@example.com',
+            'is_active': False,
+            'status': 'inactive',
+            'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'updated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+
+        user = User.from_dict(user_dict)
+        session.add(user)
+        session.commit()
+
+        retrieved_user = session.query(User).filter_by(name='Jane Smith').first()
+        assert retrieved_user is not None
+        assert retrieved_user.name == 'Jane Smith'
+        assert retrieved_user.age == 25
+        assert retrieved_user.email == 'jane@example.com'
+        assert not retrieved_user.is_active
+        assert retrieved_user.status == 'inactive'
+
+    def test_to_dict_with_relationship(self, _db_cli):
+        session = _db_cli.session()
+        user = User(name='Bob Johnson', age=35, email='bob@example.com', is_active=True, status='active')
+        category = Category(name='Technology', creator=user)
+        article = Article(title='New Tech Trends', content='Some content', author=user, category=category)
+        session.add_all([user, category, article])
+        session.commit()
+
+        user_dict = user.to_dict()
+        assert isinstance(user_dict, dict)
+        assert 'categories' in user_dict
+        assert isinstance(user_dict['categories'], list)
+        assert len(user_dict['categories']) == 1
+        assert 'articles' in user_dict
+        assert isinstance(user_dict['articles'], list)
+        assert len(user_dict['articles']) == 1
+
+    def test_from_dict_with_relationship(self, _db_cli):
+        session = _db_cli.session()
+        user_dict = {
+            'name': 'Eve Brown',
+            'age': 28,
+            'email': 'eve@example.com',
+            'is_active': True,
+            'status': 'active',
+            'categories': [
+                {
+                    'name': 'Science',
+                    'articles': [
+                        {
+                            'title': 'Science Discoveries',
+                            'content': 'Some science content'
+                        }
+                    ]
+                }
+            ]
+        }
+
+        user = User.from_dict(user_dict)
+        session.add(user)
+        session.commit()
+
+        retrieved_user = session.query(User).filter_by(name='Eve Brown').first()
+        assert retrieved_user is not None
+        assert retrieved_user.name == 'Eve Brown'
+        assert len(retrieved_user.categories) == 1
+        category = retrieved_user.categories[0]
+        assert category.name == 'Science'
+        assert len(category.articles) == 1
+        article = category.articles[0]
+        assert article.title == 'Science Discoveries'
+        assert article.content == 'Some science content'
