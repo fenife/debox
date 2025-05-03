@@ -345,6 +345,13 @@ class DBClient(object):
     def connect(self) -> Connection:
         return self._engine.connect()
 
+    def execute(self, sql: str, params: dict = None) -> ResultProxy:
+        logger.info("sql: %s, params: %s", sql, params)
+        with self.session() as sess:
+            result: ResultProxy = sess.execute(text(sql), params or {})
+            sess.commit()
+        return result
+
     def select(self, sql: str, params: dict = None) -> List[Dict[str, Any]]:
         """
         执行SQL查询并返回字典列表，select语句中不能有重复的字段
@@ -352,7 +359,7 @@ class DBClient(object):
         :param params: 查询参数
         :return: 字典列表
         """
-        logger.info(sql)
+        logger.info("sql: %s, params: %s", sql, params)
 
         with self.session() as sess:
             result: ResultProxy = sess.execute(text(sql), params or {})

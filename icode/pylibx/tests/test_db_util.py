@@ -61,6 +61,19 @@ def _db_cli(setup_database):
     return cli
 
 
+class TestDbClientExecuteCase(object):
+
+    def test_execute_with_params(self, _db_cli):
+        sql = "update users set email = 'u1@test.com' where id = :id;"
+        params = {"id": 1}
+        result = _db_cli.execute(sql, params)
+
+        results = _db_cli.select("select * from users where id = 1;")
+        db_util.print_pretty_table(results)
+        assert len(results) == 1
+        assert results[0].get("email") == 'u1@test.com'
+    
+
 class TestDbClientSelectCase(object):
 
     def test_select_sql_with_join(self, _db_cli):
