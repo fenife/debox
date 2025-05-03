@@ -1,6 +1,7 @@
 import pytest
 from datetime import datetime
-from pylibx.filter_util import filter_dict_list
+from pylibx.dict_list_util import filter_dict_list
+
 
 @pytest.fixture
 def sample_data():
