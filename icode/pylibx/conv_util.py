@@ -1,19 +1,21 @@
 from dataclasses import asdict, is_dataclass
-from datetime import datetime
+from datetime import datetime, date
 from enum import Enum
 from typing import Any, Dict, Type, TypeVar, Optional
 import json
+from pylibx import utils
 
 T = TypeVar('T')
 
+
 class DataclassMixin:
     """为dataclass添加字典和JSON转换功能的Mixin"""
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """将dataclass对象转换为字典"""
         def convert(value: Any):
-            if isinstance(value, datetime):
-                return value.isoformat()
+            if isinstance(value, (date, datetime)):
+                return utils.format_value(value)
             elif isinstance(value, Enum):
                 return value.value
             elif is_dataclass(value):
@@ -23,15 +25,15 @@ class DataclassMixin:
             elif isinstance(value, dict):
                 return {k: convert(v) for k, v in value.items()}
             return value
-        
+
         return {k: convert(v) for k, v in asdict(self).items()}
 
     @classmethod
     def from_dict(cls: Type[T], data: Dict[str, Any]) -> T:
         """从字典创建dataclass对象"""
         def convert(field_type: Type, value: Any):
-            if field_type is datetime:
-                return datetime.fromisoformat(value)
+            if field_type in (date, datetime):
+                return utils.convert_from_value(value, field_type)
             elif isinstance(field_type, type) and issubclass(field_type, Enum):
                 return field_type(value)
             elif is_dataclass(field_type):
@@ -40,7 +42,7 @@ class DataclassMixin:
                 # 处理泛型如List, Optional等
                 origin = field_type.__origin__
                 args = field_type.__args__
-                
+
                 if origin is list:
                     item_type = args[0]
                     return [convert(item_type, item) for item in value]
@@ -50,7 +52,7 @@ class DataclassMixin:
                 elif origin is type(Optional):
                     return convert(args[0], value) if value is not None else None
             return value
-        
+
         field_types = cls.__annotations__
         processed = {
             k: convert(field_types.get(k, type(v)), v)

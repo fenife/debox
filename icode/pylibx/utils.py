@@ -2,11 +2,13 @@ import os
 import inspect
 import logging
 import sys
+from datetime import date, datetime
 from pathlib import Path
-from datetime import datetime
 
 LOG_FORMAT = "[%(asctime)s.%(msecs)03d] [%(levelname)4s] [%(name)s:%(lineno)s] -- %(message)s"
-DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+DATE_FORMAT = '%Y-%m-%d'
+
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +26,7 @@ def setup_logger(
     level: str = "info",
     log_file: str = None,
     log_format: str = LOG_FORMAT,
-    date_format: str = DATE_FORMAT,
+    dt_format: str = DATETIME_FORMAT,
 ):
     """
     初始化日志配置，同时输出到控制台和文件
@@ -43,7 +45,7 @@ def setup_logger(
     # 1. 控制台Handler
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(log_level)
-    console_formatter = logging.Formatter(log_format, datefmt=date_format)
+    console_formatter = logging.Formatter(log_format, datefmt=dt_format)
     console_handler.setFormatter(console_formatter)
     logger.addHandler(console_handler)
 
@@ -55,7 +57,7 @@ def setup_logger(
 
         file_handler = logging.FileHandler(log_file, encoding='utf-8')
         file_handler.setLevel(log_level)
-        file_formatter = logging.Formatter(log_format, datefmt=date_format)
+        file_formatter = logging.Formatter(log_format, datefmt=dt_format)
         file_handler.setFormatter(file_formatter)
         logger.addHandler(file_handler)
 
@@ -112,3 +114,25 @@ def create_path(file_path):
     if not os.path.exists(file_path):
         os.mkdir(file_path)
         logger.info("create path: {}", file_path)
+
+
+g_format_types = {
+    date: lambda x: x.strftime(DATE_FORMAT) if x else None,
+    datetime: lambda x: x.strftime(DATETIME_FORMAT) if x else None,
+}
+
+g_type_converters = {
+    date: lambda x: datetime.strptime(x, DATE_FORMAT) if isinstance(x, str) else x,
+    datetime: lambda x: datetime.strptime(x, DATETIME_FORMAT) if isinstance(x, str) else x,
+}
+
+def format_value(value):
+    formater = g_format_types.get(type(value))
+    return formater(value) if formater else value
+
+def convert_from_value(value, field_type=None):
+    if not field_type:
+        field_type = type(value)
+    converter = g_type_converters.get(field_type)
+    return converter(value) if converter else value
+
