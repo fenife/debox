@@ -159,6 +159,7 @@ cython_debug/
 **/images/*
 **/tmp/*
 **/log/*
+**/data/*
 
 build/repo
 

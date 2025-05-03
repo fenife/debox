@@ -143,6 +143,33 @@ def filter_dict_list(
     return [item for item in data if evaluate(item, filters)]
 
 
+def dict_compare(dict1, dict2, include_keys=None, exclude_keys=None):
+    """
+    对比两个字典，支持指定要对比的 key 列表和排除对比的 key 列表
+    :param dict1: 第一个字典
+    :param dict2: 第二个字典
+    :param include_keys: 要对比的 key 列表，默认为 None 表示对比所有 key
+    :param exclude_keys: 要排除对比的 key 列表，默认为 None 表示不排除任何 key
+    :return: 如果两个字典在指定规则下相等返回 True，否则返回 False
+    """
+    if include_keys is None:
+        # 如果未指定要对比的 key 列表，则使用两个字典所有 key 的并集
+        all_keys = set(dict1.keys()) | set(dict2.keys())
+    else:
+        all_keys = set(include_keys)
+
+    if exclude_keys is not None:
+        # 从要对比的 key 列表中排除指定的 key
+        all_keys = all_keys - set(exclude_keys)
+
+    for key in all_keys:
+        if key not in dict1 or key not in dict2:
+            return False
+        if dict1[key] != dict2[key]:
+            return False
+    return True
+
+
 def _test():
     sample_data = [
         {"id": 1, "name": "Alice", "age": 25, "active": True,
