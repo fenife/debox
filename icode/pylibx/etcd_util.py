@@ -1,13 +1,20 @@
 import etcd3
+from etcd3.client import KVMetadata
 import json
 from typing import Callable, List, Union
 
 class EtcdKV:
-    def __init__(self, key: str, val: Union[dict, str], revision: int, meta):
+    def __init__(self, key: str, val: Union[dict, str], meta: KVMetadata):
         self.key = key
         self.val = val
-        self.revision = revision
         self.meta = meta
+        self.revision = meta.mod_revision
+    
+    def to_dict(self):
+        return {
+            "key": self.key,
+            "val": self.val,
+        }
 
 
 class EtcdClient(object):
@@ -33,8 +40,7 @@ class EtcdClient(object):
                 kv = EtcdKV(
                     key=key_str,
                     val=val,
-                    revision=metadata.mod_revision,
-                    meta=metadata
+                    meta=metadata,
                 )
                 result.append(kv)
         return result
