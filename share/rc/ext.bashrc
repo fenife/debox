@@ -35,6 +35,9 @@ export PATH=$PATH:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/
 
 export PYTHONPATH=$PYTHONPATH:$ICODE_DIR
 
+# python etcd
+export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
+
 ############################################################
 # alias
 alias dps="docker ps -a --format 'table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'"
