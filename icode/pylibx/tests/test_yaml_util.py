@@ -26,6 +26,7 @@ class TestYamlUtils:
         with NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
             yaml.safe_dump(TEST_DATA, f)
             temp_path = f.name
+        write_yaml("./data/test_yaml.yaml", TEST_DATA)
         yield temp_path  # 测试使用这个文件
         os.unlink(temp_path)  # 测试完成后删除
 
@@ -51,6 +52,17 @@ class TestYamlUtils:
         with open(temp_yaml_file, 'r') as f:
             written_data = yaml.safe_load(f)
         assert written_data == new_data
+
+    def test_write_yaml_with_key(self, temp_yaml_file):
+        """测试写入 YAML 文件"""
+        new_data = {"new": "data"}
+        key="new_key"
+        write_yaml(temp_yaml_file, new_data, key=key)
+
+        # 验证写入的内容
+        with open(temp_yaml_file, 'r') as f:
+            written_data = yaml.safe_load(f)
+        assert written_data[key] == new_data
 
     def test_write_yaml_with_special_chars(self, temp_yaml_file):
         """测试写入包含特殊字符的数据"""
