@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime
 from enum import Enum
 from dataclasses import dataclass, field
-from pylibx.conv_util import DataclassMixin
+from pylibx.obj_util import DataclassMixin
 
 
 class Status(Enum):
@@ -28,7 +28,7 @@ class Customer(DataclassMixin):
 
 
 class TestDataclassMixinConversion:
-    def test_dataclass_conversion():
+    def test_dataclass_conversion(self):
         # 创建测试对象
         address = Address(street="123 Main St",
                           city="New York", zip_code="10001")
@@ -65,7 +65,7 @@ class TestDataclassMixinConversion:
         assert loaded_customer.name == "Alice"
         assert loaded_customer.address.street == "123 Main St"
 
-    def test_edge_cases():
+    def test_edge_cases(self):
         # 测试None值处理
         @dataclass
         class TestNone(DataclassMixin):
