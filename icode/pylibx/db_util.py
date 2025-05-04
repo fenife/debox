@@ -12,6 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy import create_engine, Engine, Connection, text
 from sqlalchemy.orm import sessionmaker, Session, Query, class_mapper, \
     relationship, declarative_base, Mapper, RelationshipProperty
+from sqlalchemy.orm.properties import ColumnProperty
 from sqlalchemy.engine import ResultProxy
 from sqlalchemy import or_, and_, not_, ColumnElement
 
@@ -38,7 +39,7 @@ _g_type_converters = {
 }
 
 
-class ModelConverterMixin(object):
+class ModelMixin(object):
 
     def to_dict(
         self,
@@ -200,8 +201,42 @@ class ModelConverterMixin(object):
         instance = cls(**kwargs)
         return instance
 
+    def compare(self, other, include_keys=None, exclude_keys=None):
+        """
+        支持与同类型对象比较，可以指定包含和排除的字段
 
-class ModelBase(Base, ModelConverterMixin):
+        :param other: 要比较的同类型对象
+        :param include_keys: 要包含比较的字段列表
+        :param exclude_keys: 要排除比较的字段列表
+        :return: 如果对象相等返回 True，否则返回 False
+        """
+        if not isinstance(other, type(self)):
+            return False
+
+        mapper = class_mapper(self.__class__)
+        # 过滤出普通列，不包含 relationship 字段
+        all_columns = [prop.key for prop in mapper.iterate_properties
+                       if isinstance(prop, ColumnProperty)]
+
+        if include_keys:
+            columns_to_compare = [
+                col for col in all_columns if col in include_keys]
+        else:
+            columns_to_compare = all_columns
+
+        if exclude_keys:
+            columns_to_compare = [
+                col for col in columns_to_compare if col not in exclude_keys]
+
+        for column in columns_to_compare:
+            self_value = getattr(self, column)
+            other_value = getattr(other, column)
+            if self_value != other_value:
+                return False
+        return True
+
+
+class ModelBase(Base, ModelMixin):
     __abstract__ = True
 
     id = sa.Column(sa.Integer, primary_key=True)

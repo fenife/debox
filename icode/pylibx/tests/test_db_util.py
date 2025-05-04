@@ -3,11 +3,10 @@ import pandas as pd
 from datetime import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from test_models import Base, User, Article, Category
 
 from pylibx import db_util
 from pylibx.db_util import dict_to_sa_filter, build_query
-from test_models import User, Article, Category
+from test_models import Base, User, Article, Category
 
 # 测试用的内存SQLite数据库
 TEST_DB_URL = "sqlite:///:memory:"
@@ -72,7 +71,7 @@ class TestDbClientExecuteCase(object):
         db_util.print_pretty_table(results)
         assert len(results) == 1
         assert results[0].get("email") == 'u1@test.com'
-    
+
 
 class TestDbClientSelectCase(object):
 
@@ -250,10 +249,11 @@ def test_in_operator(_db_cli):
 
 
 class TestModelConverterMixin:
-    
+
     def test_to_dict(self, _db_cli):
         session = _db_cli.session()
-        user = User(name='John Doe', age=30, email='john@example.com', is_active=True, status='active')
+        user = User(name='John Doe', age=30, email='john@example.com',
+                    is_active=True, status='active')
         session.add(user)
         session.commit()
 
@@ -283,7 +283,8 @@ class TestModelConverterMixin:
         session.add(user)
         session.commit()
 
-        retrieved_user = session.query(User).filter_by(name='Jane Smith').first()
+        retrieved_user = session.query(
+            User).filter_by(name='Jane Smith').first()
         assert retrieved_user is not None
         assert retrieved_user.name == 'Jane Smith'
         assert retrieved_user.age == 25
@@ -293,9 +294,11 @@ class TestModelConverterMixin:
 
     def test_to_dict_with_relationship(self, _db_cli):
         session = _db_cli.session()
-        user = User(name='Bob Johnson', age=35, email='bob@example.com', is_active=True, status='active')
+        user = User(name='Bob Johnson', age=35,
+                    email='bob@example.com', is_active=True, status='active')
         category = Category(name='Technology', creator=user)
-        article = Article(title='New Tech Trends', content='Some content', author=user, category=category)
+        article = Article(title='New Tech Trends',
+                          content='Some content', author=user, category=category)
         session.add_all([user, category, article])
         session.commit()
 
@@ -333,7 +336,8 @@ class TestModelConverterMixin:
         session.add(user)
         session.commit()
 
-        retrieved_user = session.query(User).filter_by(name='Eve Brown').first()
+        retrieved_user = session.query(
+            User).filter_by(name='Eve Brown').first()
         assert retrieved_user is not None
         assert retrieved_user.name == 'Eve Brown'
         assert len(retrieved_user.categories) == 1
@@ -343,3 +347,59 @@ class TestModelConverterMixin:
         article = category.articles[0]
         assert article.title == 'Science Discoveries'
         assert article.content == 'Some science content'
+
+
+class TestORMComparisonMixin:
+    @pytest.fixture
+    def user1(self):
+        return User(
+            id=1,
+            created_at=datetime(2000, 1, 1, 0, 0, 0),
+            updated_at=datetime(2000, 1, 1, 0, 0, 0),
+            name='Alice',
+            age=25,
+            email='alice@example.com',
+            is_active=True,
+            status='active')
+
+    @pytest.fixture
+    def user2(self):
+        return User(
+            id=1,
+            created_at=datetime(2000, 1, 1, 0, 0, 0),
+            updated_at=datetime(2000, 1, 1, 0, 0, 0),
+            name='Alice',
+            age=25,
+            email='alice@example.com',
+            is_active=True,
+            status='active')
+
+    @pytest.fixture
+    def user3(self):
+        return User(
+            id=3,
+            created_at=datetime(2000, 1, 1, 0, 0, 0),
+            updated_at=datetime(2000, 1, 1, 0, 0, 0),
+            name='Bob',
+            age=25,
+            email='bob@example.com',
+            is_active=True,
+            status='active')
+
+    def test_compare_without_filters(self, user1, user2):
+        assert user1.compare(user2)
+
+    def test_compare_not_equal_without_filters(self, user1, user3):
+        assert not user1.compare(user3)
+
+    def test_compare_with_include_keys(self, user1, user2):
+        assert user1.compare(user2, include_keys=['name'])
+
+    def test_compare_with_exclude_keys(self, user1, user3):
+        assert user1.compare(user3,
+                             exclude_keys=['id', 'name', 'email'])
+
+    def test_compare_with_include_keys_and_exclude_keys(self, user1, user3):
+        assert user1.compare(user3,
+                             include_keys=['age'],
+                             exclude_keys=['name', 'email'])
