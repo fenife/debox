@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/icode",
+        "${workspaceFolder}/icode/pytest/tests",
+    ]
+}
