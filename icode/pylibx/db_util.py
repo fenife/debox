@@ -210,6 +210,17 @@ class ModelBase(Base, ModelConverterMixin):
         sa.DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
 
 
+"""
+- eq: == 等于
+- ne: != 不等于
+- gt: >  大于
+- lt: <  小于
+- ge: >= 大于等于
+- le: <= 小于等于
+- in:    包含在列表中
+- like:  模糊匹配(支持%和_通配符)
+- isnull: 是否为None (值应为True/False)
+"""
 _negated_op = {
     "eq": "ne",
     "ne": "eq",
@@ -455,7 +466,7 @@ def print_pretty_table(
 
 
 def _main():
-    import utils
+    from pylibx import utils
 
     utils.log_base_config()
     DATABASE_URL = "mysql+pymysql://test:test@dev.local:3306/test"

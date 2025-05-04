@@ -1,9 +1,10 @@
-from dataclasses import asdict, is_dataclass
+import json
+from dataclasses import asdict, is_dataclass, fields
 from datetime import datetime, date
 from enum import Enum
-from typing import Any, Dict, Type, TypeVar, Optional
-import json
+from typing import Any, Dict, List, Type, TypeVar, Optional, Union
 from pylibx import utils
+
 
 T = TypeVar('T')
 
@@ -69,3 +70,38 @@ class DataclassMixin:
     def from_json(cls: Type[T], json_str: str) -> T:
         """从JSON字符串创建对象"""
         return cls.from_dict(json.loads(json_str))
+
+    def comapre(
+        self,
+        other: object,
+        include_keys: List[str] = None,
+        exclude_keys: List[str] = None,
+    ) -> bool:
+        """
+        支持指定包含或排除字段进行对象比较
+        :param other: 要比较的另一个对象
+        :param include_keys: 要包含比较的字段列表
+        :param exclude_keys: 要排除比较的字段列表
+        :return: 如果对象相等返回 True，否则返回 False
+        """
+        if not isinstance(other, type(self)):
+            return False
+
+        all_fields = [f.name for f in fields(self)]
+
+        if include_keys:
+            fields_to_compare = [
+                field for field in all_fields if field in include_keys]
+        else:
+            fields_to_compare = all_fields
+
+        if exclude_keys:
+            fields_to_compare = [
+                field for field in fields_to_compare if field not in exclude_keys]
+
+        for field in fields_to_compare:
+            self_value = getattr(self, field)
+            other_value = getattr(other, field)
+            if self_value != other_value:
+                return False
+        return True
