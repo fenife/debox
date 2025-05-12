@@ -137,6 +137,28 @@ class TestDictListFilter(object):
 
 
 class TestDictCompare(object):
+    def test_dict_compare_all_none(self):
+        dict1 = dict2 = None
+        result = dict_compare(dict1, dict2)
+        assert result is False
+
+    def test_dict_compare_none_empty(self):
+        dict1 = None
+        dict2 = {}
+        result = dict_compare(dict1, dict2)
+        assert result is False
+
+    def test_dict_compare_all_empty(self):
+        dict1 = dict2 = {}
+        result = dict_compare(dict1, dict2)
+        assert result is True
+
+    def test_dict_compare_one_empty(self):
+        dict1 = {}
+        dict2 = {"a": 1}
+        result = dict_compare(dict1, dict2)
+        assert result is False
+
     def test_dict_compare_all_keys_equal(self):
         dict1 = {'a': 1, 'b': 2}
         dict2 = {'a': 1, 'b': 2}
