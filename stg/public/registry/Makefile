@@ -13,7 +13,8 @@ pre:	## prepare
 	mkdir -p $(REGISTRY_DATA)
 
 start:	## start registry
-	docker run -d --name $(REGISTRY_NAME) \
+	docker run -d --restart on-failure:3 \
+	--name $(REGISTRY_NAME) \
 	-p $(REGISTRY_PORT):5000 \
 	-v $(REGISTRY_DATA):/var/lib/registry \
 	$(REGISTRY_IMAGE)
@@ -32,7 +33,8 @@ check:		## check registry
 
 
 ui-start:		## start registry ui
-	docker run -d --name $(REGISTRY_UI_NAME) \
+	docker run -d --restart on-failure:3 \
+	--name $(REGISTRY_UI_NAME) \
 	-p $(REGISTRY_UI_PORT):8080 \
 	--link $(REGISTRY_NAME) \
 	-e SECRET_KEY_BASE=123 \
