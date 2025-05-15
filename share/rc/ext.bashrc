@@ -16,12 +16,14 @@ K8S_DIR=$SHARE_DIR/k8s
 # jump 
 alias jbox="cd $BASE_DIR" 
 alias jbuild="cd $BUILD_DIR" 
-alias jlocal="cd $LOCAL_DIR" 
 alias jshare="cd $SHARE_DIR" 
 alias japp="cd $APP_DIR" 
 alias jk8s="cd $K8S_DIR" 
 alias jicode="cd $ICODE_DIR" 
+
+alias jlocal="cd $LOCAL_DIR"
 alias jinfra="cd $LOCAL_DIR/infra"
+alias jstg="cd $BASE_DIR/stg"
 
 ############################################################
 # export
@@ -33,9 +35,12 @@ export INC_DIR=$INC_DIR
 
 export PATH=$PATH:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/go/bin:${HOME}/.local/bin:${HOME}/go/bin:${SHARE_DIR}/bin
 
+export GOPATH=${HOME}/go
+
 export PYTHONPATH=$PYTHONPATH:$ICODE_DIR
 
 # python etcd
+export ETCDCTL_API=3
 export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 
 ############################################################
