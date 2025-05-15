@@ -2,7 +2,7 @@
 include $(INC_DIR)/Makefile.inc
 
 REDIS_IMAGE=$(REGISTRY_URL)/redis:7.0
-REDIS_NAME=redis7.0
+REDIS_NAME=redis-7.0
 REDIS_DATA_DIR=/wine/var/redis
 
 .PHONY: start stop
@@ -26,4 +26,8 @@ stop:
 
 enter:
 	docker exec -it $(REDIS_NAME) bash
+
+check:
+	redis-cli set test 1
+	redis-cli get test
 

@@ -21,17 +21,20 @@ include $(INC_DIR)/Makefile.inc
 # IMAGE = klausmeyer/docker-registry-browser:1.7.5
 # IMAGE = quay.io/coreos/etcd:v3.4.32
 # IMAGE = bitnami/etcd:3.5
-IMAGE = sigoden/dufs:v0.42.0
+# IMAGE = sigoden/dufs:v0.42.0
+IMAGE := mysql:8.0
 
 DOCKER_PROXY := m.daocloud.io/docker.io
-DOCKER_PROXY := docker.1ms.run
+# DOCKER_PROXY := docker.1ms.run
 
 DOCKER_PROXY_IMAGE := $(DOCKER_PROXY)/$(IMAGE)
 REGISTRY_IMAGE := $(REGISTRY_URL)/$(IMAGE)
 
 build:		## download origin image and tag
 	docker pull $(DOCKER_PROXY_IMAGE)
+	@echo
 	docker tag $(DOCKER_PROXY_IMAGE) $(REGISTRY_IMAGE)
+	@echo
 	docker rmi $(DOCKER_PROXY_IMAGE)
 
 push: 		## push image to registry

@@ -2,7 +2,7 @@
 include $(INC_DIR)/Makefile.inc
 
 ETCD_IMAGE=$(REGISTRY_URL)/bitnami/etcd:3.5
-ETCD_NAME=etcd3.5
+ETCD_NAME=etcd-3.5
 ETCD_DATA_DIR=/wine/var/etcd
 
 .PHONY: start stop
