@@ -15,7 +15,7 @@ venv:	## create venv dir
 	python3 -m venv $(WEBOX_VENV_DIR)
 
 pip:	## install requirements 
-	$(WEBOX_VENV_DIR)/bin/pip3 install -r $(WEBOX_CODE_DIR)/requirements.txt
+	$(WEBOX_VENV_DIR)/bin/pip3 install -r $(ICODE_DIR)/requirements.txt
 
 pre:	## prepare
 	mkdir -p $(LOG_DIR)
