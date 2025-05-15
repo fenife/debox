@@ -38,8 +38,8 @@ NOW = $(shell date '+%Y-%m-%d %H:%M:%S')
 NOW_TS = $(shell date '+%s')
 
 # ETH_NAME=ens33
-ETH_NAME=$(shell ifconfig -s | grep -E 'eth|ens' | grep -v 'veth' | awk '{print $$1}')
-HOST_IP=$(shell ifconfig  | grep $(ETH_NAME) -A 2 | grep inet | head -1 | awk '{print $$2}')
+ETH_NAME=$(shell ifconfig -s | grep -E 'eth|ens|enp' | grep -v 'veth' | awk '{print $$1}')
+HOST_IP=$(shell ifconfig | grep $(ETH_NAME) -A 2 | grep inet | head -1 | awk '{print $$2}')
 # HOST_IP=192.168.0.2
 HOST_NAME=$(shell hostname)
 
@@ -71,14 +71,13 @@ sys: ## print system info
 	@echo "exec dir:             $(EXEC_DIR)"
 	@echo
 	@echo "-------------------- system info --------------------"
-	-cat /etc/centos-release
+	-cat /etc/os-release
+	@echo
 	-cat /etc/lsb-release
 	@echo
 	cat /proc/version
 	@echo
 	uname -r
-	@echo
-	ifconfig  | grep $(ETH_NAME) -A 2 | grep inet | head -1 | awk '{print $$2}'
 	@echo
 	@echo "eth name:  $(ETH_NAME)"
 	@echo "host ip:   $(HOST_IP)"
