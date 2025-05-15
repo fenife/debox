@@ -12,10 +12,10 @@ WEBOX_VENV_DIR=/wine/venv/icode
 ############################################################
 
 venv:	## create venv dir
-	python3.12 -m venv $(VENV_DIR)
+	python3 -m venv $(WEBOX_VENV_DIR)
 
 pip:	## install requirements 
-	$(VENV_DIR)/bin/pip3 install -r $(CODE_DIR)/requirements.txt
+	$(WEBOX_VENV_DIR)/bin/pip3 install -r $(WEBOX_CODE_DIR)/requirements.txt
 
 pre:	## prepare
 	mkdir -p $(LOG_DIR)
@@ -51,6 +51,6 @@ at:		## attach to container
 
 dev: 		## start service
 	cd $(WEBOX_CODE_DIR); \
-	$(WEBOX_VENV_DIR)/bin/python3.12 -m streamlit \
+	$(WEBOX_VENV_DIR)/bin/python3 -m streamlit \
 	run main.py --server.port 8010
 
