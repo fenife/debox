@@ -5,11 +5,16 @@ MYSQL_NAME=mysql5.7
 MYSQL_DATA_DIR=/wine/var/mysql
 MYSQL_ROOT_PASSWORD=root
 
+pre:
+	mkdir -p $(MYSQL_DATA_DIR)
+
 pull:		## pull mysql
 	docker pull $(MYSQL_IMAGE)
 
 start:		## start mysql
-	docker run -d -p 3306:3306 --name $(MYSQL_NAME) \
+	docker run -d --restart on-failure:3 \
+	--name $(MYSQL_NAME) \
+	-p 3306:3306 \
 	-v $(MYSQL_DATA_DIR):/var/lib/mysql \
 	-e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) \
 	$(MYSQL_IMAGE) 
