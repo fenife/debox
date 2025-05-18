@@ -15,7 +15,6 @@ from sqlalchemy.orm import sessionmaker, Session, Query, class_mapper, \
 from sqlalchemy.orm.properties import ColumnProperty
 from sqlalchemy.engine import ResultProxy
 from sqlalchemy import or_, and_, not_, ColumnElement
-from pylibx import df_util
 
 
 logger = logging.getLogger(__name__)
@@ -38,6 +37,14 @@ _g_type_converters = {
     sa.DateTime: lambda x: datetime.datetime.strptime(x, DATETIME_FORMAT)
     if isinstance(x, str) else x,
 }
+
+
+def df_to_orm(df: pd.DataFrame, model: Any):
+    if df is None or model is None:
+        return None
+    columns = model.__table__.columns.keys()
+    return [model(**{col: row[col] for col in columns if col in row})
+            for _, row in df.iterrows()]
 
 
 class ModelMixin(object):
@@ -494,7 +501,7 @@ class DBClient(object):
 
     def select_as_model(self, model: Any, sql: str, params: dict = None) -> Any:
         df = self.select_as_df(sql=sql, params=params)
-        return df_util.df_to_orm(df, model)
+        return df_to_orm(df, model)
 
     def select(self, sql: str, params: dict = None) -> List[Dict[str, Any]]:
         """
