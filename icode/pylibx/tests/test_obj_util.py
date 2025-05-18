@@ -1,8 +1,12 @@
 import pytest
 from datetime import datetime
 from enum import Enum
+import numpy as np
+import pandas as pd
+from typing import List, Optional
 from dataclasses import dataclass, field
-from pylibx.obj_util import DataclassMixin
+from pylibx.obj_util import DataclassMixin, df_to_objs
+from pylibx import dict_util
 
 
 class Status(Enum):
@@ -25,6 +29,13 @@ class Customer(DataclassMixin):
     join_date: datetime
     address: Address
     tags: list[str] = field(default_factory=list)
+
+
+@dataclass
+class Person:
+    name: str
+    age: Optional[int] = None
+    city: Optional[str] = None
 
 
 class TestDataclassMixinConversion:
@@ -117,3 +128,59 @@ class TestDataclassMixinCompare:
 
     def test_not_equal_with_exclude_keys(self, obj1, obj3):
         assert not obj1.comapre(obj3, exclude_keys=["field2", "field3"])
+
+
+class TestDataFrameToDataclassList:
+    def test_empty_df(self):
+        df = pd.DataFrame()
+        result = df_to_objs(df, Person)
+        assert result == []
+
+    def test_single_row(self):
+        df = pd.DataFrame({'name': ['Alice'], 'age': [30], 'city': ['New York']})
+        result = df_to_objs(df, Person)
+        assert len(result) == 1
+        assert isinstance(result[0], Person)
+        assert result[0].name == 'Alice'
+        assert result[0].age == 30
+        assert result[0].city == 'New York'
+
+    def test_multiple_rows(self):
+        df = pd.DataFrame({
+            'name': ['Alice', 'Bob'],
+            'age': [30, 25],
+            'city': ['New York', 'London']
+        })
+        result = df_to_objs(df, Person)
+        assert len(result) == 2
+        assert result[0].name == 'Alice'
+        assert result[1].age == 25
+
+    def test_with_nan_values(self):
+        df = pd.DataFrame({
+            'name': ['Alice', 'Bob'],
+            'age': [30, np.nan],
+            'city': [np.nan, 'London']
+        })
+        result = df_to_objs(df, Person)
+        assert result[0].age == 30
+        assert result[0].city is None
+        assert result[1].age is None
+        assert result[1].city == 'London'
+
+    def test_missing_required_field(self):
+        # 缺少必需字段'name'
+        df = pd.DataFrame({'age': [30]})  
+        objs = df_to_objs(df, Person)
+        assert objs[0].name == None
+
+    def test_extra_columns_in_df(self):
+        df = pd.DataFrame({
+            'name': ['Alice'],
+            'age': [30],
+            'city': ['New York'],
+            'extra': ['value']  # 额外列
+        })
+        result = df_to_objs(df, Person)
+        assert result[0].name == 'Alice'
+        assert not hasattr(result[0], 'extra')    

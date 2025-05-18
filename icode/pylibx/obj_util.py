@@ -1,12 +1,37 @@
 import json
+import numpy as np
+import pandas as pd
 from dataclasses import asdict, is_dataclass, fields
 from datetime import datetime, date
 from enum import Enum
 from typing import Any, Dict, List, Type, TypeVar, Optional, Union
 from pylibx import utils
+from pylibx import dict_util
 
 
 T = TypeVar('T')
+
+
+def df_to_objs(df: pd.DataFrame, cls: Any) -> List:
+    """将DataFrame转换为dataclass对象列表"""
+    if df is None or df.empty:
+        return []
+
+    # 将NaN转换为None
+    df = df.replace({np.nan: None})
+
+    # 获取字段名
+    field_names = {f.name: f for f in cls.__dataclass_fields__.values()}
+
+    objs = []
+    for _, row in df.iterrows():
+        kv = {}
+        for f in field_names:
+            kv[f] = row[f] if f in row else None
+        obj = cls(**kv)
+        objs.append(obj)
+
+    return objs
 
 
 class DataclassMixin:
