@@ -241,8 +241,10 @@ class ModelBase(Base, ModelMixin):
 
     id = sa.Column(sa.Integer, primary_key=True)
     created_at = sa.Column(sa.DateTime, default=datetime.datetime.now)
-    updated_at = sa.Column(
-        sa.DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
+    updated_at = sa.Column(sa.DateTime, default=datetime.datetime.now, 
+                           onupdate=datetime.datetime.now)
+    # created_at = sa.Column(sa.TIMESTAMP, default=sa.func.now)
+    # updated_at = sa.Column(sa.TIMESTAMP, default=sa.func.now, onupdate=sa.func.now)
 
 
 """
@@ -375,6 +377,21 @@ def build_query(
     return query
 
 
+def df_to_orm(df: pd.DataFrame, model: Any):
+    if df is None or model is None:
+        return None
+    columns = model.__table__.columns.keys()
+    return [model(**{col: row[col] for col in columns if col in row}) 
+            for _, row in df.iterrows()]
+
+
+def dict_list_to_df(dict_list: List[Dict[str, Any]]) -> pd.DataFrame:
+    """
+    将字典列表转换为Pandas DataFrame
+    """
+    return pd.DataFrame(dict_list)
+
+
 class DBClient(object):
     def __init__(self, connection: str) -> None:
         self._conn_str = connection
@@ -397,6 +414,20 @@ class DBClient(object):
             result: ResultProxy = sess.execute(text(sql), params or {})
             sess.commit()
         return result
+
+    def select_as_df(self, sql: str, params: dict = None) -> pd.DataFrame:
+        logger.info("sql: %s, params: %s", sql, params)
+        try:
+            df = pd.read_sql(sql, con=self.engine, params=params)        
+        except Exception as e:
+            logger.error("query failed: %s", e)
+        result_len = len(df) if df is not None else 0
+        logger.info("row count: %s", result_len)
+        return df
+    
+    def select_as_model(self, model: Any, sql: str, params: dict = None) -> Any:
+        df = self.select_as_df(sql=sql, params=params)
+        return df_to_orm(df, model)
 
     def select(self, sql: str, params: dict = None) -> List[Dict[str, Any]]:
         """
@@ -460,14 +491,6 @@ def get_fields(dict_list: List[Dict[str, Any]]) -> List[str]:
     fields = list(dict_list[0].keys()) if dict_list else []
     return fields
 
-
-def to_dataframe(dict_list: List[Dict[str, Any]]) -> pd.DataFrame:
-    """
-    将字典列表转换为Pandas DataFrame
-    """
-    return pd.DataFrame(dict_list)
-
-
 def print_pretty_table(
     dict_list: List[Dict[str, Any]],
     columns: List[str] = None,
@@ -496,6 +519,31 @@ def print_pretty_table(
 
     for row in dict_list:
         table.add_row([row.get(col, '') for col in display_columns])
+
+    print(table)
+
+
+def print_df_pretty_table(
+    df: pd.DataFrame,
+    max_width: int = 80
+):
+    """
+    使用PrettyTable打印美观的输出
+    :param df: dataframe
+    :param max_width: 列最大宽度（自动换行）
+    """
+    if df is None:
+        logger.warning("No data to display")
+        return
+    
+    table = PrettyTable()
+    table.field_names = df.columns.tolist()
+    table.add_rows(df.values.tolist())  # 批量添加所有行
+
+    # 设置列格式
+    for field in table.field_names:
+        table._max_width[field] = max_width
+        table.align[field] = "l"
 
     print(table)
 

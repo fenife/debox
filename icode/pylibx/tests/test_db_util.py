@@ -74,6 +74,24 @@ class TestDbClientExecuteCase(object):
 
 
 class TestDbClientSelectCase(object):
+    
+    def test_select_as_df(self, _db_cli):
+        """测试select为DataFrame"""
+        sql = "SELECT id, name FROM users"
+        df = _db_cli.select_as_df(sql)
+        assert isinstance(df, pd.DataFrame)
+        assert df.shape[0] == 3
+        assert "id" in df.columns
+        assert "name" in df.columns
+    
+    def test_select_as_model(self, _db_cli):
+        """测试select为DataFrame"""
+        sql = "SELECT id, name FROM users"
+        data = _db_cli.select_as_model(User, sql)
+        assert len(data) == 3
+        user1 = data[0]
+        assert isinstance(user1, User)
+        assert user1.name == 'Alice'
 
     def test_select_sql_with_join(self, _db_cli):
         """测试多表关联查询"""
@@ -104,7 +122,7 @@ class TestDbClientSelectCase(object):
         """测试转换为DataFrame"""
         sql = "SELECT id, name FROM users"
         data = _db_cli.select(sql)
-        df = db_util.to_dataframe(data)
+        df = db_util.dict_list_to_df(data)
         assert isinstance(df, pd.DataFrame)
         assert df.shape[0] == 3
         assert "id" in df.columns
@@ -115,6 +133,17 @@ class TestDbClientSelectCase(object):
         sql = "SELECT id, name FROM users LIMIT 1"
         data = _db_cli.select(sql)
         db_util.print_pretty_table(data)
+        captured = capsys.readouterr()
+        assert "id" in captured.out
+        assert "name" in captured.out
+        assert "Alice" in captured.out or "Bob" in captured.out
+        print(captured.out)
+
+    def test_df_pretty_table_output(self, _db_cli, capsys):
+        """测试 dataframe PrettyTable 输出"""
+        sql = "SELECT id, name FROM users LIMIT 1"
+        data = _db_cli.select_as_df(sql)
+        db_util.print_df_pretty_table(data)
         captured = capsys.readouterr()
         assert "id" in captured.out
         assert "name" in captured.out
