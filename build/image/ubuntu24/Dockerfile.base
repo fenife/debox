@@ -24,6 +24,7 @@ RUN apt install -y openssh-client psmisc sysstat strace lsof hostname
 RUN apt install -y iproute2 net-tools telnet ncat tcpdump ethtool 
 RUN apt install -y mysql-client redis golang-go
 RUN apt install -y iptables ipset zsh python3-pip
+RUN apt install -y iputils-ping
 
 #------------------------------------------------------------
 # golang
