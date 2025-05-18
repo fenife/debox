@@ -1,5 +1,8 @@
 import pytest
 from datetime import datetime
+import numpy as np
+import pandas as pd
+from pylibx import dict_util
 from pylibx.dict_util import filter_dict_list, dict_compare
 
 
@@ -11,6 +14,78 @@ def sample_data():
         {"id": 3, "name": "Charlie", "age": 35, "active": True, "email": "charlie@example.net", "tags": None, "created_at": None},
         {"id": 4, "name": "David", "age": None, "active": True, "email": "DAVID@example.com", "tags": ["admin"], "created_at": datetime(2023, 1, 3)},
     ]
+
+
+class TestDictListToDataFrame:
+    def test_empty_list(self):
+        result = dict_util.dict_list_to_df([])
+        assert result.empty
+        assert list(result.columns) == []
+
+    def test_single_dict(self):
+        data = [{'A': 1, 'B': 'a'}]
+        df = dict_util.dict_list_to_df(data)
+        assert df.shape == (1, 2)
+        assert df.to_dict('records') == data
+
+    def test_multiple_dicts_same_keys(self):
+        data = [{'A': 1, 'B': 'a'}, {'A': 2, 'B': 'b'}]
+        df = dict_util.dict_list_to_df(data)
+        assert df.shape == (2, 2)
+        assert df.to_dict('records') == data
+
+    def test_multiple_dicts_different_keys(self):
+        data = [{'A': 1, 'B': 'a'}, {'A': 2, 'C': 'c'}]
+        df = dict_util.dict_list_to_df(data)
+        assert df.shape == (2, 3)
+        assert df.to_dict('records') == [
+            {'A': 1, 'B': 'a', 'C': np.nan},
+            {'A': 2, 'B': np.nan, 'C': 'c'}
+        ]
+
+    def test_dict_with_none_values(self):
+        data = [{'A': None, 'B': 'a'}, {'A': 2, 'B': None}]
+        df = dict_util.dict_list_to_df(data)
+        assert df.shape == (2, 2)
+        print(df)
+        # 注意：pandas会将数值类型的None转换为NaN
+        assert df.replace({np.nan: None}).to_dict('records') == data
+
+    def test_mixed_value_types(self):
+        data = [
+            {'A': 1, 'B': 'a', 'C': True, 'D': 1.5},
+            {'A': 2, 'B': None, 'C': False, 'D': np.nan}
+        ]
+        df = dict_util.dict_list_to_df(data)
+        assert df.shape == (2, 4)
+        assert df.replace({np.nan: None}).to_dict('records') == [
+            {'A': 1, 'B': 'a', 'C': True, 'D': 1.5},
+            {'A': 2, 'B': None, 'C': False, 'D': None}
+        ]
+
+class TestDataFrameToDictList(object):
+    def test_df_to_dict_list_none(self):
+        assert dict_util.df_to_dict_list(None) == None
+
+    def test_df_to_dict_list_empty_df(self):
+        df = pd.DataFrame()
+        assert dict_util.df_to_dict_list(df) == []
+
+    def test_df_to_dict_list_single_row(self):
+        df = pd.DataFrame({'A': [1], 'B': ['a']})
+        expected = [{'A': 1, 'B': 'a'}]
+        assert dict_util.df_to_dict_list(df) == expected
+
+    def test_df_to_dict_list_multiple_rows(self):
+        df = pd.DataFrame({'A': [1, 2], 'B': ['a', 'b']})
+        expected = [{'A': 1, 'B': 'a'}, {'A': 2, 'B': 'b'}]
+        assert dict_util.df_to_dict_list(df) == expected
+
+    def test_df_to_dict_list_with_nan(self):
+        df = pd.DataFrame({'A': [1, None], 'B': ['b1', 'b2']})
+        expected = [{'A': 1, 'B': 'b1'}, {'A': None, 'B': 'b2'}]
+        assert dict_util.df_to_dict_list(df) == expected
+
 
 class TestDictListFilter(object):
     def test_basic_filter(self, sample_data):

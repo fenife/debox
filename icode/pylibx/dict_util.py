@@ -1,5 +1,6 @@
 import re
 import logging
+import numpy as np
 import pandas as pd
 from typing import List, Dict, Any, Union
 from datetime import datetime
@@ -8,11 +9,11 @@ from datetime import datetime
 logger = logging.getLogger(__name__)
 
 
-def dict_list_to_df(dict_list: List[Dict[str, Any]]) -> pd.DataFrame:
+def dict_list_to_df(dict_list: List[Dict[str, Any]], **kwargs) -> pd.DataFrame:
     """
     将字典列表转换为DataFrame
     """
-    return pd.DataFrame(dict_list)
+    return pd.DataFrame(dict_list, **kwargs)
 
 
 def df_to_dict_list(df: pd.DataFrame) -> List[Dict[str, Any]]:
@@ -20,8 +21,8 @@ def df_to_dict_list(df: pd.DataFrame) -> List[Dict[str, Any]]:
     将DataFrame转换为字典列表
     """
     if df is None:
-        return []
-    data = df.to_dict('records')
+        return None
+    data = df.replace({np.nan: None}).to_dict('records')
     return data
 
 
