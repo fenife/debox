@@ -1,6 +1,6 @@
 import pytest
 from datetime import datetime
-from pylibx.dict_list_util import filter_dict_list, dict_compare
+from pylibx.dict_util import filter_dict_list, dict_compare
 
 
 @pytest.fixture

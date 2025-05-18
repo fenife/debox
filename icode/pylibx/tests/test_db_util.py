@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from pylibx import db_util
-from pylibx import df_util
+from pylibx import dict_util
 from pylibx import print_util
 from pylibx.db_util import dict_to_sa_filter, build_query
 from test_models import Base, User, Article, Category
@@ -124,7 +124,7 @@ class TestDbClientSelectCase(object):
         """测试转换为DataFrame"""
         sql = "SELECT id, name FROM users"
         data = _db_cli.select(sql)
-        df = df_util.dict_list_to_df(data)
+        df = dict_util.dict_list_to_df(data)
         assert isinstance(df, pd.DataFrame)
         assert df.shape[0] == 3
         assert "id" in df.columns
