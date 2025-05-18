@@ -1,5 +1,9 @@
 
+import pandas as pd
 import yaml
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def read_yaml(yaml_path: str, key: str = None):
@@ -20,3 +24,14 @@ def clean_yaml(yaml_path: str):
         pass
 
 
+def read_yaml_to_df(file_path: str) -> pd.DataFrame:
+    """读取YAML文件并转换为DataFrame"""
+    with open(file_path, 'r', encoding='utf-8') as f:
+        data = yaml.safe_load(f)
+
+    if isinstance(data, list):
+        return pd.DataFrame(data)
+    elif isinstance(data, dict):
+        return pd.DataFrame.from_dict(data, orient='index')
+    else:
+        raise ValueError(f"unsupport data: {data}")

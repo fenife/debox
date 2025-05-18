@@ -1,10 +1,11 @@
 import os
 import pytest
 import yaml
+import pandas as pd
 from tempfile import NamedTemporaryFile
 
 # 假设你的 YAML 工具函数在 yaml_utils.py 中
-from pylibx.yaml_util import read_yaml, write_yaml, clean_yaml
+from pylibx.yaml_util import read_yaml, write_yaml, clean_yaml, read_yaml_to_df
 
 
 # 测试数据
@@ -105,3 +106,75 @@ class TestYamlUtils:
         """测试读取空 YAML 文件"""
         clean_yaml(temp_yaml_file)
         assert read_yaml(temp_yaml_file) is None
+
+
+class TestReadYamlToDataframe:
+    def create_temp_yaml(self, content: str) -> str:
+        """创建临时YAML文件并返回路径"""
+        with NamedTemporaryFile(
+            mode='w', suffix='.yaml', delete=False, encoding='utf-8'
+        ) as f:
+            f.write(content)
+            return f.name
+
+    def test_list_format(self):
+        content = """
+        - name: Alice
+          age: 30
+        - name: Bob
+          age: 25
+        """
+        temp_path = self.create_temp_yaml(content)
+        df = read_yaml_to_df(temp_path)
+        assert len(df) == 2
+        assert df.loc[0, 'name'] == 'Alice'
+        assert df.loc[1, 'age'] == 25
+
+    def test_dict_format(self):
+        content = """
+        person1: {name: Alice, age: 30}
+        person2: {name: Bob, age: 25}
+        """
+        temp_path = self.create_temp_yaml(content)
+        df = read_yaml_to_df(temp_path)
+        assert len(df) == 2
+        assert df.loc['person1', 'age'] == 30
+
+    def test_nested_data(self):
+        content = """
+        - name: Alice
+          details:
+            age: 30
+            city: New York
+        """
+        temp_path = self.create_temp_yaml(content)
+        df = read_yaml_to_df(temp_path)
+        assert isinstance(df.loc[0, 'details'], dict)
+        assert df.loc[0, 'details']['age'] == 30
+
+    def test_non_list_dict_data(self):
+        content = "hello world"
+        temp_path = self.create_temp_yaml(content)
+        with pytest.raises(ValueError) as exc:
+            df = read_yaml_to_df(temp_path)
+        assert "unsupport data" in str(exc.value)
+
+    def test_mixed_types(self):
+        content = """
+        - name: Alice
+          age: 30
+        - name: Bob
+          age: null
+        """
+        temp_path = self.create_temp_yaml(content)
+        df = read_yaml_to_df(temp_path)
+        assert pd.isna(df.loc[1, 'age'])
+
+    def test_numeric_keys(self):
+        content = """
+        1: [a, b]
+        2: [c, d]
+        """
+        temp_path = self.create_temp_yaml(content)
+        df = read_yaml_to_df(temp_path)
+        assert df.index.tolist() == [1, 2]
