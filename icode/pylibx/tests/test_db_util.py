@@ -5,6 +5,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from pylibx import db_util
+from pylibx import df_util
+from pylibx import print_util
 from pylibx.db_util import dict_to_sa_filter, build_query
 from test_models import Base, User, Article, Category
 
@@ -68,7 +70,7 @@ class TestDbClientExecuteCase(object):
         result = _db_cli.execute(sql, params)
 
         results = _db_cli.select("select * from users where id = 1;")
-        db_util.print_pretty_table(results)
+        print_util.print_table_dict_list(results)
         assert len(results) == 1
         assert results[0].get("email") == 'u1@test.com'
 
@@ -122,7 +124,7 @@ class TestDbClientSelectCase(object):
         """测试转换为DataFrame"""
         sql = "SELECT id, name FROM users"
         data = _db_cli.select(sql)
-        df = db_util.dict_list_to_df(data)
+        df = df_util.dict_list_to_df(data)
         assert isinstance(df, pd.DataFrame)
         assert df.shape[0] == 3
         assert "id" in df.columns
@@ -132,7 +134,7 @@ class TestDbClientSelectCase(object):
         """测试PrettyTable输出"""
         sql = "SELECT id, name FROM users LIMIT 1"
         data = _db_cli.select(sql)
-        db_util.print_pretty_table(data)
+        print_util.print_table_dict_list(data)
         captured = capsys.readouterr()
         assert "id" in captured.out
         assert "name" in captured.out
@@ -143,7 +145,7 @@ class TestDbClientSelectCase(object):
         """测试 dataframe PrettyTable 输出"""
         sql = "SELECT id, name FROM users LIMIT 1"
         data = _db_cli.select_as_df(sql)
-        db_util.print_df_pretty_table(data)
+        print_util.print_table_df(data)
         captured = capsys.readouterr()
         assert "id" in captured.out
         assert "name" in captured.out
@@ -331,7 +333,7 @@ class TestModelConverterMixin:
         session.add_all([user, category, article])
         session.commit()
 
-        user_dict = user.to_dict()
+        user_dict = user.to_nested_dict()
         assert isinstance(user_dict, dict)
         assert 'categories' in user_dict
         assert isinstance(user_dict['categories'], list)
@@ -361,7 +363,7 @@ class TestModelConverterMixin:
             ]
         }
 
-        user = User.from_dict(user_dict)
+        user = User.from_nested_dict(user_dict)
         session.add(user)
         session.commit()
 

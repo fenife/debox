@@ -15,6 +15,7 @@ from sqlalchemy.orm import sessionmaker, Session, Query, class_mapper, \
 from sqlalchemy.orm.properties import ColumnProperty
 from sqlalchemy.engine import ResultProxy
 from sqlalchemy import or_, and_, not_, ColumnElement
+from pylibx import df_util
 
 
 logger = logging.getLogger(__name__)
@@ -42,6 +43,87 @@ _g_type_converters = {
 class ModelMixin(object):
 
     def to_dict(
+        self,
+        exclude: Set[str] = None,
+        format_types: Dict[Type, Callable[[Any], Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        将 ORM 模型实例转换为字典，忽略关系属性
+
+        Args:
+            exclude: 要排除的属性名集合
+            format_types: 类型格式化函数字典,
+            visited: 防止循环引用的已访问对象集合（内部使用）
+
+        Returns:
+            转换后的字典
+        """
+        if exclude is None:
+            exclude = set()
+
+        if format_types is None:
+            format_types = _g_format_types
+
+        # mapper: Mapper = inspect(self.__class__)
+        mapper = class_mapper(self.__class__)
+        result = {}
+
+        # 处理普通列
+        for column in mapper.columns:
+            if column.key in exclude:
+                continue
+            value = getattr(self, column.key)
+            # # 应用类型格式化
+            formatter = format_types.get(type(value))
+            if formatter:
+                value = formatter(value)
+            result[column.key] = value
+
+        return result
+
+    @classmethod
+    def from_dict(
+        cls: Any,
+        data: Dict[str, Any],
+        exclude: Set[str] = None,
+        type_converters: Dict[Type, Callable[[Any], Any]] = None,
+    ):
+        """
+        从字典创建 ORM 模型实例，忽略关系属性
+
+        Args:
+            data: 要转换的字典数据
+            exclude: 要排除的属性名集合
+            type_converters: 类型转换函数字典，如 {str: lambda x: x.strip()}
+            visited: 防止循环引用的已访问对象集合（内部使用）
+
+        Returns:
+            创建的 ORM 模型实例
+        """
+        if exclude is None:
+            exclude = set()
+        if type_converters is None:
+            type_converters = _g_type_converters
+        # mapper: Mapper = inspect(cls)
+        mapper = class_mapper(cls)
+        kwargs = {}
+
+        # 处理普通列
+        for column in mapper.columns:
+            if column.key in exclude or column.key not in data:
+                continue
+            # 应用类型转换
+            value = data[column.key]
+            converter = type_converters.get(type(column.type))
+            if converter:
+                value = converter(value)
+            kwargs[column.key] = value
+
+        # 创建实例
+        instance = cls(**kwargs)
+        return instance
+
+    def to_nested_dict(
         self,
         exclude: Set[str] = None,
         format_types: Dict[Type, Callable[[Any], Any]] = None,
@@ -104,7 +186,7 @@ class ModelMixin(object):
             elif isinstance(rel, RelationshipProperty):
                 if rel.uselist:  # 一对多或多对多关系
                     result[rel.key] = [
-                        child.to_dict(
+                        child.to_nested_dict(
                             exclude=exclude,
                             format_types=format_types,
                             visited=visited.copy()
@@ -112,7 +194,7 @@ class ModelMixin(object):
                         for child in related_obj
                     ]
                 else:  # 多对一或一对一关系
-                    result[rel.key] = related_obj.to_dict(
+                    result[rel.key] = related_obj.to_nested_dict(
                         exclude=exclude,
                         format_types=format_types,
                         visited=visited.copy()
@@ -121,7 +203,7 @@ class ModelMixin(object):
         return result
 
     @classmethod
-    def from_dict(
+    def from_nested_dict(
         cls: Any,
         data: Dict[str, Any],
         exclude: Set[str] = None,
@@ -181,7 +263,7 @@ class ModelMixin(object):
             elif isinstance(rel, RelationshipProperty):
                 if rel.uselist:  # 一对多或多对多关系
                     kwargs[rel.key] = [
-                        rel.mapper.class_.from_dict(
+                        rel.mapper.class_.from_nested_dict(
                             item_data,
                             exclude=exclude,
                             type_converters=type_converters,
@@ -190,7 +272,7 @@ class ModelMixin(object):
                         for item_data in rel_data
                     ]
                 else:  # 多对一或一对一关系
-                    kwargs[rel.key] = rel.mapper.class_.from_dict(
+                    kwargs[rel.key] = rel.mapper.class_.from_nested_dict(
                         rel_data,
                         exclude=exclude,
                         type_converters=type_converters,
@@ -241,7 +323,7 @@ class ModelBase(Base, ModelMixin):
 
     id = sa.Column(sa.Integer, primary_key=True)
     created_at = sa.Column(sa.DateTime, default=datetime.datetime.now)
-    updated_at = sa.Column(sa.DateTime, default=datetime.datetime.now, 
+    updated_at = sa.Column(sa.DateTime, default=datetime.datetime.now,
                            onupdate=datetime.datetime.now)
     # created_at = sa.Column(sa.TIMESTAMP, default=sa.func.now)
     # updated_at = sa.Column(sa.TIMESTAMP, default=sa.func.now, onupdate=sa.func.now)
@@ -377,21 +459,6 @@ def build_query(
     return query
 
 
-def df_to_orm(df: pd.DataFrame, model: Any):
-    if df is None or model is None:
-        return None
-    columns = model.__table__.columns.keys()
-    return [model(**{col: row[col] for col in columns if col in row}) 
-            for _, row in df.iterrows()]
-
-
-def dict_list_to_df(dict_list: List[Dict[str, Any]]) -> pd.DataFrame:
-    """
-    将字典列表转换为Pandas DataFrame
-    """
-    return pd.DataFrame(dict_list)
-
-
 class DBClient(object):
     def __init__(self, connection: str) -> None:
         self._conn_str = connection
@@ -418,16 +485,16 @@ class DBClient(object):
     def select_as_df(self, sql: str, params: dict = None) -> pd.DataFrame:
         logger.info("sql: %s, params: %s", sql, params)
         try:
-            df = pd.read_sql(sql, con=self.engine, params=params)        
+            df = pd.read_sql(sql, con=self.engine, params=params)
         except Exception as e:
             logger.error("query failed: %s", e)
         result_len = len(df) if df is not None else 0
         logger.info("row count: %s", result_len)
         return df
-    
+
     def select_as_model(self, model: Any, sql: str, params: dict = None) -> Any:
         df = self.select_as_df(sql=sql, params=params)
-        return df_to_orm(df, model)
+        return df_util.df_to_orm(df, model)
 
     def select(self, sql: str, params: dict = None) -> List[Dict[str, Any]]:
         """
@@ -491,71 +558,16 @@ def get_fields(dict_list: List[Dict[str, Any]]) -> List[str]:
     fields = list(dict_list[0].keys()) if dict_list else []
     return fields
 
-def print_pretty_table(
-    dict_list: List[Dict[str, Any]],
-    columns: List[str] = None,
-    max_width: int = 80
-):
-    """
-    使用PrettyTable打印美观的输出
-    :param dict_list: 数据字典列表
-    :param columns: 指定要显示的列（None表示全部）
-    :param max_width: 列最大宽度（自动换行）
-    """
-    if not dict_list:
-        logger.warning("No data to display")
-        return
-
-    table = PrettyTable()
-
-    # 确定要显示的列
-    display_columns = columns or list(dict_list[0].keys())
-    table.field_names = display_columns
-
-    # 设置列格式
-    for field in table.field_names:
-        table._max_width[field] = max_width
-        table.align[field] = "l"
-
-    for row in dict_list:
-        table.add_row([row.get(col, '') for col in display_columns])
-
-    print(table)
-
-
-def print_df_pretty_table(
-    df: pd.DataFrame,
-    max_width: int = 80
-):
-    """
-    使用PrettyTable打印美观的输出
-    :param df: dataframe
-    :param max_width: 列最大宽度（自动换行）
-    """
-    if df is None:
-        logger.warning("No data to display")
-        return
-    
-    table = PrettyTable()
-    table.field_names = df.columns.tolist()
-    table.add_rows(df.values.tolist())  # 批量添加所有行
-
-    # 设置列格式
-    for field in table.field_names:
-        table._max_width[field] = max_width
-        table.align[field] = "l"
-
-    print(table)
-
 
 def _main():
     from pylibx import utils
+    from pylibx import print_util
 
     utils.log_base_config()
     DATABASE_URL = "mysql+pymysql://test:test@dev.local:3306/test"
     db_cli = DBClient(connection=DATABASE_URL)
     res = db_cli.select("select * from users limit 3;")
-    print_pretty_table(res)
+    print_util.print_table_dict_list(res)
 
 
 if __name__ == "__main__":
