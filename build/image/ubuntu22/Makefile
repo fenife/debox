@@ -1,0 +1,50 @@
+
+include $(INC_DIR)/Makefile.inc
+
+############################################################
+# base 
+############################################################
+
+UBUNTU_BASE_IMAGE=$(IMAGE_ME_NS)/ubuntu-base-22.04:latest
+UBUNTU_BASE_NAME=ubuntu22-base
+
+build-base: 
+	docker build -f ./Dockerfile.base -t $(UBUNTU_BASE_IMAGE) $(BUILD_DIR)
+
+start-base: 
+	docker run --rm -it \
+	--name $(UBUNTU_BASE_NAME) --hostname $(UBUNTU_BASE_NAME) \
+	$(UBUNTU_BASE_IMAGE)
+
+stop-base:
+	docker stop $(UBUNTU_BASE_NAME)
+	docker rm $(UBUNTU_BASE_NAME)
+
+enter-base:
+	docker exec -it $(UBUNTU_BASE_NAME) bash
+
+############################################################
+# local image
+############################################################
+
+UBUNTU_IMAGE=$(IMAGE_ME_NS)/ubuntu-local-22.04:latest
+UBUNTU_NAME=ubuntu22
+
+build: 
+	docker build -f ./Dockerfile.local -t $(UBUNTU_IMAGE) $(BUILD_DIR)
+
+# docker run $(LOCAL_WITH_OPTIONS) 
+start: 
+	docker run --rm -it --privileged \
+	--name $(UBUNTU_NAME) --hostname $(UBUNTU_NAME) \
+	-v $(SHARE_DIR):$(SHARE_DIR) \
+	$(UBUNTU_IMAGE)
+
+stop:
+	docker stop $(UBUNTU_NAME)
+	docker rm $(UBUNTU_NAME)
+
+at:
+	docker exec -it $(UBUNTU_NAME) zsh
+
+

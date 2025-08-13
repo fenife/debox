@@ -1,0 +1,56 @@
+FROM stg-registry.me:8810/ubuntu:22.04
+
+# 时区
+ENV TZ "Asia/Shanghai"
+# 禁用交互式提示
+ENV DEBIAN_FRONTEND noninteractive
+# terminal colors with xterm
+ENV TERM xterm
+ENV HOME_DIR /root
+
+#------------------------------------------------------------
+# repo and base softwares
+# RUN mv /etc/apt/sources.list /tmp/ 
+# COPY etc/ubuntu24/repo/sources.list.ali /etc/apt/sources.list
+# RUN apt -o Acquire::Check-Valid-Until=false -o Acquire::Check-Date=false update 
+
+RUN apt update -y 
+RUN apt install -y tzdata ca-certificates
+RUN apt install -y wget curl git vim tar bzip2 unzip tree rsync htop zsh
+RUN apt install -y passwd sudo man-db tig 
+RUN apt install -y gcc g++ make automake cmake 
+RUN apt install -y openssh-client psmisc sysstat strace lsof hostname 
+RUN apt install -y iproute2 net-tools telnet ncat tcpdump ethtool 
+RUN apt install -y iptables ipset iputils-ping
+RUN apt install -y python2.7 python3-pip
+RUN apt install -y mysql-client redis 
+
+#------------------------------------------------------------
+# golang
+COPY repo/go/go1.22.3.linux-amd64.tar.gz /tmp/
+RUN cd /tmp \
+    && tar -zxf go1.22.3.linux-amd64.tar.gz -C /usr/local \
+    && rm -rf /tmp/go*
+ENV PATH="$PATH:/usr/local/go/bin"
+# RUN go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/ \
+RUN go env -w GOPROXY=https://goproxy.cn,direct \
+    && go env -w GO111MODULE=on \
+    && go env -w GOSUMDB='off'
+
+#------------------------------------------------------------
+# pip2
+COPY /repo/pip2 /tmp
+RUN cd /tmp \
+    && python2.7 get-pip.py --no-index --find-links=packages 
+
+#------------------------------------------------------------
+# config
+
+# inputrc
+COPY etc/conf/.inputrc ${HOME_DIR}/
+# git config
+COPY etc/conf/.gitconfig /${HOME_DIR}/.gitconfig
+# pip config
+COPY etc/conf/pip.conf ${HOME_DIR}/.pip/pip.conf
+
+CMD ["/bin/bash"]

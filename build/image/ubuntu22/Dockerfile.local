@@ -1,0 +1,34 @@
+FROM stg-registry.me:8810/fenife/ubuntu-base-22.04:latest
+
+RUN apt install -y bridge-utils traceroute openssh-server
+
+#------------------------------------------------------------ 
+# golang
+RUN go install golang.org/x/tools/gopls@v0.15.3 \
+    && go install github.com/go-delve/delve/cmd/dlv@v1.22.1 \
+    && go install honnef.co/go/tools/cmd/staticcheck@v0.4.7 
+
+ 
+#------------------------------------------------------------ 
+# install oh my zsh 
+COPY repo/zsh/ohmyzsh-master.zip /tmp/
+RUN cd /tmp \
+    && unzip -q ohmyzsh-master.zip \
+    && mv ohmyzsh-master ${HOME_DIR}/.oh-my-zsh \
+    && cp ${HOME_DIR}/.oh-my-zsh/templates/zshrc.zsh-template ${HOME_DIR}/.zshrc \
+    && rm -rf /tmp/ohmyzsh-*
+
+#------------------------------------------------------------ 
+# configs
+
+# zsh config
+RUN echo >> ${HOME_DIR}/.zshrc \
+    && echo "source /wine/debox/share/rc/ext.bashrc" >> ${HOME_DIR}/.zshrc \
+    && echo "source /wine/debox/share/rc/ext.zshrc" >> ${HOME_DIR}/.zshrc \
+    && sed -i "s/robbyrussell/ys/" ${HOME_DIR}/.zshrc \
+    && sed -i "s/# zstyle ':omz:update' mode disabled/zstyle ':omz:update' mode disabled/" \
+        ${HOME_DIR}/.zshrc 
+# 切换shell
+RUN chsh -s $(which zsh) 
+
+CMD ["/bin/zsh"]
