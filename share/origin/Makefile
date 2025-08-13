@@ -23,10 +23,11 @@ include $(INC_DIR)/Makefile.inc
 # IMAGE = bitnami/etcd:3.5
 # IMAGE = sigoden/dufs:v0.42.0
 # IMAGE := mysql:8.0
-IMAGE := python:3.11-slim-bullseye
+# IMAGE := python:3.11-slim-bullseye
+IMAGE := python:2.7.18
 
-DOCKER_PROXY := m.daocloud.io/docker.io
-# DOCKER_PROXY := docker.1ms.run
+# DOCKER_PROXY := m.daocloud.io/docker.io
+DOCKER_PROXY := docker.1ms.run
 
 DOCKER_PROXY_IMAGE := $(DOCKER_PROXY)/$(IMAGE)
 REGISTRY_IMAGE := $(REGISTRY_URL)/$(IMAGE)
