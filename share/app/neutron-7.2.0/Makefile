@@ -10,6 +10,30 @@ WITH_CONFIG_FILE=--config-file $(NEUTRON_CODE_DIR)/etc/neutron.conf \
 			     --config-dir $(NEUTRON_CODE_DIR)/etc
 
 
+NEUTRON_IMAGE=neutron-7.2.0:latest
+NEUTRON_NAME=neutron
+NEUTRON_CODE_DIR=/wine/code/neutron-7.2.0
+
+build: 		## docker build image 
+	docker build -f ./Dockerfile -t $(NEUTRON_IMAGE) .
+
+start: 		## docker start container
+	docker run $(DEVC_WITH_OPTIONS) \
+	--name $(NEUTRON_NAME) --hostname $(NEUTRON_NAME) \
+	-p 9696:9696 \
+	-v $(NEUTRON_CODE_DIR):$(NEUTRON_CODE_DIR) \
+	--privileged=true \
+	$(NEUTRON_IMAGE)
+
+stop:		## docker stop container
+	docker stop $(NEUTRON_NAME)
+	docker rm $(NEUTRON_NAME)
+
+enter:		## attach to container
+	docker exec -it $(NEUTRON_NAME) zsh
+
+
+
 venv:
 	virtualenv $(VENV_DIR)
 

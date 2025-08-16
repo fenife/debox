@@ -1,7 +1,4 @@
-ARG IMAGE_FROM=
-FROM ${IMAGE_FROM}
-
-ENV CACHE_DIR_PIP=/wine/cache/pip
+FROM stg-registry.me:8810/fenife/ubuntu-local-22.04:latest
 
 # 先安装必须依赖，否则后面会报错
 RUN --mount=type=cache,target=${CACHE_DIR_PIP} \
@@ -11,8 +8,8 @@ COPY requirements.txt /tmp/
 RUN --mount=type=cache,target=${CACHE_DIR_PIP} \
     pip2 install --no-deps -r /tmp/requirements.txt
 
-ENV CODE_DIR=/wine/code/neutron
-ENV PYTHONPATH="$PYTHONPATH:${CODE_DIR}"
+ENV CODE_DIR=/wine/code/neutron-7.2.0
+# ENV PYTHONPATH="$PYTHONPATH:${CODE_DIR}"
 
 WORKDIR /wine/devbox/opt/devc/neutron
 
