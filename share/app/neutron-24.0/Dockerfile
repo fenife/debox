@@ -2,7 +2,8 @@ FROM stg-registry.me:8810/fenife/ubuntu-local-22.04:latest
 
 # 先安装必须依赖，否则后面会报错
 RUN --mount=type=cache,target=${CACHE_DIR_PIP} \
-    pip3 install --no-deps pbr==1.8 Paste==2.0.2 PasteDeploy==1.5.0 aioeventlet==0.5.2
+    pip3 install --no-deps pbr==4.0.0 Paste==2.0.2 PasteDeploy==1.5.0 
+    # aioeventlet==0.5.2
 
 COPY requirements.txt /tmp/
 RUN --mount=type=cache,target=${CACHE_DIR_PIP} \

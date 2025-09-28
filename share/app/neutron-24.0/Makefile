@@ -14,7 +14,7 @@ NEUTRON_IMAGE=neutron-24.0.1:latest
 NEUTRON_NAME=neutron
 
 build: 		## docker build image 
-	docker build -f ./Dockerfile -t $(NEUTRON_IMAGE) .
+	DOCKER_BUILDKIT=0 docker build -f ./Dockerfile -t $(NEUTRON_IMAGE) .
 
 start: 		## docker start container
 	docker run $(DEVC_WITH_OPTIONS) \
