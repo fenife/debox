@@ -160,6 +160,7 @@ cython_debug/
 **/tmp/*
 **/log/*
 **/data/*
+**/saves/*
 
 image/repo
 
