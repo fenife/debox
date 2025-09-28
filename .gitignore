@@ -161,7 +161,7 @@ cython_debug/
 **/log/*
 **/data/*
 
-build/repo
+image/repo
 
 .idea
 
