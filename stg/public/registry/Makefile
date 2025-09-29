@@ -2,12 +2,12 @@ include $(INC_DIR)/Makefile.inc
 
 REGISTRY_NAME = docker-registry
 REGISTRY_IMAGE = $(REGISTRY_URL)/registry:2.8
-REGISTRY_PORT = 8810
+REGISTRY_PORT = 9000
 REGISTRY_DATA = /wine/var/registry
 
 REGISTRY_UI_NAME = docker-registry-ui
 REGISTRY_UI_IMAGE = $(REGISTRY_URL)/klausmeyer/docker-registry-browser:1.7.5
-REGISTRY_UI_PORT = 8820
+REGISTRY_UI_PORT = 9010
 
 pre:	## prepare
 	mkdir -p $(REGISTRY_DATA)

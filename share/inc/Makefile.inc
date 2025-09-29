@@ -29,7 +29,7 @@ EXEC_MAKEFILE_PATH = $(dir $(EXEC_MAKEFILE))
 EXEC_DIR = $(shell basename $(EXEC_MAKEFILE_PATH))
 
 FILE_SERVER_URL = stg-fileserver.me:8800
-REGISTRY_URL = stg-registry.me:8810
+REGISTRY_URL = registry.me:9000
 
 IMAGE_ME_NS = $(REGISTRY_URL)/fenife
 
