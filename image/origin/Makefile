@@ -29,29 +29,22 @@ IMAGE = bitnami/etcd:3.5
 # DOCKER_PROXY := m.daocloud.io/docker.io
 DOCKER_PROXY := docker.1ms.run
 
-SRC_IMAGE := $(DOCKER_PROXY)/$(IMAGE)
-DST_IMAGE := $(REGISTRY_URL)/$(IMAGE)
+IMAGE_SRC := $(DOCKER_PROXY)/$(IMAGE)
+IMAGE_REG := $(REGISTRY_URL)/$(IMAGE)
 
 
 pull-origin:		## download origin image and tag
-	docker pull $(SRC_IMAGE)
+	docker pull $(IMAGE_SRC)
 	@echo
-	docker tag $(SRC_IMAGE) $(IMAGE)
+	docker tag $(IMAGE_SRC) $(IMAGE_REG)
 	@echo
-	docker rmi $(SRC_IMAGE)
-
-build:		## download origin image and tag
-	docker pull $(SRC_IMAGE)
-	@echo
-	docker tag $(SRC_IMAGE) $(DST_IMAGE)
-	@echo
-	docker rmi $(SRC_IMAGE)
+	docker rmi $(IMAGE_SRC)
 
 push: 		## push image to registry
-	docker push $(DST_IMAGE)
+	docker push $(IMAGE_REG)
 
 pull:		## pull image from registry
-	docker pull $(DST_IMAGE)
+	docker pull $(IMAGE_REG)
 
 check:		## check registry
 	curl http://$(REGISTRY_URL)/v2/_catalog
@@ -59,20 +52,26 @@ check:		## check registry
 all: build push check
 
 
-
 # 替换所有/为_, 替换所有:为_
-SAVE_IMAGE := ./saves/$(shell echo "$(IMAGE)" | sed 's/\//_/g' | sed 's/:/_/g').img
+IMAGE_SAVE := ./saves/$(shell echo "$(IMAGE)" | sed 's/\//_/g' | sed 's/:/_/g').img
+IMAGE_TAR := $(IMAGE_SAVE).tar.gz
 
 save: 	# save
 	@echo "source image: $(IMAGE)"
-	@echo "save to:      $(SAVE_IMAGE)"
+	@echo "save to:      $(IMAGE_SAVE)"
 	@if [ ! -d "./saves" ]; then set -x; mkdir -p ./saves; fi
-	@if [ -f ${SAVE_IMAGE} ]; then set -x; rm ${SAVE_IMAGE}; fi
-	docker save -o ${SAVE_IMAGE} ${DST_IMAGE}
+	@if [ -f $(IMAGE_SAVE) ]; then set -x; rm $(IMAGE_SAVE); fi
+	docker save -o ${IMAGE_SAVE} ${IMAGE_REG}
+	@if [ -f $(IMAGE_TAR) ]; then set -x; rm $(IMAGE_TAR); fi
+	tar -czvf $(IMAGE_TAR) $(IMAGE_SAVE)
+	rm -f $(IMAGE_SAVE)
 	@echo
 	ls -alh ./saves
 
 load:		## load
-	# docker image rm $(SAVE_IMAGE)
-	docker load -i $(SAVE_IMAGE) 
+	# docker image rm $(IMAGE_SAVE)
+	@if [ -f $(IMAGE_SAVE) ]; then set -x; rm $(IMAGE_SAVE); fi
+	tar -xzvf $(IMAGE_TAR)
+	docker load -i $(IMAGE_SAVE) 
+	rm -f $(IMAGE_SAVE)
 
