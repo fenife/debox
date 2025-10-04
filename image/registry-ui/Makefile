@@ -1,13 +1,12 @@
 include $(INC_DIR)/Makefile.inc
 
 REGISTRY_NAME = docker-registry
-REGISTRY_IMAGE = $(REGISTRY_URL)/registry:2.8
 REGISTRY_PORT = 9000
 REGISTRY_DATA = /wine/var/registry
 
-REGISTRY_UI_NAME = docker-registry-ui2
+REGISTRY_UI_NAME = docker-registry-ui
 REGISTRY_UI_IMAGE = $(REGISTRY_URL)/joxit/docker-registry-ui:2.5.7 
-REGISTRY_UI_PORT = 9030
+REGISTRY_UI_PORT = 9010
 
 start:		## start registry ui
 	docker run -d --restart on-failure:3 \
@@ -26,16 +25,6 @@ start:		## start registry ui
 	-e REGISTRY_SECURED=false \
 	-e CATALOG_ELEMENTS_LIMIT=1000 \
 	$(REGISTRY_UI_IMAGE)
-
-# 	-e NGINX_PROXY_PASS_URL=http://$(REGISTRY_NAME):5000/v2 \
-
-# 	docker run -d --restart on-failure:3 \
-# 	--name $(REGISTRY_UI_NAME) \
-# 	-p $(REGISTRY_UI_PORT):8080 \
-# 	--link $(REGISTRY_NAME) \
-# 	-e SECRET_KEY_BASE=123 \
-# 	-e DOCKER_REGISTRY_URL=http://$(REGISTRY_NAME):5000/v2 \
-# 	$(REGISTRY_UI_IMAGE)
 
 stop:		## start registry ui
 	docker stop $(REGISTRY_UI_NAME)
