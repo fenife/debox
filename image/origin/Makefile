@@ -27,7 +27,8 @@ include $(INC_DIR)/Makefile.inc
 # IMAGE := python:2.7.18
 # IMAGE := uifd/ui-for-docker:0.11.0
 # IMAGE := konradkleine/docker-registry-frontend:v2
-IMAGE := joxit/docker-registry-ui:2.5.7
+# IMAGE := joxit/docker-registry-ui:2.5.7
+IMAGE := golang:1.25.0
 
 # DOCKER_PROXY := m.daocloud.io/docker.io
 DOCKER_PROXY := docker.1ms.run
@@ -52,11 +53,11 @@ pull:		## pull image from registry
 check:		## check registry
 	curl http://$(REGISTRY_URL)/v2/_catalog
 
-all: build push check
 
 
+SAVE_DIR=./saves
 # 替换所有/为_, 替换所有:为_
-IMAGE_SAVE := ./saves/$(shell echo "$(IMAGE)" | sed 's/\//_/g' | sed 's/:/_/g').img
+IMAGE_SAVE := $(SAVE_DIR)/$(shell echo "$(IMAGE)" | sed 's/\//_/g' | sed 's/:/_/g').img
 IMAGE_TAR := $(IMAGE_SAVE).tar.gz
 
 save: 	# save
@@ -78,3 +79,7 @@ load:		## load
 	docker load -i $(IMAGE_SAVE) 
 	rm -f $(IMAGE_SAVE)
 
+ls:
+	ls -alh $(SAVE_DIR)
+	@echo
+	du -sh $(SAVE_DIR)

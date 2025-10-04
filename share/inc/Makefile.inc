@@ -11,7 +11,7 @@
 ############################################################
 
 BASE_DIR=/wine/debox
-BUILD_DIR=$(BASE_DIR)/build
+BUILD_DIR=$(BASE_DIR)/image
 IMAGE_SAVE_DIR=$(BASE_DIR)/images
 ICODE_DIR=$(BASE_DIR)/icode
 SHARE_DIR=$(BASE_DIR)/share
@@ -33,7 +33,7 @@ FILE_SERVER_URL = stg-fileserver.me:8800
 REGISTRY_URL = registry.me:9000
 REGISTRY_HOST = registry.me
 
-IMAGE_ME_NS = $(REGISTRY_URL)/fenife
+IMAGE_ME_NS = $(REGISTRY_URL)/devel
 
 # time
 NOW = $(shell date '+%Y-%m-%d %H:%M:%S')

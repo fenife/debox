@@ -2,7 +2,7 @@
 ############################################################
 # dirs
 BASE_DIR=/wine/debox
-BUILD_DIR=/wine/debox/build
+BUILD_DIR=/wine/debox/image
 ICODE_DIR=/wine/debox/icode
 LOCAL_DIR=/wine/debox/local
 STG_DIR=/wine/debox/stg
