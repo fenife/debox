@@ -1,4 +1,4 @@
-FROM stg-registry.me:8810/ubuntu:22.04
+FROM registry.me:9000/ubuntu:22.04
 
 # 时区
 ENV TZ "Asia/Shanghai"
@@ -27,9 +27,9 @@ RUN apt install -y mysql-client redis
 
 #------------------------------------------------------------
 # golang
-COPY repo/go/go1.22.3.linux-amd64.tar.gz /tmp/
+COPY repo/go/go1.25.1.linux-amd64.tar.gz /tmp/
 RUN cd /tmp \
-    && tar -zxf go1.22.3.linux-amd64.tar.gz -C /usr/local \
+    && tar -zxf go1.25.1.linux-amd64.tar.gz -C /usr/local \
     && rm -rf /tmp/go*
 ENV PATH="$PATH:/usr/local/go/bin"
 # RUN go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/ \

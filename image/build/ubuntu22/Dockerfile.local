@@ -1,12 +1,13 @@
-FROM stg-registry.me:8810/fenife/ubuntu-base-22.04:latest
+# FROM stg-registry.me:8810/fenife/ubuntu-base-22.04:latest
+FROM registry.me:9000/devel/ubuntu-22.04-base:latest
 
 RUN apt install -y bridge-utils traceroute openssh-server
 
 #------------------------------------------------------------ 
 # golang
-RUN go install golang.org/x/tools/gopls@v0.15.3 \
-    && go install github.com/go-delve/delve/cmd/dlv@v1.22.1 \
-    && go install honnef.co/go/tools/cmd/staticcheck@v0.4.7 
+RUN go install golang.org/x/tools/gopls@v0.20.0 \
+    && go install github.com/go-delve/delve/cmd/dlv@v1.25.0 \
+    && go install honnef.co/go/tools/cmd/staticcheck@v0.6.1
 
  
 #------------------------------------------------------------ 

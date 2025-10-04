@@ -5,7 +5,7 @@ include $(INC_DIR)/Makefile.inc
 # base 
 ############################################################
 
-UBUNTU_BASE_IMAGE=$(IMAGE_ME_NS)/ubuntu-base-22.04:latest
+UBUNTU_BASE_IMAGE=$(REGISTRY_URL)/devel/ubuntu-22.04-base:latest
 UBUNTU_BASE_NAME=ubuntu22-base
 
 build-base: 
@@ -27,7 +27,7 @@ enter-base:
 # local image
 ############################################################
 
-UBUNTU_IMAGE=$(IMAGE_ME_NS)/ubuntu-local-22.04:latest
+UBUNTU_IMAGE=$(REGISTRY_URL)/devel/ubuntu-22.04-local:latest
 UBUNTU_NAME=ubuntu22
 
 build: 
