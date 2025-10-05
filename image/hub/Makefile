@@ -1,6 +1,6 @@
 include $(INC_DIR)/Makefile.inc
 
-# IMAGE := b3log/siyuan:v3.0.17
+IMAGE := b3log/siyuan:v3.0.17
 # IMAGE := ubuntu:20.04
 # IMAGE := ubuntu:22.04
 # IMAGE := ubuntu:24.04
@@ -9,8 +9,9 @@ include $(INC_DIR)/Makefile.inc
 # IMAGE := python:3.12.5
 # IMAGE := golang:1.22.5-alpine3.20
 # IMAGE := alpine:3.20
-# IMAGE := kindest/node:v1.25.8
 # IMAGE := registry:2.8
+# IMAGE := joxit/docker-registry-ui:2.5.7
+# IMAGE := kindest/node:v1.25.8
 # IMAGE := kindest/node:v1.25.16
 # IMAGE := kindest/node:v1.27.0
 # IMAGE := redhat/ubi8:8.4
@@ -18,20 +19,16 @@ include $(INC_DIR)/Makefile.inc
 # IMAGE := mysql:5.7
 # IMAGE := redis:7.0
 # IMAGE := cptactionhank/atlassian-confluence:7.9.3
-# IMAGE = klausmeyer/docker-registry-browser:1.7.5
-# IMAGE = quay.io/coreos/etcd:v3.4.32
+# IMAGE = quay.io/coreos/etcd:v3.4.32 ?
 # IMAGE = bitnami/etcd:3.5
 # IMAGE = sigoden/dufs:v0.42.0
 # IMAGE := mysql:8.0
 # IMAGE := python:3.11-slim-bullseye
 # IMAGE := python:2.7.18
-# IMAGE := uifd/ui-for-docker:0.11.0
-# IMAGE := konradkleine/docker-registry-frontend:v2
-# IMAGE := joxit/docker-registry-ui:2.5.7
-IMAGE := golang:1.25.0
+# IMAGE := golang:1.25.0
 
-# DOCKER_PROXY := m.daocloud.io/docker.io
-DOCKER_PROXY := docker.1ms.run
+DOCKER_PROXY := m.daocloud.io/docker.io
+# DOCKER_PROXY := docker.1ms.run
 
 IMAGE_SRC := $(DOCKER_PROXY)/$(IMAGE)
 IMAGE_REG := $(REGISTRY_URL)/$(IMAGE)
@@ -53,7 +50,7 @@ pull:		## pull image from registry
 check:		## check registry
 	curl http://$(REGISTRY_URL)/v2/_catalog
 
-
+po: pull-origin
 
 SAVE_DIR=./saves
 # 替换所有/为_, 替换所有:为_
