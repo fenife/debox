@@ -1,8 +1,8 @@
 
-include $(INC_DIR)/Makefile.common
+include $(INC_DIR)/Makefile.inc
 
 RABBITMQ_IMAGE=rabbitmq:3.12-management
-RABBITMQ_NAME=rabbitmq
+RABBITMQ_NAME=rabbitmq-3.12
 RABBITMQ_DATA_DIR=$(ROOT_DIR)/var/rabbitmq
 RABBITMQ_ROOT_PASSWORD=root
 

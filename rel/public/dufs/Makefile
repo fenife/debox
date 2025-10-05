@@ -2,8 +2,8 @@
 
 include $(INC_DIR)/Makefile.inc
 
-DUFS_NAME = dufs-0.42
 DUFS_IMAGE = $(REGISTRY_URL)/sigoden/dufs:v0.42.0
+DUFS_NAME = dufs-0.42
 DUFS_PORT = 8800
 DUFS_DATA = /wine/var/dufs
 
