@@ -1,4 +1,4 @@
-FROM stg-registry.me:8810/fenife/local-ubuntu-24.04:latest
+FROM registry.me:9000/devel/ubuntu-22.04-local:latest
 
 WORKDIR /wine/debox/share/app/webox
 
