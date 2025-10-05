@@ -1,6 +1,10 @@
 include $(INC_DIR)/Makefile.inc
 
-IMAGE := b3log/siyuan:v3.0.17
+############################################################
+# origin
+############################################################
+
+# IMAGE := b3log/siyuan:v3.0.17
 # IMAGE := ubuntu:20.04
 # IMAGE := ubuntu:22.04
 # IMAGE := ubuntu:24.04
@@ -25,14 +29,25 @@ IMAGE := b3log/siyuan:v3.0.17
 # IMAGE := mysql:8.0
 # IMAGE := python:3.11-slim-bullseye
 # IMAGE := python:2.7.18
-# IMAGE := golang:1.25.0
+IMAGE := golang:1.25.0
 
-DOCKER_PROXY := m.daocloud.io/docker.io
+DOCKER_PROXY = m.daocloud.io/docker.io
 # DOCKER_PROXY := docker.1ms.run
 
-IMAGE_SRC := $(DOCKER_PROXY)/$(IMAGE)
-IMAGE_REG := $(REGISTRY_URL)/$(IMAGE)
+IMAGE_SRC = $(DOCKER_PROXY)/$(IMAGE)
+IMAGE_REG = $(REGISTRY_URL)/$(IMAGE)
 
+############################################################
+# devel build image
+############################################################
+
+# IMAGE = devel/ubuntu-22.04-local:latest
+
+IMAGE_REG = $(REGISTRY_URL)/$(IMAGE)
+
+############################################################
+# command
+############################################################
 
 pull-origin:		## download origin image and tag
 	docker pull $(IMAGE_SRC)
@@ -60,14 +75,14 @@ IMAGE_TAR := $(IMAGE_SAVE).tar.gz
 save: 	# save
 	@echo "source image: $(IMAGE)"
 	@echo "save to:      $(IMAGE_SAVE)"
-	@if [ ! -d "./saves" ]; then set -x; mkdir -p ./saves; fi
+	@if [ ! -d "$(SAVE_DIR)" ]; then set -x; mkdir -p $(SAVE_DIR); fi
 	@if [ -f $(IMAGE_SAVE) ]; then set -x; rm $(IMAGE_SAVE); fi
 	docker save -o ${IMAGE_SAVE} ${IMAGE_REG}
 	@if [ -f $(IMAGE_TAR) ]; then set -x; rm $(IMAGE_TAR); fi
 	tar -czvf $(IMAGE_TAR) $(IMAGE_SAVE)
 	rm -f $(IMAGE_SAVE)
 	@echo
-	ls -alh ./saves
+	ls -alh $(SAVE_DIR)
 
 load:		## load
 	# docker image rm $(IMAGE_SAVE)
@@ -80,3 +95,6 @@ ls:
 	ls -alh $(SAVE_DIR)
 	@echo
 	du -sh $(SAVE_DIR)
+	@echo
+	ls $(SAVE_DIR) | wc -l
+
