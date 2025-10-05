@@ -5,7 +5,7 @@ SERVER_GO_NAME=server-go
 SERVER_GO_CODE_DIR=$(ICODE_DIR)/server-go
 
 pre:
-	go install github.com/swaggo/swag/cmd/swag@latest
+	go install github.com/swaggo/swag/cmd/swag@v1.16.6
 
 build: 		## docker build image
 	docker build -f ./Dockerfile \
