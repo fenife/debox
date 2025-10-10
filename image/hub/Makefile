@@ -14,7 +14,7 @@ include $(INC_DIR)/Makefile.inc
 # IMAGE := golang:1.22.5-alpine3.20
 # IMAGE := alpine:3.20
 # IMAGE := registry:2.8
-# IMAGE := joxit/docker-registry-ui:2.5.7
+IMAGE := joxit/docker-registry-ui:2.5.7
 # IMAGE := kindest/node:v1.25.8
 # IMAGE := kindest/node:v1.25.16
 # IMAGE := kindest/node:v1.27.0
@@ -29,7 +29,7 @@ include $(INC_DIR)/Makefile.inc
 # IMAGE := mysql:8.0
 # IMAGE := python:3.11-slim-bullseye
 # IMAGE := python:2.7.18
-IMAGE := golang:1.25.0
+# IMAGE := golang:1.25.0
 
 DOCKER_PROXY = m.daocloud.io/docker.io
 # DOCKER_PROXY := docker.1ms.run

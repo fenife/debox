@@ -161,6 +161,8 @@ cython_debug/
 **/log/*
 **/data/*
 **/saves/*
+**/splits/*
+**/source/*
 
 image/repo
 
