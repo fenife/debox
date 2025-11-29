@@ -9,7 +9,7 @@ pre:	## prepare
 	mkdir -p $(REGISTRY_DATA)
 
 start:	## start registry
-	docker run -d --restart on-failure:3 \
+	docker run -d --restart unless-stopped \
 	--name $(REGISTRY_NAME) \
 	-p $(REGISTRY_PORT):5000 \
 	-v $(REGISTRY_DATA):/var/lib/registry \

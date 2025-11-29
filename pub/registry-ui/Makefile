@@ -9,7 +9,7 @@ REGISTRY_UI_IMAGE = $(REGISTRY_URL)/joxit/docker-registry-ui:2.5.7
 REGISTRY_UI_PORT = 9010
 
 start:		## start registry ui
-	docker run -d --restart on-failure:3 \
+	docker run -d --restart unless-stopped \
 	--add-host="$(REGISTRY_HOST):$(HOST_IP)"  \
 	--name $(REGISTRY_UI_NAME) \
 	-p $(REGISTRY_UI_PORT):80 \
