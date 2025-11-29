@@ -5,7 +5,7 @@ include $(INC_DIR)/Makefile.inc
 DUFS_IMAGE = $(REGISTRY_URL)/sigoden/dufs:v0.42.0
 DUFS_NAME = dufs-0.42
 DUFS_PORT = 8800
-DUFS_DATA = /wine/var/dufs
+DUFS_DATA = /wine/debox/pub/drive
 
 pre:	## prepare
 	mkdir -p $(DUFS_DATA)
@@ -30,6 +30,4 @@ rm:			## rm registry
 restart:
 	docker restart $(DUFS_NAME)
 
-check:		## check registry
-	curl http://$(REGISTRY_URL)/v2/_catalog
 

@@ -18,6 +18,8 @@ include $(INC_DIR)/Makefile.inc
 # IMAGE := kindest/node:v1.25.8
 # IMAGE := kindest/node:v1.25.16
 # IMAGE := kindest/node:v1.27.0
+IMAGE := kindest/node:v1.24.12
+# IMAGE := kindest/node:v1.27.0
 # IMAGE := redhat/ubi8:8.4
 # IMAGE := nginx:1.27.2
 # IMAGE := mysql:5.7
@@ -30,11 +32,11 @@ include $(INC_DIR)/Makefile.inc
 # IMAGE := python:3.11-slim-bullseye
 # IMAGE := python:2.7.18
 # IMAGE := golang:1.25.0
-IMAGE := busybox:1.36
+# IMAGE := busybox:1.36
 # IMAGE := busybox:1.36-glibc
 
-DOCKER_PROXY = m.daocloud.io/docker.io
-# DOCKER_PROXY := docker.1ms.run
+# DOCKER_PROXY = m.daocloud.io/docker.io
+DOCKER_PROXY := docker.1ms.run
 
 IMAGE_SRC = $(DOCKER_PROXY)/$(IMAGE)
 IMAGE_REG = $(REGISTRY_URL)/$(IMAGE)
