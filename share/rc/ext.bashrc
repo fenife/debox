@@ -15,15 +15,19 @@ K8S_DIR=$SHARE_DIR/k8s
 ############################################################
 # jump 
 alias jbox="cd $BASE_DIR" 
-alias jbuild="cd $BUILD_DIR" 
 alias jshare="cd $SHARE_DIR" 
 alias japp="cd $APP_DIR" 
 alias jk8s="cd $K8S_DIR" 
 alias jicode="cd $ICODE_DIR" 
 
+alias jbuild="cd $BUILD_DIR" 
+alias jhub="cd $BASE_DIR/image/hub"
+
 alias jlocal="cd $LOCAL_DIR"
 alias jinfra="cd $LOCAL_DIR/infra"
-alias jstg="cd $BASE_DIR/stg"
+
+alias jpub="cd $BASE_DIR/pub"
+alias jdrive="cd $BASE_DIR/pub/drive/data"
 
 ############################################################
 # export
