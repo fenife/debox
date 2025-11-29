@@ -12,7 +12,7 @@ pull:		## pull mysql
 	docker pull $(MYSQL_IMAGE)
 
 start:		## start mysql
-	docker run -d --restart on-failure:3 \
+	docker run -d --restart unless-stopped \
 	--name $(MYSQL_NAME) \
 	-p 3306:3306 \
 	-v $(MYSQL_DATA_DIR):/var/lib/mysql \
