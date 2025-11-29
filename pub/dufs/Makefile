@@ -15,8 +15,11 @@ start:	## start registry
 	--name $(DUFS_NAME) \
 	-p $(DUFS_PORT):5000 \
 	-v $(DUFS_DATA):/data \
+	-e DUFS_ALLOW_ALL=false \
+	-e DUFS_ALLOW_ARCHIVE=true \
+	-e DUFS_ALLOW_SEARCH=true \
 	$(DUFS_IMAGE) \
-	/data -A
+	/data 
 
 stop:		## stop registry
 	docker stop $(DUFS_NAME)
