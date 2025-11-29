@@ -11,7 +11,7 @@ pre:	## prepare
 	mkdir -p $(DUFS_DATA)
 
 start:	## start dufs
-	docker run -d --restart on-failure:3 \
+	docker run -d --restart always \
 	--name $(DUFS_NAME) \
 	-p $(DUFS_PORT):5000 \
 	-v $(DUFS_DATA):/data \
