@@ -156,15 +156,15 @@ cython_debug/
 ############################################################
 
 **/bak/*
-**/images/*
 **/tmp/*
 **/log/*
-**/data/*
+# **/data/*
 **/saves/*
 **/splits/*
 **/source/*
 
-image/repo
+**/pkgs/*
+**/images/*
 
 .idea
 
@@ -175,3 +175,4 @@ image/repo
 
 **/*.log
 **/*.pub
+**/*.zip
