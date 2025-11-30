@@ -9,37 +9,70 @@ DOCKER_PROXY := docker.1ms.run
 # library
 ############################################################
 
-IMAGE_SRC = $(DOCKER_PROXY)/ubuntu:20.04
-IMAGE_DST = $(REGISTRY_URL)/library/ubuntu:20.04
-IMAGE = library/ubuntu:20.04
+# IMAGE_SRC = $(DOCKER_PROXY)/registry:2.8
+# IMAGE_DST = $(REGISTRY_URL)/library/registry:2.8
+# IMAGE = library/registry:2.8
 
-# IMAGE := ubuntu:20.04
-# IMAGE := ubuntu:22.04
-# IMAGE := ubuntu:24.04
-# IMAGE := ubuntu:24.10
-# IMAGE := golang:1.22.5
+# IMAGE_SRC = $(DOCKER_PROXY)/joxit/docker-registry-ui:2.5.7
+# IMAGE_DST = $(REGISTRY_URL)/joxit/docker-registry-ui:2.5.7
+# IMAGE = joxit/docker-registry-ui:2.5.7
+
+# IMAGE_SRC = $(DOCKER_PROXY)/sigoden/dufs:v0.42.0
+# IMAGE_DST = $(REGISTRY_URL)/sigoden/dufs:v0.42.0
+# IMAGE = sigoden/dufs:v0.42.0
+
+# IMAGE_SRC = $(DOCKER_PROXY)/ubuntu:20.04
+# IMAGE_DST = $(REGISTRY_URL)/library/ubuntu:20.04
+# IMAGE = library/ubuntu:20.04
+
+# IMAGE_SRC = $(DOCKER_PROXY)/ubuntu:22.04
+# IMAGE_DST = $(REGISTRY_URL)/library/ubuntu:22.04
+# IMAGE = library/ubuntu:22.04
+
+# IMAGE_SRC = $(DOCKER_PROXY)/ubuntu:24.04
+# IMAGE_DST = $(REGISTRY_URL)/library/ubuntu:24.04
+# IMAGE = library/ubuntu:24.04
+
+# IMAGE_SRC = $(DOCKER_PROXY)/ubuntu:24.10
+# IMAGE_DST = $(REGISTRY_URL)/library/ubuntu:24.10
+# IMAGE = library/ubuntu:24.10
+
+# IMAGE_SRC = $(DOCKER_PROXY)/mysql:5.7
+# IMAGE_DST = $(REGISTRY_URL)/library/mysql:5.7
+# IMAGE = library/mysql:5.7
+
+# IMAGE_SRC = $(DOCKER_PROXY)/kindest/node:v1.24.12
+# IMAGE_DST = $(REGISTRY_URL)/kindest/node:v1.24.12
+# IMAGE = kindest/node:v1.24.12
+
+# IMAGE_SRC = $(DOCKER_PROXY)/redhat/ubi8:8.4
+# IMAGE_DST = $(REGISTRY_URL)/redhat/ubi8:8.4
+# IMAGE = redhat/ubi8:8.4
+
+# IMAGE_SRC = $(DOCKER_PROXY)/golang:1.22.5
+# IMAGE_DST = $(REGISTRY_URL)/library/golang:1.22.5
+# IMAGE = library/golang:1.22.5
+
+IMAGE_SRC = $(DOCKER_PROXY)/golang:1.25.0
+IMAGE_DST = $(REGISTRY_URL)/library/golang:1.25.0
+IMAGE = library/golang:1.25.0
+
 # IMAGE := python:3.12.5
 # IMAGE := golang:1.22.5-alpine3.20
 # IMAGE := alpine:3.20
-# IMAGE := registry:2.8
-# IMAGE := joxit/docker-registry-ui:2.5.7
+
 # IMAGE := kindest/node:v1.25.8
 # IMAGE := kindest/node:v1.25.16
 # IMAGE := kindest/node:v1.27.0
-# IMAGE := kindest/node:v1.24.12
 # IMAGE := kindest/node:v1.27.0
-# IMAGE := redhat/ubi8:8.4
 # IMAGE := nginx:1.27.2
-# IMAGE := mysql:5.7
 # IMAGE := redis:7.0
 # IMAGE := cptactionhank/atlassian-confluence:7.9.3
 # IMAGE = quay.io/coreos/etcd:v3.4.32 ?
 # IMAGE = bitnami/etcd:3.5
-# IMAGE = sigoden/dufs:v0.42.0
 # IMAGE := mysql:8.0
 # IMAGE := python:3.11-slim-bullseye
 # IMAGE := python:2.7.18
-# IMAGE := golang:1.25.0
 # IMAGE := busybox:1.36
 # IMAGE := busybox:1.36-glibc
 
@@ -166,6 +199,10 @@ upload:
 	cp $(IMAGE_TAR_FILE) $(IMAGE_UPLOAD_FILE)
 	@echo
 	$(call _print_file_info,${IMAGE_UPLOAD_FILE})
+
+save-image: save tar upload
+
+all: po push save-image
 
 ############################################################
 # load
