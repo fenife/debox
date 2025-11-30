@@ -29,6 +29,8 @@ alias jinfra="cd $LOCAL_DIR/infra"
 alias jpub="cd $BASE_DIR/pub"
 alias jdrive="cd $BASE_DIR/pub/drive/data"
 
+alias jsetup="cd $SHARE_DIR/setup"
+
 ############################################################
 # export
 export TERM xterm

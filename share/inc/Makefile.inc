@@ -30,8 +30,7 @@ EXEC_DIR = $(shell basename $(EXEC_MAKEFILE_PATH))
 
 FILE_SERVER_URL = stg-fileserver.me:8800
 
-REGISTRY_URL = registry.me:9000
-REGISTRY_HOST = registry.me
+REGISTRY_URL = registry.dev.local:9000
 
 IMAGE_ME_NS = $(REGISTRY_URL)/devel
 
