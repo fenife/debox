@@ -21,10 +21,8 @@ EXEC_MAKEFILE_PATH = $(dir $(EXEC_MAKEFILE))
 EXEC_DIR = $(shell basename $(EXEC_MAKEFILE_PATH))
 
 REGISTRY_HOST = registry.dev.local
-REGISTRY_URL = registry.dev.local:9000
-
-DFS_SERVER = registry.dev.local:9060
-DFS_DATA_URL=http://$(DFS_SERVER)/data
+# REGISTRY_URL = registry.dev.local:9000
+# DFS_URL=http://registry.dev.local:9060/data
 
 IMAGE_ME_NS = $(REGISTRY_URL)/devel
 

@@ -119,7 +119,7 @@ check:		## check registry
 # ###########################################################################
 
 # DFS_DIR: bashrc 文件中定义
-# DFS_DATA_URL: inc 文件中定义
+# DFS_URL: bashrc 文件中定义
 
 DFS_IMAGE_DIR = $(DFS_DIR)/images
 SAVE_DIR = ./saves
@@ -210,10 +210,10 @@ all: po push save-image
 
 download:
 	@echo "======================================================"
-	@echo "下载镜像: ${DFS_DATA_URL}/images/${IMG_TAR}"
+	@echo "下载镜像: ${DFS_URL}/images/${IMG_TAR}"
 	@echo "======================================================"
 	$(call _delete_file,${IMAGE_TAR_FILE})
-	curl -o ${IMAGE_TAR_FILE} ${DFS_DATA_URL}/images/${IMG_TAR}
+	curl -o ${IMAGE_TAR_FILE} ${DFS_URL}/images/${IMG_TAR}
 	@echo
 	$(call _print_file_info,${IMAGE_TAR_FILE})
 

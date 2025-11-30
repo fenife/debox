@@ -40,6 +40,9 @@ export LANG=en_US.UTF-8
 export INC_DIR=$INC_DIR
 export DFS_DIR=$BASE_DIR/pub/drive/data
 
+export REGISTRY_URL=registry.dev.local:9000
+export DFS_URL=http://registry.dev.local:9060/data
+
 export PATH=$PATH:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/go/bin:${HOME}/.local/bin:${HOME}/go/bin:${SHARE_DIR}/bin
 
 export GOPATH=${HOME}/go

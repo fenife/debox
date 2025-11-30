@@ -2,7 +2,7 @@
 #------------------------------------------------------------
 # const
 #------------------------------------------------------------
-DFS_DATA_URL=http://registry.dev.local:9060/data
+# DFS_URL=http://registry.dev.local:9060/data
 
 DL_DIR=/wine/tmp/downloads
 BAK_DIR=/wine/bak
@@ -63,7 +63,7 @@ host-add-reg: host-bak
 
 # 下载文件指定目录
 host-dl:
-	curl -o $(DL_DIR)/hosts $(DFS_DATA_URL)/configs/host/hosts
+	curl -o $(DL_DIR)/hosts $(DFS_URL)/configs/host/hosts
 
 # 添加 host 条目
 host-add: host-bak host-dl
