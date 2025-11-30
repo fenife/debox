@@ -38,6 +38,7 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
 export INC_DIR=$INC_DIR
+export DFS_DIR=$BASE_DIR/pub/drive/data
 
 export PATH=$PATH:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/go/bin:${HOME}/.local/bin:${HOME}/go/bin:${SHARE_DIR}/bin
 
@@ -52,7 +53,7 @@ export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 ############################################################
 # alias
 alias dps="docker ps -a --format 'table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'"
-alias dls="docker image ls"
+alias dls="docker image ls | sort -n"
 
 ############################################################
 # alias for Makefile
