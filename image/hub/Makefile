@@ -81,78 +81,133 @@ check:		## check registry
 	curl http://$(REGISTRY_URL)/v2/_catalog
 
 
-############################################################
-# save
-############################################################
+# ###########################################################################
+# 定义和函数
+# ###########################################################################
+
+# DFS_DIR: bashrc 文件中定义
+# DFS_DATA_URL: inc 文件中定义
 
 DFS_IMAGE_DIR = $(DFS_DIR)/images
 SAVE_DIR = ./saves
 
 # 镜像文件名，换所有/为_, 替换所有:为_
-IMG_NAME = $(shell echo "$(IMAGE)" | sed 's/\//_/g' | sed 's/:/_/g').img
-IMG_TAR = $(IMG_NAME).tar.gz
+IMG_RAW = $(shell echo "$(IMAGE)" | sed 's/\//_/g' | sed 's/:/_/g').img
+IMG_TAR = $(IMG_RAW).tar.gz
 
 # 镜像保存路径
-IMAGE_SAVE_FILE = $(SAVE_DIR)/$(IMG_NAME)
+IMAGE_RAW_FILE = $(SAVE_DIR)/$(IMG_RAW)
 IMAGE_TAR_FILE = $(SAVE_DIR)/$(IMG_TAR)
 IMAGE_UPLOAD_FILE = $(DFS_IMAGE_DIR)/$(IMG_TAR)
 
+# 函数：删除旧文件（若存在）
+# 参数：$1 = 文件路径
+define _delete_file
+	@echo "清理旧文件: $1"
+	@if [ -f "$1" ]; then \
+		set -x; rm -f "$1"; \
+		echo "旧文件已删除\n"; \
+	else \
+		echo "无旧文件，跳过清理\n"; \
+	fi
+endef
+
+# 函数：打印文件详细信息（ls + du）
+# 参数：$1 = 文件/目录路径
+define _print_file_info
+	@echo "\n------------------------------" 
+	@echo "文件详情: $1"
+	ls -alh $1
+	@echo
+	du -sh $1
+	@echo
+	ls $1 | wc -l
+endef
+
+############################################################
+# save
+############################################################
+
 desc:
-	@echo $(IMG_NAME)
-	@echo $(IMG_TAR)
+	@echo "======================================================"
+	@echo "Docker 镜像保存/加载脚本配置"
+	@echo "======================================================"
+	@echo "源镜像:       $(IMAGE_SRC)"
+	@echo "目标镜像:     $(IMAGE_DST)"
+	@echo "镜像名:       $(IMAGE)"
+	@echo "本地保存目录: $(SAVE_DIR)"
+	@echo "原始镜像文件: ${IMAGE_RAW_FILE}"
+	@echo "压缩包文件:   ${IMAGE_TAR_FILE}"
+	@echo "DFS存储路径:  $(DFS_IMAGE_DIR)"
+	@echo "======================================================"
 
 save: 	# save
-	@echo "source image: $(IMAGE)"
-	@echo "save to:      $(IMAGE_SAVE_FILE)"
-	if [ ! -d "$(SAVE_DIR)" ]; then set -x; mkdir -p $(SAVE_DIR); fi
-	if [ -f $(IMAGE_SAVE_FILE) ]; then set -x; rm $(IMAGE_SAVE_FILE); fi
-	docker save -o ${IMAGE_SAVE_FILE} ${IMAGE_DST}
+	@echo "======================================================"
+	@echo "保存镜像: $(IMAGE_DST) -> $(IMAGE_RAW_FILE)"
+	@echo "======================================================"
+	$(call _delete_file,${IMAGE_RAW_FILE})
+	docker save -o ${IMAGE_RAW_FILE} ${IMAGE_DST}
+	$(call _print_file_info,${IMAGE_RAW_FILE})
 
 tar:
-	if [ -f $(IMAGE_TAR_FILE) ]; then set -x; rm $(IMAGE_TAR_FILE); fi
-	cd $(SAVE_DIR); tar -czvf $(IMG_TAR) $(IMG_NAME)
-	rm -f $(IMAGE_SAVE_FILE)
-	@echo
-	ls -alh $(SAVE_DIR)
+	@echo "======================================================"
+	@echo "压缩镜像: $(IMAGE_RAW_FILE) -> $(IMAGE_TAR_FILE)"
+	@echo "======================================================"
+	$(call _delete_file,$(IMAGE_TAR_FILE))
+	cd ${SAVE_DIR}; tar -czvf ${IMG_TAR} ${IMG_RAW}
+	rm -f ${IMAGE_RAW_FILE}
+	$(call _print_file_info,${IMAGE_TAR_FILE})
 
 upload:
-	if [ -f $(IMAGE_UPLOAD_FILE) ]; then set -x; rm $(IMAGE_UPLOAD_FILE); fi	
+	@echo "======================================================"
+	@echo "上传镜像: $(IMAGE_TAR_FILE) -> $(DFS_IMAGE_DIR)"
+	@echo "======================================================"
+	$(call _delete_file,$(IMAGE_UPLOAD_FILE))
 	cp $(IMAGE_TAR_FILE) $(IMAGE_UPLOAD_FILE)
 	@echo
-	ls -alh $(IMAGE_UPLOAD_FILE)
-
+	$(call _print_file_info,${IMAGE_UPLOAD_FILE})
 
 ############################################################
 # load
 ############################################################
 
 download:
-	if [ -f $(IMAGE_TAR_FILE) ]; then set -x; rm $(IMAGE_TAR_FILE); fi
-	curl -o $(IMAGE_TAR_FILE) $(DFS_DATA_URL)/images/$(IMG_TAR)
+	@echo "======================================================"
+	@echo "下载镜像: ${DFS_DATA_URL}/images/${IMG_TAR}"
+	@echo "======================================================"
+	$(call _delete_file,${IMAGE_TAR_FILE})
+	curl -o ${IMAGE_TAR_FILE} ${DFS_DATA_URL}/images/${IMG_TAR}
 	@echo
-	ls -alh $(SAVE_DIR)
+	$(call _print_file_info,${IMAGE_TAR_FILE})
 
 untar:
-	if [ -f $(IMAGE_SAVE_FILE) ]; then set -x; rm $(IMAGE_SAVE_FILE); fi
-	cd $(SAVE_DIR); tar -xzvf $(IMG_TAR)
-	rm -f $(IMAGE_TAR_FILE)
-	@echo
-	ls -alh $(SAVE_DIR)
+	@echo "======================================================"
+	@echo "解压镜像: ${IMAGE_TAR_FILE} -> ${IMAGE_RAW_FILE}"
+	@echo "======================================================"
+	$(call _delete_file,${IMAGE_RAW_FILE})
+	cd ${SAVE_DIR}; tar -xzvf ${IMG_TAR}
+	$(call _delete_file,${IMAGE_TAR_FILE})
+	$(call _print_file_info,${IMAGE_RAW_FILE})
 
 load:		## load
-	docker image rm ${IMAGE_DST}
-	docker load -i $(IMAGE_SAVE_FILE) 
+	@echo "======================================================"
+	@echo "加载镜像: ${IMAGE_RAW_FILE} -> Docker (${IMAGE_DST})"
+	@echo "======================================================"
+	docker image rm ${IMAGE_DST} || true
+	docker load -i ${IMAGE_RAW_FILE} 
 
 clean:
-	if [ -f $(IMAGE_SAVE_FILE) ]; then set -x; rm $(IMAGE_SAVE_FILE); fi
-	if [ -f $(IMAGE_TAR_FILE) ]; then set -x; rm $(IMAGE_TAR_FILE); fi
-	@echo
-	ls -alh $(SAVE_DIR)
+	@echo "======================================================"
+	@echo "清理本地临时文件"
+	@echo "======================================================"
+	$(call _delete_file,${IMAGE_RAW_FILE})
+	$(call _delete_file,${IMAGE_TAR_FILE})
+	$(call _print_file_info,${SAVE_DIR})
 
 ls:
-	ls -alh $(SAVE_DIR)
+	ls -alh ${SAVE_DIR}
 	@echo
-	du -sh $(SAVE_DIR)
+	du -sh ${SAVE_DIR}
 	@echo
-	ls $(SAVE_DIR) | wc -l
+	ls ${SAVE_DIR} | wc -l
 
