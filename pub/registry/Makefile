@@ -1,7 +1,7 @@
 include $(INC_DIR)/Makefile.inc
 
 REGISTRY_NAME = docker-registry
-REGISTRY_IMAGE = $(REGISTRY_URL)/registry:2.8
+REGISTRY_IMAGE = $(REGISTRY_URL)/library/registry:2.8
 REGISTRY_PORT = 9000
 REGISTRY_DATA = /wine/var/registry
 

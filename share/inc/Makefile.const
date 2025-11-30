@@ -20,8 +20,11 @@ EXEC_MAKEFILE_PATH = $(dir $(EXEC_MAKEFILE))
 # 执行的makefile所在的文件夹
 EXEC_DIR = $(shell basename $(EXEC_MAKEFILE_PATH))
 
+REGISTRY_HOST = registry.dev.local
 REGISTRY_URL = registry.dev.local:9000
-FS_URL = registry.dev.local:9060
+
+DFS_SERVER = registry.dev.local:9060
+DFS_DATA_URL=http://$(DFS_SERVER)/data
 
 IMAGE_ME_NS = $(REGISTRY_URL)/devel
 
