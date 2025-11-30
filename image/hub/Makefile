@@ -1,10 +1,18 @@
 include $(INC_DIR)/Makefile.inc
 
+REGISTRY_URL = registry.dev.local:9000
+
+# DOCKER_PROXY = m.daocloud.io/docker.io
+DOCKER_PROXY := docker.1ms.run
+
 ############################################################
-# origin
+# library
 ############################################################
 
-# IMAGE := b3log/siyuan:v3.0.17
+IMAGE_SRC = $(DOCKER_PROXY)/ubuntu:20.04
+IMAGE_DST = $(REGISTRY_URL)/library/ubuntu:20.04
+IMAGE = library/ubuntu:20.04
+
 # IMAGE := ubuntu:20.04
 # IMAGE := ubuntu:22.04
 # IMAGE := ubuntu:24.04
@@ -18,7 +26,7 @@ include $(INC_DIR)/Makefile.inc
 # IMAGE := kindest/node:v1.25.8
 # IMAGE := kindest/node:v1.25.16
 # IMAGE := kindest/node:v1.27.0
-IMAGE := kindest/node:v1.24.12
+# IMAGE := kindest/node:v1.24.12
 # IMAGE := kindest/node:v1.27.0
 # IMAGE := redhat/ubi8:8.4
 # IMAGE := nginx:1.27.2
@@ -35,19 +43,20 @@ IMAGE := kindest/node:v1.24.12
 # IMAGE := busybox:1.36
 # IMAGE := busybox:1.36-glibc
 
-# DOCKER_PROXY = m.daocloud.io/docker.io
-DOCKER_PROXY := docker.1ms.run
+############################################################
+# other
+############################################################
 
-IMAGE_SRC = $(DOCKER_PROXY)/$(IMAGE)
-IMAGE_REG = $(REGISTRY_URL)/$(IMAGE)
+# IMAGE := b3log/siyuan:v3.0.17
+
+# IMAGE_SRC = $(DOCKER_PROXY)/$(IMAGE)
+# IMAGE_DST = $(REGISTRY_URL)/$(IMAGE)
 
 ############################################################
 # devel build image
 ############################################################
 
 # IMAGE = devel/ubuntu-22.04-local:latest
-
-IMAGE_REG = $(REGISTRY_URL)/$(IMAGE)
 
 ############################################################
 # command
@@ -56,44 +65,89 @@ IMAGE_REG = $(REGISTRY_URL)/$(IMAGE)
 pull-origin:		## download origin image and tag
 	docker pull $(IMAGE_SRC)
 	@echo
-	docker tag $(IMAGE_SRC) $(IMAGE_REG)
+	docker tag $(IMAGE_SRC) $(IMAGE_DST)
 	@echo
 	docker rmi $(IMAGE_SRC)
 
+po: pull-origin
+
 push: 		## push image to registry
-	docker push $(IMAGE_REG)
+	docker push $(IMAGE_DST)
 
 pull:		## pull image from registry
-	docker pull $(IMAGE_REG)
+	docker pull $(IMAGE_DST)
 
 check:		## check registry
 	curl http://$(REGISTRY_URL)/v2/_catalog
 
-po: pull-origin
 
-SAVE_DIR=./saves
-# 替换所有/为_, 替换所有:为_
-IMAGE_SAVE := $(SAVE_DIR)/$(shell echo "$(IMAGE)" | sed 's/\//_/g' | sed 's/:/_/g').img
-IMAGE_TAR := $(IMAGE_SAVE).tar.gz
+############################################################
+# save
+############################################################
+
+DFS_IMAGE_DIR = $(DFS_DIR)/images
+SAVE_DIR = ./saves
+
+# 镜像文件名，换所有/为_, 替换所有:为_
+IMG_NAME = $(shell echo "$(IMAGE)" | sed 's/\//_/g' | sed 's/:/_/g').img
+IMG_TAR = $(IMG_NAME).tar.gz
+
+# 镜像保存路径
+IMAGE_SAVE_FILE = $(SAVE_DIR)/$(IMG_NAME)
+IMAGE_TAR_FILE = $(SAVE_DIR)/$(IMG_TAR)
+IMAGE_UPLOAD_FILE = $(DFS_IMAGE_DIR)/$(IMG_TAR)
+
+desc:
+	@echo $(IMG_NAME)
+	@echo $(IMG_TAR)
 
 save: 	# save
 	@echo "source image: $(IMAGE)"
-	@echo "save to:      $(IMAGE_SAVE)"
-	@if [ ! -d "$(SAVE_DIR)" ]; then set -x; mkdir -p $(SAVE_DIR); fi
-	@if [ -f $(IMAGE_SAVE) ]; then set -x; rm $(IMAGE_SAVE); fi
-	docker save -o ${IMAGE_SAVE} ${IMAGE_REG}
-	@if [ -f $(IMAGE_TAR) ]; then set -x; rm $(IMAGE_TAR); fi
-	tar -czvf $(IMAGE_TAR) $(IMAGE_SAVE)
-	rm -f $(IMAGE_SAVE)
+	@echo "save to:      $(IMAGE_SAVE_FILE)"
+	if [ ! -d "$(SAVE_DIR)" ]; then set -x; mkdir -p $(SAVE_DIR); fi
+	if [ -f $(IMAGE_SAVE_FILE) ]; then set -x; rm $(IMAGE_SAVE_FILE); fi
+	docker save -o ${IMAGE_SAVE_FILE} ${IMAGE_DST}
+
+tar:
+	if [ -f $(IMAGE_TAR_FILE) ]; then set -x; rm $(IMAGE_TAR_FILE); fi
+	cd $(SAVE_DIR); tar -czvf $(IMG_TAR) $(IMG_NAME)
+	rm -f $(IMAGE_SAVE_FILE)
+	@echo
+	ls -alh $(SAVE_DIR)
+
+upload:
+	if [ -f $(IMAGE_UPLOAD_FILE) ]; then set -x; rm $(IMAGE_UPLOAD_FILE); fi	
+	cp $(IMAGE_TAR_FILE) $(IMAGE_UPLOAD_FILE)
+	@echo
+	ls -alh $(IMAGE_UPLOAD_FILE)
+
+
+############################################################
+# load
+############################################################
+
+download:
+	if [ -f $(IMAGE_TAR_FILE) ]; then set -x; rm $(IMAGE_TAR_FILE); fi
+	curl -o $(IMAGE_TAR_FILE) $(DFS_DATA_URL)/images/$(IMG_TAR)
+	@echo
+	ls -alh $(SAVE_DIR)
+
+untar:
+	if [ -f $(IMAGE_SAVE_FILE) ]; then set -x; rm $(IMAGE_SAVE_FILE); fi
+	cd $(SAVE_DIR); tar -xzvf $(IMG_TAR)
+	rm -f $(IMAGE_TAR_FILE)
 	@echo
 	ls -alh $(SAVE_DIR)
 
 load:		## load
-	# docker image rm $(IMAGE_SAVE)
-	@if [ -f $(IMAGE_SAVE) ]; then set -x; rm $(IMAGE_SAVE); fi
-	tar -xzvf $(IMAGE_TAR)
-	docker load -i $(IMAGE_SAVE) 
-	rm -f $(IMAGE_SAVE)
+	docker image rm ${IMAGE_DST}
+	docker load -i $(IMAGE_SAVE_FILE) 
+
+clean:
+	if [ -f $(IMAGE_SAVE_FILE) ]; then set -x; rm $(IMAGE_SAVE_FILE); fi
+	if [ -f $(IMAGE_TAR_FILE) ]; then set -x; rm $(IMAGE_TAR_FILE); fi
+	@echo
+	ls -alh $(SAVE_DIR)
 
 ls:
 	ls -alh $(SAVE_DIR)
