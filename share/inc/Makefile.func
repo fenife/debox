@@ -1,0 +1,16 @@
+include $(INC_DIR)/Makefile.const
+
+############################################################
+# images
+############################################################
+
+# 保存镜像
+# $1: docker image name
+define _save_image
+	$(INC_SH_DIR)/image.sh save $(1)
+endef
+
+# $1: docker image name
+define _load_image
+	$(INC_SH_DIR)/image.sh load $(1)
+endef

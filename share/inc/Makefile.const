@@ -1,0 +1,41 @@
+
+############################################################
+# env
+############################################################
+
+BASE_DIR=/wine/debox
+BUILD_DIR=$(BASE_DIR)/image
+ICODE_DIR=$(BASE_DIR)/icode
+SHARE_DIR=$(BASE_DIR)/share
+
+VENV_DIR=/wine/venv
+
+INC_DIR=$(SHARE_DIR)/inc
+INC_SH_DIR=$(INC_DIR)/sh
+
+# 执行的makefile文件
+EXEC_MAKEFILE = $(abspath $(firstword $(MAKEFILE_LIST)))
+# 执行的makefile路径
+EXEC_MAKEFILE_PATH = $(dir $(EXEC_MAKEFILE))
+# 执行的makefile所在的文件夹
+EXEC_DIR = $(shell basename $(EXEC_MAKEFILE_PATH))
+
+REGISTRY_URL = registry.dev.local:9000
+FS_URL = registry.dev.local:9060
+
+IMAGE_ME_NS = $(REGISTRY_URL)/devel
+
+# time
+NOW = $(shell date '+%Y-%m-%d %H:%M:%S')
+NOW_TS = $(shell date '+%s')
+
+# ETH_NAME=ens33
+ETH_NAME=$(shell ifconfig -s | grep -E 'eth|ens|enp' | grep -v 'veth' | awk '{print $$1}')
+HOST_IP=$(shell ifconfig | grep $(ETH_NAME) -A 2 | grep inet | head -1 | awk '{print $$2}')
+# HOST_IP=192.168.0.2
+HOST_NAME=$(shell hostname)
+
+DEVC_WITH_OPTIONS = --rm -it --privileged \
+	--add-host="dev.local:$(HOST_IP)"  \
+	-v $(SHARE_DIR):$(SHARE_DIR) \
+	-v $(ICODE_DIR):$(ICODE_DIR) 
