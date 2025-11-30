@@ -1,6 +1,6 @@
 include $(INC_DIR)/Makefile.inc
 
-MYSQL_IMAGE=$(REGISTRY_URL)/mysql:5.7
+MYSQL_IMAGE=$(REGISTRY_URL)/library/mysql:5.7
 MYSQL_NAME=mysql-5.7
 MYSQL_DATA_DIR=/wine/var/mysql
 MYSQL_ROOT_PASSWORD=root
