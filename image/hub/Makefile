@@ -10,51 +10,51 @@ DOCKER_PROXY := docker.1ms.run
 ############################################################
 
 # IMAGE_SRC = $(DOCKER_PROXY)/registry:2.8
-# IMAGE_DST = $(REGISTRY_URL)/library/registry:2.8
+# IMAGE_REG = $(REGISTRY_URL)/library/registry:2.8
 # IMAGE = library/registry:2.8
 
 # IMAGE_SRC = $(DOCKER_PROXY)/joxit/docker-registry-ui:2.5.7
-# IMAGE_DST = $(REGISTRY_URL)/joxit/docker-registry-ui:2.5.7
+# IMAGE_REG = $(REGISTRY_URL)/joxit/docker-registry-ui:2.5.7
 # IMAGE = joxit/docker-registry-ui:2.5.7
 
 # IMAGE_SRC = $(DOCKER_PROXY)/sigoden/dufs:v0.42.0
-# IMAGE_DST = $(REGISTRY_URL)/sigoden/dufs:v0.42.0
+# IMAGE_REG = $(REGISTRY_URL)/sigoden/dufs:v0.42.0
 # IMAGE = sigoden/dufs:v0.42.0
 
 # IMAGE_SRC = $(DOCKER_PROXY)/ubuntu:20.04
-# IMAGE_DST = $(REGISTRY_URL)/library/ubuntu:20.04
+# IMAGE_REG = $(REGISTRY_URL)/library/ubuntu:20.04
 # IMAGE = library/ubuntu:20.04
 
 # IMAGE_SRC = $(DOCKER_PROXY)/ubuntu:22.04
-# IMAGE_DST = $(REGISTRY_URL)/library/ubuntu:22.04
+# IMAGE_REG = $(REGISTRY_URL)/library/ubuntu:22.04
 # IMAGE = library/ubuntu:22.04
 
 # IMAGE_SRC = $(DOCKER_PROXY)/ubuntu:24.04
-# IMAGE_DST = $(REGISTRY_URL)/library/ubuntu:24.04
+# IMAGE_REG = $(REGISTRY_URL)/library/ubuntu:24.04
 # IMAGE = library/ubuntu:24.04
 
 # IMAGE_SRC = $(DOCKER_PROXY)/ubuntu:24.10
-# IMAGE_DST = $(REGISTRY_URL)/library/ubuntu:24.10
+# IMAGE_REG = $(REGISTRY_URL)/library/ubuntu:24.10
 # IMAGE = library/ubuntu:24.10
 
 # IMAGE_SRC = $(DOCKER_PROXY)/mysql:5.7
-# IMAGE_DST = $(REGISTRY_URL)/library/mysql:5.7
+# IMAGE_REG = $(REGISTRY_URL)/library/mysql:5.7
 # IMAGE = library/mysql:5.7
 
 # IMAGE_SRC = $(DOCKER_PROXY)/kindest/node:v1.24.12
-# IMAGE_DST = $(REGISTRY_URL)/kindest/node:v1.24.12
+# IMAGE_REG = $(REGISTRY_URL)/kindest/node:v1.24.12
 # IMAGE = kindest/node:v1.24.12
 
 # IMAGE_SRC = $(DOCKER_PROXY)/redhat/ubi8:8.4
-# IMAGE_DST = $(REGISTRY_URL)/redhat/ubi8:8.4
+# IMAGE_REG = $(REGISTRY_URL)/redhat/ubi8:8.4
 # IMAGE = redhat/ubi8:8.4
 
 # IMAGE_SRC = $(DOCKER_PROXY)/golang:1.22.5
-# IMAGE_DST = $(REGISTRY_URL)/library/golang:1.22.5
+# IMAGE_REG = $(REGISTRY_URL)/library/golang:1.22.5
 # IMAGE = library/golang:1.22.5
 
 IMAGE_SRC = $(DOCKER_PROXY)/golang:1.25.0
-IMAGE_DST = $(REGISTRY_URL)/library/golang:1.25.0
+IMAGE_REG = $(REGISTRY_URL)/library/golang:1.25.0
 IMAGE = library/golang:1.25.0
 
 # IMAGE := python:3.12.5
@@ -83,7 +83,7 @@ IMAGE = library/golang:1.25.0
 # IMAGE := b3log/siyuan:v3.0.17
 
 # IMAGE_SRC = $(DOCKER_PROXY)/$(IMAGE)
-# IMAGE_DST = $(REGISTRY_URL)/$(IMAGE)
+# IMAGE_REG = $(REGISTRY_URL)/$(IMAGE)
 
 ############################################################
 # devel build image
@@ -98,17 +98,17 @@ IMAGE = library/golang:1.25.0
 pull-origin:		## download origin image and tag
 	docker pull $(IMAGE_SRC)
 	@echo
-	docker tag $(IMAGE_SRC) $(IMAGE_DST)
+	docker tag $(IMAGE_SRC) $(IMAGE_REG)
 	@echo
 	docker rmi $(IMAGE_SRC)
 
 po: pull-origin
 
 push: 		## push image to registry
-	docker push $(IMAGE_DST)
+	docker push $(IMAGE_REG)
 
 pull:		## pull image from registry
-	docker pull $(IMAGE_DST)
+	docker pull $(IMAGE_REG)
 
 check:		## check registry
 	curl http://$(REGISTRY_URL)/v2/_catalog
@@ -166,7 +166,7 @@ desc:
 	@echo "Docker 镜像保存/加载脚本配置"
 	@echo "======================================================"
 	@echo "源镜像:       $(IMAGE_SRC)"
-	@echo "目标镜像:     $(IMAGE_DST)"
+	@echo "目标镜像:     $(IMAGE_REG)"
 	@echo "镜像名:       $(IMAGE)"
 	@echo "本地保存目录: $(SAVE_DIR)"
 	@echo "原始镜像文件: ${IMAGE_RAW_FILE}"
@@ -176,10 +176,10 @@ desc:
 
 save: 	# save
 	@echo "======================================================"
-	@echo "保存镜像: $(IMAGE_DST) -> $(IMAGE_RAW_FILE)"
+	@echo "保存镜像: $(IMAGE_REG) -> $(IMAGE_RAW_FILE)"
 	@echo "======================================================"
 	$(call _delete_file,${IMAGE_RAW_FILE})
-	docker save -o ${IMAGE_RAW_FILE} ${IMAGE_DST}
+	docker save -o ${IMAGE_RAW_FILE} ${IMAGE_REG}
 	$(call _print_file_info,${IMAGE_RAW_FILE})
 
 tar:
@@ -228,9 +228,9 @@ untar:
 
 load:		## load
 	@echo "======================================================"
-	@echo "加载镜像: ${IMAGE_RAW_FILE} -> Docker (${IMAGE_DST})"
+	@echo "加载镜像: ${IMAGE_RAW_FILE} -> Docker (${IMAGE_REG})"
 	@echo "======================================================"
-	docker image rm ${IMAGE_DST} || true
+	docker image rm ${IMAGE_REG} || true
 	docker load -i ${IMAGE_RAW_FILE} 
 
 clean:
