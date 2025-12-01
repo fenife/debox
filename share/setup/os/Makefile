@@ -78,3 +78,38 @@ host-clear: host-bak
 host-rb:
 	sudo cp $(HOST_BAK_DIR)/hosts /etc/hosts
 
+#------------------------------------------------------------
+# bash
+#------------------------------------------------------------
+setup_bash:
+	echo "source /wine/debox/share/rc/ext.bashrc" >> ${HOME}/.bashrc
+	cp conf/.inputrc ${HOME}/
+
+setup_vscode:
+	mkdir -p ${HOME}/.ssh
+	cat ssh/id_rsa_feng.pub >> ${HOME}/.ssh/authorized_keys
+	chmod 600 ${HOME}/.ssh/auth_keys
+	chmod 700 ${HOME}/.ssh
+
+setup_git:
+	cp conf/.gitconfig ${HOME}/
+
+setup_pip:
+	mkdir -p ${HOME}/.pip
+	cp conf/pip.conf ${HOME}/.pip
+	@echo
+	ls ${HOME}/.pip
+
+setup_zsh:
+	sudo yum install zsh
+	sudo usermod -s /usr/bin/zsh $USER
+
+tmp_dir = /tmp
+setup_ohmyzsh:
+	curl -O ohmyzsh.zip /tmp
+	cd /tmp; unzip -q ohmyzsh.zip
+	mv /tmp/ohmyzsh-master ${HOME}/.oh-my-zsh
+	cp ${HOME}/.oh-my-zsh/templates/zshrc.zsh-template ${HOME}/.zshrc
+	echo "source /wine/debox/share/rc/ext.zshrc" >> ${HOME}/.zshrc
+	sed -i "s/robbyrussell/ys/" ${HOME}/.zshrc
+
