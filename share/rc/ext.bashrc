@@ -56,7 +56,8 @@ export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 ############################################################
 # alias
 alias dps="docker ps -a --format 'table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'"
-alias dls="docker image ls | sort -n"
+alias dls="docker image ls"
+alias dlt="docker image ls | sort -nr"
 
 ############################################################
 # alias for Makefile

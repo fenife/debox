@@ -42,18 +42,6 @@ info:	## cluster info
 image:		## worker image ls
 	docker exec -it local-worker crictl images
 
-start-registry:			## start docker registry
-	docker run -d \
-	--name docker-registry \
-	--restart=always  \
-	-v /wine/k8s/registry:/var/lib/registry \
-	-p 5000:5000 \
-	registry:2.8
-
-stop-registry:	## stop docker registry
-	docker stop docker-registry
-	docker rm docker-registry
-
 
 
 
