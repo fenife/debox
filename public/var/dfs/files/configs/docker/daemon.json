@@ -3,8 +3,9 @@
     "https://dockerproxy.com"
   ],
   "insecure-registries": [
-    "register.dev.local:9000",
-    "stg-registry.me:8810"
+    "local.registry.io:9000",
+    "registry.dev.local:9000",
+    "stg-registry.me:8810",
+    "registry.me:9000"
   ]
 }
-

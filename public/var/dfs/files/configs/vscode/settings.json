@@ -32,6 +32,7 @@
     "files.associations": {
         "*Makefile*": "makefile",
         "*makefile*": "makefile",
+        "*.service": "ini",
     },
     "files.exclude": {
         "**/__pycache__": true,
