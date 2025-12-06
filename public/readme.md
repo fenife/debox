@@ -1,13 +1,13 @@
 
-
 ## 前置
+### 镜像
 ```bash
-# 导出 PUB_DIR 目录
-export PUB_DIR=path_to_pub
+local.registry.io:9000/sigoden/dufs:v0.42.0
+local.registry.io:9000/library/registry:2.8
+local.registry.io:9000/joxit/docker-registry-ui:2.5.7
 ```
 
 ## 目录说明
-
 public
     srv             # 公共服务
         dufs
@@ -28,22 +28,14 @@ public
             mysql
             redis
             etcd
-    envs
-        local.dfs.io
-        dev.dfs.io
-        local.registry.io
-        dev.registry.io
-
-        export DFS_PUB_URL
-        export DFS_PRIV_URL
-        export REGISTRY_URL
-
-    local
+    etc
         hosts
+            local.dfs.io
+            local.registry.io
+            dev.dfs.io
+            dev.registry.io
         envs
-    dev
-        hosts
-        envs
-            DFS_URL
-            REGISTRY_URL
+            export DFS_PUB_URL=local.dfs.io
+            export DFS_PRIV_URL=local.dfs.io
+            export REGISTRY_URL=local.registry.io
 

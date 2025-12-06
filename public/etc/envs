@@ -1,0 +1,5 @@
+
+## user define envs ##
+export DFS_PUB_URL=local.dfs.io
+export DFS_PRIV_URL=local.dfs.io
+export REGISTRY_URL=local.registry.io
