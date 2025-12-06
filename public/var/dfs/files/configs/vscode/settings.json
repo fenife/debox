@@ -1,25 +1,31 @@
 // /C:/Users/<user>/AppData/Roaming/Code/User/settings.json
 
 {
-    "workbench.tree.indent": 10,
-    "security.workspace.trust.untrustedFiles": "open",
     "editor.mouseWheelZoom": true,
+    "update.mode": "none",
     "remote.SSH.remotePlatform": {
         "feng-dev": "linux",
-        "ubt-dev": "linux",
-        "ubt-stg": "linux"
+        "node2": "linux",
+        "ubt-main": "linux",
+        "ubt-origin": "linux",
+        "ubt-node1": "linux"
     },
+    "workbench.secondarySideBar.defaultVisibility": "hidden",
+    "workbench.tree.indent": 10,
+    "security.workspace.trust.untrustedFiles": "open",
     "terminal.integrated.mouseWheelZoom": true,
-    "window.zoomLevel": 0.8,
+    "window.zoomLevel": 0.2,
+    "window.restoreWindows": "none",
     "vim.handleKeys": {
         "<C-c>": false,
         "<C-v>": false,
         "<C-x>": false,
-        "<C-f>": false,
         "<C-a>": false,
+        "<C-f>": false,
+        "<C-n>": false,
         "<C-p>": false,
         "<C-h>": false,
-        "<C-e>": false,
+        "<C-r>": false,
     },
     "workbench.iconTheme": "material-icon-theme",
     "workbench.colorTheme": "Default Dark+",
@@ -28,7 +34,8 @@
         "*makefile*": "makefile",
     },
     "files.exclude": {
-        "**/__pycache__": true
+        "**/__pycache__": true,
+        "**/var/lib": true,
     },
     "editor.wordWrap": "on",
     "editor.rulers": [
@@ -36,14 +43,9 @@
         100,
         120
     ],
-    "trae.chatLanguage": "cn",
-    "trae.codeCompletionPro": {
-        "enableCodeCompletionPro": false
-    },
-    "trae.enableCodelens": {
-        "enableInlineDocumentation": false,
-        "enableInlineUnitTest": false,
-        "enableInlineExplain": false
-    },
-    "trae.enableInlineCommand": false
+    "vscode-office.editorTheme": "One Dark",
+    "vscode-office.openOutline": true,
+    "vscode-office.viewAbsoluteLocal": true,
+    "vscode-office.workspacePathAsImageBasePath": true,
+    "vscode-office.quickOpen": true,
 }
