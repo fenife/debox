@@ -40,49 +40,49 @@ some tools and project examples for development.
 ## dir
 ```text
 
-wine
+wine/debox
 
-debox
+image
     build
-        image
-            alpine
+        alpine
+        centos7
+        python
+        golang
+        ubuntu24
+
+    etc
+        conf
+            git
+            ssh
+            pip
+        yum
             centos7
-            python
-            golang
-            ubuntu24
-        etc
-            conf
-                git
-                ssh
-                pip
-            yum
-                centos7
-                rhel8
-        repo    (public repo)
-            src
-                python 
-            linux  
-                etcd
-            alpine
-                apk
-            centos7
-                ovs
-            rhel8 
-                ovs
-            vscode
-    local
-        infra
-            mysql
-            redis
-    share
-        iapp
-        ilab
-        app
-        bin
-        inc
-        rc
-        work
-        tmp
+            rhel8
+    repo    (public repo)
+        src
+            python 
+        linux  
+            etcd
+        alpine
+            apk
+        centos7
+            ovs
+        rhel8 
+            ovs
+        vscode
+local
+    infra
+        mysql
+        redis
+share
+    iapp
+    ilab
+    app
+    bin
+    inc
+    rc
+    work
+    tmp
 ```
 
 ## vscode

@@ -1,9 +1,0 @@
-
-# bash 上下键根据前缀搜索历史命令
-"\e[A": history-search-backward
-"\e[B": history-search-forward
-
-# bash Ctrl+p, Ctrl+n 根据前缀搜索历史命令
-# "\C-p": history-search-backward
-# "\C-n": history-search-forward
-

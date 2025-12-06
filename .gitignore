@@ -158,7 +158,7 @@ cython_debug/
 **/bak/*
 **/tmp/*
 **/log/*
-# **/data/*
+**/data/*
 **/saves/*
 **/splits/*
 **/source/*
