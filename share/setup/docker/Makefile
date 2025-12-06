@@ -11,12 +11,18 @@ pre-clean:
 	@echo
 	sudo rpm -qa | grep docker
 
+dl:
+	curl -o ${SRC_DIR}/docker-conf.zip $(DFS_PUB_URL)/configs/docker/?zip
+	curl -o ${SRC_DIR}/${DOCKER_TAR} $(DFS_PUB_URL)/pkgs/docker/${DOCKER_TAR}
+
 untar:
+	cd ${SRC_DIR}; unzip docker-conf.zip
+	@echo
 	cd ${SRC_DIR}; tar -xzvf ${DOCKER_TAR}
 	@echo
 	ls -alh ${SRC_DIR}
 
-cp:
+cp-bin:
 	mkdir -p ${BIN_DIR}
 	cp ${SRC_DIR}/docker/* ${BIN_DIR}/
 	@echo
@@ -30,12 +36,12 @@ ln:
 	sudo ln -s ${BIN_DIR}/docker-proxy ${USR_BIN_DIR}/docker-proxy
 	sudo ln -s ${BIN_DIR}/docker-init ${USR_BIN_DIR}/docker-init
 
-conf:
+cp-conf:
 	sudo mkdir -p /etc/docker
-	sudo cp conf/docker/daemon.json /etc/docker/
+	sudo cp ${SRC_DIR}/docker/daemon.json /etc/docker/
 
-service:
-	sudo cp conf/docker/docker.service /usr/lib/systemd/system/docker.service
+cp-svc:
+	sudo cp ${SRC_DIR}/docker/docker.service /usr/lib/systemd/system/docker.service
 
 enable:
 	sudo systemctl enable docker.service
