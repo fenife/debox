@@ -1,18 +1,41 @@
-include $(INC_DIR)/Makefile.inc
+
+CUR_DIR := $(shell pwd)
+PUB_DIR := $(shell readlink -f $(CUR_DIR)/../..)
+BASE_DIR := /wine
 
 MYSQL_IMAGE=$(REGISTRY_URL)/library/mysql:5.7
 MYSQL_NAME=mysql-5.7
-MYSQL_DATA_DIR=/wine/var/mysql
+MYSQL_DATA_DIR=${BASE_DIR}/var/lib/mysql5.7
+
 MYSQL_ROOT_PASSWORD=root
 
+help:
+	@echo "usage:"
+	@echo "  pub dir:  ${PUB_DIR}"
+	@echo "  base dir: ${BASE_DIR}"
+	@echo "  data dir: ${MYSQL_DATA_DIR}"
+	@echo
+	@echo "  pre		- 准备 var data 目录"
+	@echo "  pull		- pull"
+	@echo "  start		- start"
+	@echo "  stop		- stop"
+	@echo "  restart	- restart"
+	@echo "  at			- docker enter (exec)"
+	@echo "  root		- connect to mysql by root"
+	@echo "  test		- connect to mysql by test"
+
+h: help
+
 pre:
-	mkdir -p $(MYSQL_DATA_DIR)
+	if [ -f $(MYSQL_DATA_DIR) ]; then set -x; rm $(MYSQL_DATA_DIR); fi
+	@echo
+	ls -alh $(MYSQL_DATA_DIR)
 
 pull:		## pull mysql
 	docker pull $(MYSQL_IMAGE)
 
 start:		## start mysql
-	docker run -d --restart unless-stopped \
+	docker run -d --restart always \
 	--name $(MYSQL_NAME) \
 	-p 3306:3306 \
 	-v $(MYSQL_DATA_DIR):/var/lib/mysql \
@@ -23,8 +46,7 @@ stop:		## stop mysql
 	docker stop $(MYSQL_NAME)
 	docker rm $(MYSQL_NAME)
 
-restart:	## restart mysql
-	docker restart $(MYSQL_NAME)
+restart: stop start
 
 at:		## enter mysql
 	docker exec -it $(MYSQL_NAME) bash
