@@ -49,8 +49,8 @@ export BASE_DIR=${BASE_DIR}
 export INC_DIR=${INC_DIR}
 export DFS_DIR=${DFS_DIR}
 
-export DFS_PUB_URL=http://local.dfs.io:9060/data
-export DFS_PRIV_URL=http://local.dfs.io:9060/data
+export DFS_PUB_URL=http://local.dfs.io:9060/files
+export DFS_PRIV_URL=http://local.dfs.io:9060/files
 export REGISTRY_URL=local.registry.io:9000
 
 export PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
