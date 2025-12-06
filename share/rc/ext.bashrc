@@ -1,49 +1,61 @@
 
 ############################################################
 # dirs
-BASE_DIR=/wine/debox
-BUILD_DIR=/wine/debox/image
-ICODE_DIR=/wine/debox/icode
-LOCAL_DIR=/wine/debox/local
-STG_DIR=/wine/debox/stg
-SHARE_DIR=/wine/debox/share
+############################################################
+BASE_DIR=/wine
+DEBOX_DIR=${BASE_DIR}/debox
 
-APP_DIR=$SHARE_DIR/app
-INC_DIR=$SHARE_DIR/inc
-K8S_DIR=$SHARE_DIR/k8s
+ICODE_DIR=${DEBOX_DIR}/icode
+IMAGE_DIR=${DEBOX_DIR}/image
+LOCAL_DIR=${DEBOX_DIR}/local
+SHARE_DIR=${DEBOX_DIR}/share
+PUB_DIR=${DEBOX_DIR}/public
+
+APP_DIR=${SHARE_DIR}/app
+INC_DIR=${SHARE_DIR}/inc
+
+DFS_DIR=${PUB_DIR}/var/dfs/files
 
 ############################################################
 # jump 
-alias jbox="cd $BASE_DIR" 
-alias jshare="cd $SHARE_DIR" 
-alias japp="cd $APP_DIR" 
-alias jk8s="cd $K8S_DIR" 
-alias jicode="cd $ICODE_DIR" 
+############################################################
+alias jdebox="cd ${DEBOX_DIR}" 
 
-alias jbuild="cd $BUILD_DIR" 
-alias jhub="cd $BASE_DIR/image/hub"
+alias jicode="cd ${ICODE_DIR}" 
+alias jimage="cd ${IMAGE_DIR}" 
+alias jlocal="cd ${LOCAL_DIR}"
+alias jshare="cd ${SHARE_DIR}" 
+alias jpub="cd ${PUB_DIR}"
 
-alias jlocal="cd $LOCAL_DIR"
-alias jinfra="cd $LOCAL_DIR/infra"
+alias jhub="cd ${IMAGE_DIR}/hub"
 
-alias jpub="cd $BASE_DIR/pub"
-alias jdrive="cd $BASE_DIR/pub/drive/data"
+alias japp="cd ${APP_DIR}" 
+alias jk8s="cd ${SHARE_DIR}/k8s" 
+alias jsetup="cd ${SHARE_DIR}/setup"
 
-alias jsetup="cd $SHARE_DIR/setup"
+alias jsrv="cd ${PUB_DIR}/srv"
+alias jinfra="cd ${PUB_DIR}/infra"
+alias jdfs="cd ${DFS_DIR}"
 
 ############################################################
 # export
+############################################################
 export TERM xterm
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
-export INC_DIR=$INC_DIR
-export DFS_DIR=$BASE_DIR/pub/drive/data
+## user define envs ##
+export BASE_DIR=${BASE_DIR}
+export INC_DIR=${INC_DIR}
+export DFS_DIR=${DFS_DIR}
 
-export REGISTRY_URL=registry.dev.local:9000
-export DFS_URL=http://registry.dev.local:9060/data
+export DFS_PUB_URL=http://local.dfs.io:9060/data
+export DFS_PRIV_URL=http://local.dfs.io:9060/data
+export REGISTRY_URL=local.registry.io:9000
 
-export PATH=$PATH:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/go/bin:${HOME}/.local/bin:${HOME}/go/bin:${SHARE_DIR}/bin
+export PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
+export PATH=$PATH:/usr/local/go/bin
+export PATH=$PATH:${HOME}/.local/bin:${HOME}/go/bin:${SHARE_DIR}/bin
 
 export GOPATH=${HOME}/go
 
@@ -55,6 +67,7 @@ export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 
 ############################################################
 # alias
+############################################################
 alias dps="docker ps -a --format 'table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'"
 alias dls="docker image ls"
 alias dlt="docker image ls | sort -nr"
@@ -85,5 +98,5 @@ alias sicode="source $VENV_DIR/icode/bin/activate"
 
 ############################################################
 # run service
-alias rswebox="make -f $APP_DIR/webox/Makefile"
+alias rswebox="make -f ${APP_DIR}/webox/Makefile"
 
