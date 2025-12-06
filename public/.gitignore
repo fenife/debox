@@ -4,5 +4,8 @@
 **/log/*
 **/data/*
 **/saves/*
+
 **/var/lib/*
+**/pkgs/*
+**/images/*
 

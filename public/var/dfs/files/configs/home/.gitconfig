@@ -1,0 +1,14 @@
+[user]
+# 	name = xx
+# 	email = xx@email.com
+
+[core]
+	editor = vim
+	autocrlf = input
+
+[alias]
+	st = status
+	ci = commit
+	co = checkout
+	br = branch
+

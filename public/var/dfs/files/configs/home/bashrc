@@ -1,0 +1,11 @@
+
+RC_DIR=/wine/debox/share/rc
+
+# source bashrc and zshrc
+if [ -f $RC_DIR/ext.bashrc ]; then
+  source $RC_DIR/ext.bashrc
+fi
+
+if [ -x "$(command -v zsh)" && -f $RC_DIR/ext.zshrc ]; then
+  source $RC_DIR/ext.zshrc
+fi
