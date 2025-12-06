@@ -1,16 +1,18 @@
 
 CUR_DIR := $(shell pwd)
 # PUB_DIR := $(shell readlink -f $(CUR_DIR)/../..)
-PUB_VAR_DIR=$(CUR_DIR)/var
 PUB_ETC_DIR=$(CUR_DIR)/etc
+PUB_VAR_DIR=$(CUR_DIR)/var
+BASE_DIR=/wine
 
 help:
 	@echo "usage:"
-	@echo "  pub dir: ${PUB_DIR}"
-	@echo "  var dir: ${PUB_VAR_DIR}"
-	@echo "  etc dir: ${PUB_ETC_DIR}"
+	@echo "  pub dir:       ${PUB_DIR}"
+	@echo "  etc dir:       ${PUB_ETC_DIR}"
+	@echo "  pub var dir:   ${PUB_VAR_DIR}"
+	@echo "  base dir:      ${BASE_DIR}"
 	@echo
-	@echo "  pre			- 准备./var目录"
+	@echo "  pre			- 准备数据目录"
 	@echo "  cat-hosts		- 查看要添加的 hosts"
 	@echo "  set-hosts		- 添加 hosts"
 	@echo "  cat-envs		- 查看要添加的 envs"
@@ -20,7 +22,9 @@ help:
 h: help
 
 pre:
-	mkdir -p ${PUB_VAR_DIR}
+	if [ -f $(PUB_VAR_DIR) ]; then set -x; rm $(PUB_VAR_DIR); fi
+	@echo
+	if [ -f $(BASE_DIR) ]; then set -x; rm $(BASE_DIR); fi
 
 cat-hosts:
 	cat ${PUB_ETC_DIR}/hosts

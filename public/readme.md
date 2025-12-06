@@ -18,16 +18,11 @@ public
         redis
         etcd
     var             # 服务数据目录
-        dfs         # vscode 可见的数据目录
+        dfs         # vscode 可见、可编辑的数据目录
             files
                 configs
                 images
                 pkgs
-        lib         # vscode 可隐藏的数据目录，避免展示的文件太多
-            registry
-            mysql
-            redis
-            etcd
     etc
         hosts
             local.dfs.io
@@ -38,4 +33,12 @@ public
             export DFS_PUB_URL=local.dfs.io
             export DFS_PRIV_URL=local.dfs.io
             export REGISTRY_URL=local.registry.io
+
+${BASE_DIR}
+    var
+        lib     # 常见组件服务的数据目录 (一般不可编辑)
+            registry
+            mysql
+            redis
+            etcd
 

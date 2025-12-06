@@ -1,11 +1,12 @@
 
 CUR_DIR := $(shell pwd)
 PUB_DIR := $(shell readlink -f $(CUR_DIR)/../..)
+BASE_DIR := /wine
 
 REGISTRY_NAME = docker-registry
 REGISTRY_IMAGE = ${REGISTRY_URL}/library/registry:2.8
 REGISTRY_PORT = 9000
-REGISTRY_DATA = ${PUB_DIR}/var/lib/registry
+REGISTRY_DATA = ${BASE_DIR}/var/lib/registry
 
 help:
 	@echo "usage:"

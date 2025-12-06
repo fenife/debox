@@ -6,6 +6,7 @@ PUB_DIR := $(shell readlink -f $(CUR_DIR)/../..)
 DUFS_IMAGE = $(REGISTRY_URL)/sigoden/dufs:v0.42.0
 DUFS_NAME = dufs-0.42
 DUFS_PORT = 9060
+# dfs 里有部分配置文件是要编辑的，放当前目录下
 DUFS_DATA = ${PUB_DIR}/var/dfs
 
 help:
