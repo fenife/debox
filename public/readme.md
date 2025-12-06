@@ -1,5 +1,11 @@
 
 
+## 前置
+```bash
+# 导出 PUB_DIR 目录
+export PUB_DIR=path_to_pub
+```
+
 ## 目录说明
 
 public
@@ -12,15 +18,16 @@ public
         redis
         etcd
     var             # 服务数据目录
-        registry
-        mysql
-        redis
-        etcd
-        dfs
+        dfs         # vscode 可见的数据目录
             files
                 configs
                 images
                 pkgs
+        lib         # vscode 可隐藏的数据目录，避免展示的文件太多
+            registry
+            mysql
+            redis
+            etcd
     envs
         local.dfs.io
         dev.dfs.io
