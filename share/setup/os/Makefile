@@ -118,3 +118,13 @@ setup-ohmyzsh:
 
 rm-ohmyzsh:
 	rm -rf ${HOME}/.oh-my-zsh
+
+proxy:
+	export HTTP_PROXY=http://feng-win:7890
+	export HTTPS_PROXY=http://feng-win:7890
+	export ALL_PROXY=socks5://feng-win:7890
+
+noproxy:
+	export HTTP_PROXY=
+	export HTTPS_PROXY=
+	export ALL_PROXY=
