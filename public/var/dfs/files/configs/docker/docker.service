@@ -8,7 +8,7 @@ Wants=network-online.target
 
 [Service]
 Type=notify
-ExecStart=/usr/bin/dockerd --log-opt max-size=100m
+ExecStart=/usr/bin/dockerd --log-opt max-size=100m -G docker
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s QUIT $MAINPID
 # Having non-zero Limit*s causes performance problems due to accounting overhead

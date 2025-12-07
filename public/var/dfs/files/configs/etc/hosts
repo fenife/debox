@@ -7,3 +7,6 @@
 192.168.2.161   ubt-node1
 192.168.2.162   ubt-node2
 
+192.168.2.160   local.dfs.io
+192.168.2.160   local.registry.io
+
