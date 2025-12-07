@@ -54,10 +54,10 @@ export DFS_PRIV_URL=http://local.dfs.io:9060/files
 export REGISTRY_URL=local.registry.io:9000
 
 export PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
-export PATH=$PATH:/usr/local/go/bin
-export PATH=$PATH:${HOME}/.local/bin:${HOME}/go/bin:${SHARE_DIR}/bin
+export PATH=$PATH:${HOME}/.local/bin:${SHARE_DIR}/bin
 
-export GOPATH=${HOME}/go
+export GOPATH=$HOME/go
+export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
 
 export PYTHONPATH=$PYTHONPATH:$ICODE_DIR
 
