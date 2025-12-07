@@ -4,12 +4,16 @@ BIN_DIR=/wine/bin
 SRC_DIR=/wine/tmp/docker
 DOCKER_TAR=docker-20.10.20.tgz
 
-pre-clean:
+pre-clean-yum:
 	sudo yum remove docker-ce-crictl
 	sudo yum remove docker-ce
 	sudo yum remove containerd
 	@echo
 	sudo rpm -qa | grep docker
+
+pre:
+	mkdir -p ${BIN_DIR}
+	mkdir -p ${SRC_DIR}
 
 dl:
 	curl -o ${SRC_DIR}/docker-conf.zip $(DFS_PUB_URL)/configs/docker/?zip
@@ -58,6 +62,8 @@ status:
 	sudo systemctl status docker.service | cat
 	@echo
 	docker info
+
+info: status
 
 ls:
 	ls -alh ${BIN_DIR}
