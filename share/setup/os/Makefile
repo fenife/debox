@@ -20,15 +20,20 @@ help:
 	@echo "  dfs pub url:   ${DFS_PUB_URL}"
 	@echo "  dfs priv url:  ${DFS_PRIV_URL}"
 	@echo
-	@echo "  pre          - 准备目录"
-	@echo "  ls           - 查看目录"
-	@echo "  bak          - 备份 hosts"
-	@echo "  cat          - 查看 hosts"
-	@echo "  add-dfs      - 提前添加 DFS 条目"
-	@echo "  dl           - 下载 hosts 配置"
-	@echo "  add          - 添加 host 条目"
-	@echo "  clear        - 清除添加的 host 条目"
-	@echo "  rb           - 通过备份文件恢复 hosts"
+	@echo "  pre             - 准备目录"
+	@echo "  ls              - 查看目录"
+	@echo "  dl              - 下载配置"
+	@echo "  unzip           - 解压配置"
+	@echo "  dl-clean        - 清除下载的配置"
+	@echo
+	@echo "  setup-bash      - setup bash"
+	@echo "  setup-vscode    - setup vscode"
+	@echo "  setup-git       - setup git"
+	@echo "  setup-pip       - setup pip"
+	@echo "  setup-zsh-yum   - setup zsh yum"
+	@echo "  setup-zsh-apt   - setup zsh apt"
+	@echo "  setup-ohmyzsh   - setup zsh ohmyzsh"
+	@echo "  rm-ohmyzsh      - rm zsh ohmyzsh"
 	@echo
 
 h: help
