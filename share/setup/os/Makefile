@@ -35,6 +35,9 @@ help:
 	@echo "  setup-ohmyzsh   - setup zsh ohmyzsh"
 	@echo "  rm-ohmyzsh      - rm zsh ohmyzsh"
 	@echo
+	@echo "  proxy           - set proxy"
+	@echo "  noproxy         - unset proxy"
+	@echo
 
 h: help
 
