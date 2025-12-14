@@ -1,27 +1,33 @@
 
-include $(INC_DIR)/Makefile.common
+include $(INC_DIR)/Makefile.inc
 
 ############################################################
 # base 
 ############################################################
 
-BASE_IMAGE_ALPINE=base-alpine-3.20:latest
-BASE_NAME_ALPINE=base-alpine3
+ALPINE_BASE_IMAGE=$(REGISTRY_URL)/devel/alpine-3.20-base:latest
+ALPINE_BASE_NAME=alpine3-base
 
-build-base: 		## build
-	docker build -f ./Dockerfile.base --progress=plain -t $(BASE_IMAGE_ALPINE) $(BUILD_DIR)
+build-base: 		## build base
+	docker build -f ./Dockerfile.base \
+	--build-arg DFS_PRIV_URL=${DFS_PRIV_URL} \
+	--build-arg DFS_PUB_URL=${DFS_PUB_URL} \
+	-t $(ALPINE_BASE_IMAGE) .
 
-start-base: 		## start
+start-base: 		## start base
 	docker run --rm -it \
-	--name $(BASE_NAME_ALPINE) --hostname $(BASE_NAME_ALPINE) \
-	$(BASE_IMAGE_ALPINE)
+	--name $(ALPINE_BASE_NAME) --hostname $(ALPINE_BASE_NAME) \
+	$(ALPINE_BASE_IMAGE)
 
-stop-base:		## stop
-	docker stop $(BASE_NAME_ALPINE)
-	docker rm $(BASE_NAME_ALPINE)
+stop-base:		## stop base
+	docker stop $(ALPINE_BASE_NAME)
+	docker rm $(ALPINE_BASE_NAME)
 
-enter-base:		## attach
-	docker exec -it $(BASE_NAME_ALPINE) bash
+enter-base:		## attach base
+	docker exec -it $(ALPINE_BASE_NAME) bash
+
+push-base:		## push base
+	docker push ${ALPINE_BASE_IMAGE}
 
 ############################################################
 # devc
