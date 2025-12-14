@@ -8,20 +8,26 @@ include $(INC_DIR)/Makefile.inc
 UBUNTU_BASE_IMAGE=$(REGISTRY_URL)/devel/ubuntu-22.04-base:latest
 UBUNTU_BASE_NAME=ubuntu22-base
 
-build-base: 
-	docker build -f ./Dockerfile.base -t $(UBUNTU_BASE_IMAGE) $(BUILD_DIR)
+build-base: 	## build base
+	docker build -f ./Dockerfile.base \
+	--build-arg DFS_PRIV_URL=${DFS_PRIV_URL} \
+	--build-arg DFS_PUB_URL=${DFS_PUB_URL} \
+	-t $(UBUNTU_BASE_IMAGE) .
 
-start-base: 
+start-base: 	## start base
 	docker run --rm -it \
 	--name $(UBUNTU_BASE_NAME) --hostname $(UBUNTU_BASE_NAME) \
 	$(UBUNTU_BASE_IMAGE)
 
-stop-base:
+stop-base:		## stop base
 	docker stop $(UBUNTU_BASE_NAME)
 	docker rm $(UBUNTU_BASE_NAME)
 
-enter-base:
+enter-base:		## enter base
 	docker exec -it $(UBUNTU_BASE_NAME) bash
+
+push-base:		## push base
+	docker push $(UBUNTU_BASE_IMAGE)
 
 ############################################################
 # local image

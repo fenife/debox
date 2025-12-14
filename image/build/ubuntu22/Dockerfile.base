@@ -1,4 +1,4 @@
-FROM registry.me:9000/ubuntu:22.04
+FROM local.registry.io:9000/library/ubuntu:22.04
 
 # 时区
 ENV TZ "Asia/Shanghai"
@@ -14,6 +14,12 @@ ENV HOME_DIR /root
 # COPY etc/ubuntu24/repo/sources.list.ali /etc/apt/sources.list
 # RUN apt -o Acquire::Check-Valid-Until=false -o Acquire::Check-Date=false update 
 
+# RUN rm /etc/apt/sources.list \
+#     && curl -sSL --output /etc/apt/sources.list "${DFS_REPO_URL}/sources.list"
+
+RUN sed -i "s|http://archive.ubuntu.com/ubuntu/|http://mirrors.aliyun.com/ubuntu/|g" /etc/apt/sources.list
+RUN sed -i "s|http://security.ubuntu.com/ubuntu/|http://mirrors.aliyun.com/ubuntu/|g" /etc/apt/sources.list
+
 RUN apt update -y 
 RUN apt install -y tzdata ca-certificates
 RUN apt install -y wget curl git vim tar bzip2 unzip tree rsync htop zsh
@@ -25,12 +31,20 @@ RUN apt install -y iptables ipset iputils-ping
 RUN apt install -y python2.7 python3-pip
 RUN apt install -y mysql-client redis 
 
+ARG DFS_PRIV_URL="http://localhost:9060/files"
+ARG DFS_PUB_URL="http://localhost:9060/files"
+ARG DFS_CONF_URL="${DFS_PRIV_URL}/configs"
+ARG DFS_REPO_URL="${DFS_PRIV_URL}/configs/os/ubuntu22/repo"
+
 #------------------------------------------------------------
 # golang
-COPY repo/go/go1.25.1.linux-amd64.tar.gz /tmp/
-RUN cd /tmp \
-    && tar -zxf go1.25.1.linux-amd64.tar.gz -C /usr/local \
-    && rm -rf /tmp/go*
+
+ARG GO_VER=go1.25.1.linux-amd64
+RUN echo "Install golang ..." \
+    && set -x; \
+    curl -sSL --output /tmp/${GO_VER}.tar.gz "${DFS_PUB_URL}/pkgs/go/${GO_VER}.tar.gz" \
+    && tar -zxf /tmp/${GO_VER}.tar.gz -C /usr/local \
+    && rm -rf /tmp/${GO_VER}*
 ENV PATH="$PATH:/usr/local/go/bin"
 # RUN go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/ \
 RUN go env -w GOPROXY=https://goproxy.cn,direct \
@@ -39,18 +53,19 @@ RUN go env -w GOPROXY=https://goproxy.cn,direct \
 
 #------------------------------------------------------------
 # pip2
-COPY /repo/pip2 /tmp
-RUN cd /tmp \
-    && python2.7 get-pip.py --no-index --find-links=packages 
+RUN echo "Install pip2 ..." \
+    && set -x; \
+    curl -sSL --output /tmp/pip2.zip "${DFS_PUB_URL}/pkgs/pip2/?zip" \
+    && unzip /tmp/pip2.zip -d /tmp/pip2 \
+    && cd /tmp/pip2; python2.7 get-pip.py --no-index --find-links=packages 
 
 #------------------------------------------------------------
 # config
-
-# inputrc
-COPY etc/conf/.inputrc ${HOME_DIR}/
-# git config
-COPY etc/conf/.gitconfig /${HOME_DIR}/.gitconfig
-# pip config
-COPY etc/conf/pip.conf ${HOME_DIR}/.pip/pip.conf
+RUN echo "Install config ..." \
+    && set -x; \
+    mkdir -p ${HOME_DIR}/.pip \
+    && curl -sSL --output ${HOME_DIR}/.inputrc "${DFS_CONF_URL}/home/.inputrc" \
+    && curl -sSL --output ${HOME_DIR}/.gitconfig "${DFS_CONF_URL}/home/.gitconfig" \
+    && curl -sSL --output ${HOME_DIR}/.pip/pip.conf "${DFS_CONF_URL}/home/pip.conf"
 
 CMD ["/bin/bash"]
