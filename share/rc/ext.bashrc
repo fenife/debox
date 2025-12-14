@@ -14,7 +14,7 @@ PUB_DIR=${DEBOX_DIR}/public
 APP_DIR=${SHARE_DIR}/app
 INC_DIR=${SHARE_DIR}/inc
 
-DFS_DIR=${PUB_DIR}/var/dfs/files
+DFS_DIR=${DEBOX_DIR}/var/dfs/files
 
 ############################################################
 # jump 
@@ -23,7 +23,7 @@ alias jdebox="cd ${DEBOX_DIR}"
 
 alias jicode="cd ${ICODE_DIR}" 
 alias jimage="cd ${IMAGE_DIR}" 
-alias jlocal="cd ${LOCAL_DIR}"
+# alias jlocal="cd ${LOCAL_DIR}"
 alias jshare="cd ${SHARE_DIR}" 
 alias jpub="cd ${PUB_DIR}"
 
@@ -49,9 +49,9 @@ export BASE_DIR=${BASE_DIR}
 export INC_DIR=${INC_DIR}
 export DFS_DIR=${DFS_DIR}
 
-export DFS_PUB_URL=http://local.dfs.io:9060/files
-export DFS_PRIV_URL=http://local.dfs.io:9060/files
 export REGISTRY_URL=local.registry.io:9000
+export DFS_PUB_URL=http://192.168.2.160:9060/files
+export DFS_PRIV_URL=http://192.168.2.160:9060/files
 
 export PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
 export PATH=$PATH:${HOME}/.local/bin:${SHARE_DIR}/bin
