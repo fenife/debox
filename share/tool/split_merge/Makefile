@@ -25,6 +25,9 @@ tar:	## tar
 split:		## split
 	split -b 9m -d -a 1 $(SRC_TAR) $(SRC_TAR).
 
+zip:
+	zip -r file_splits.zip $(SPLIT_DIR)
+
 merge:		## merge
 	cat $(SRC_TAR).* > $(SRC_TAR)
 	tar -xzvf $(SRC_TAR)
