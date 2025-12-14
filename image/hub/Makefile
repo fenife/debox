@@ -58,6 +58,14 @@ DOCKER_PROXY := docker.1ms.run
 # IMAGE_REG = $(REGISTRY_URL)/library/golang:1.25.0
 # IMAGE = library/golang:1.25.0
 
+# IMAGE_SRC = $(DOCKER_PROXY)/golang:1.24-alpine3.20
+# IMAGE_REG = $(REGISTRY_URL)/library/golang:1.24-alpine3.20
+# IMAGE = library/golang:1.24-alpine3.20
+
+# IMAGE_SRC = $(DOCKER_PROXY)/golang:1.25-alpine3.22
+# IMAGE_REG = $(REGISTRY_URL)/library/golang:1.25-alpine3.22
+# IMAGE = library/golang:1.25-alpine3.22
+
 # IMAGE_SRC = $(DOCKER_PROXY)/redis:7.0
 # IMAGE_REG = $(REGISTRY_URL)/library/redis:7.0
 # IMAGE = library/redis:7.0
@@ -69,6 +77,10 @@ DOCKER_PROXY := docker.1ms.run
 # IMAGE_SRC = $(DOCKER_PROXY)/alpine:3.20
 # IMAGE_REG = $(REGISTRY_URL)/library/alpine:3.20
 # IMAGE = library/alpine:3.20
+
+IMAGE_SRC = $(DOCKER_PROXY)/alpine:3.22
+IMAGE_REG = $(REGISTRY_URL)/library/alpine:3.22
+IMAGE = library/alpine:3.22
 
 # IMAGE_SRC = $(DOCKER_PROXY)/nginx:1.27.2
 # IMAGE_REG = $(REGISTRY_URL)/library/nginx:1.27.2
