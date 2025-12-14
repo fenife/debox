@@ -1,21 +1,22 @@
-FROM golang:1.22.5-alpine3.20 as builder
+# FROM local.registry.io:9000/devel/ubuntu-22.04-base:latest as builder
+FROM local.registry.io:9000/library/golang:1.25-alpine3.22 as builder
 
 RUN go env -w GOPROXY='https://goproxy.cn,direct' \
     && go env -w GO111MODULE='on' \
     && go env -w GOSUMDB='off'
 
-WORKDIR /go/src/app
+WORKDIR /app/echo-app
 
 COPY go.mod go.sum ./
 RUN go mod download 
 
-COPY *.go .
+COPY . .
 RUN GOOS=linux GOARCH=amd64 go build -o echo-app ./
 
-
-FROM alpine-base:3.20
-COPY --from=builder /go/src/app/echo-app /go/src/app/
+# FROM local.registry.io:9000/devel/ubuntu-22.04-base:latest
+FROM local.registry.io:9000/devel/alpine-3.20-base:latest
+COPY --from=builder /app/echo-app /app/
+WORKDIR /app
 EXPOSE 6000
-ENTRYPOINT ["/go/src/app/echo-app"]
-
+ENTRYPOINT ["/app/echo-app"]
 
