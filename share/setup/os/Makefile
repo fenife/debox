@@ -11,7 +11,7 @@ DFS_PRIV_URL=http://local.dfs.io:9060/files
 
 .PHONY: help h pre
 
-help:
+help:	## help
 	@echo "usage:"
 	@echo "  cur dir:       ${CUR_DIR}"
 	@echo "  download dir:  ${DL_DIR}"
@@ -20,26 +20,9 @@ help:
 	@echo "  dfs pub url:   ${DFS_PUB_URL}"
 	@echo "  dfs priv url:  ${DFS_PRIV_URL}"
 	@echo
-	@echo "  pre             - 准备目录"
-	@echo "  ls              - 查看目录"
-	@echo "  dl              - 下载配置"
-	@echo "  unzip           - 解压配置"
-	@echo "  dl-clean        - 清除下载的配置"
-	@echo
-	@echo "  setup-bash      - setup bash"
-	@echo "  setup-vscode    - setup vscode"
-	@echo "  setup-git       - setup git"
-	@echo "  setup-pip       - setup pip"
-	@echo "  setup-zsh-yum   - setup zsh yum"
-	@echo "  setup-zsh-apt   - setup zsh apt"
-	@echo "  setup-ohmyzsh   - setup zsh ohmyzsh"
-	@echo "  rm-ohmyzsh      - rm zsh ohmyzsh"
-	@echo
-	@echo "  proxy           - set proxy"
-	@echo "  noproxy         - unset proxy"
-	@echo
+	@cat $(MAKEFILE_LIST) | grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s \033[0m%s\n", $$1, $$2}'
 
-h: help
+h: help		## help
 
 #------------------------------------------------------------
 # function
@@ -61,7 +44,7 @@ endef
 # prepare
 #------------------------------------------------------------
 
-pre:
+pre:	## pre
 	mkdir -p ${DL_DIR}	
 	@echo
 	mkdir -p ${BAK_DIR}	
@@ -118,6 +101,10 @@ setup-ohmyzsh:
 	cp ${HOME}/.oh-my-zsh/templates/zshrc.zsh-template ${HOME}/.zshrc
 	echo "\nsource ${RC_DIR}/ext.zshrc\n" | tee -a ${HOME}/.zshrc
 	sed -i "s/robbyrussell/ys/" ${HOME}/.zshrc
+
+# robbyrussell, ys, crcandy
+setup-zsh-theme:
+	sed -i '/^ZSH_THEME=/c\\ZSH_THEME="crcandy"' ~/.zshrc
 
 rm-ohmyzsh:
 	rm -rf ${HOME}/.oh-my-zsh
