@@ -7,14 +7,12 @@ REGISTRY_UI_NAME = docker-registry-ui
 REGISTRY_UI_IMAGE = $(REGISTRY_URL)/joxit/docker-registry-ui:2.5.7 
 REGISTRY_UI_PORT = 9010
 
-help:
+help:		## help
 	@echo "usage:"
 	@echo
-	@echo "  start		- start registry ui"
-	@echo "  stop		- stop registry ui"
-	@echo "  restart	- restart registry ui"
+	@cat $(MAKEFILE_LIST) | grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s \033[0m%s\n", $$1, $$2}'
 
-h: help
+h: help		## help
 
 # 	--add-host="$(REGISTRY_HOST):$(HOST_IP)"  
 
@@ -40,5 +38,5 @@ stop:		## start registry ui
 	docker stop $(REGISTRY_UI_NAME)
 	docker rm $(REGISTRY_UI_NAME)
 
-restart:
+restart:	## restart
 	docker restart $(REGISTRY_UI_NAME)

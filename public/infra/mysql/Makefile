@@ -9,22 +9,15 @@ MYSQL_DATA_DIR=${BASE_DIR}/var/lib/mysql5.7
 
 MYSQL_ROOT_PASSWORD=root
 
-help:
+help:		## help
 	@echo "usage:"
 	@echo "  pub dir:  ${PUB_DIR}"
 	@echo "  base dir: ${BASE_DIR}"
 	@echo "  data dir: ${MYSQL_DATA_DIR}"
 	@echo
-	@echo "  pre		- 准备 var data 目录"
-	@echo "  pull		- pull"
-	@echo "  start		- start"
-	@echo "  stop		- stop"
-	@echo "  restart	- restart"
-	@echo "  at			- docker enter (exec)"
-	@echo "  root		- connect to mysql by root"
-	@echo "  test		- connect to mysql by test"
+	@cat $(MAKEFILE_LIST) | grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s \033[0m%s\n", $$1, $$2}'
 
-h: help
+h: help		## help
 
 pre:
 	if [ -f $(MYSQL_DATA_DIR) ]; then set -x; rm $(MYSQL_DATA_DIR); fi

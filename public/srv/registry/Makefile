@@ -8,18 +8,14 @@ REGISTRY_IMAGE = ${REGISTRY_URL}/library/registry:2.8
 REGISTRY_PORT = 9000
 REGISTRY_DATA = ${BASE_DIR}/var/lib/registry
 
-help:
+help:		## help
 	@echo "usage:"
 	@echo "  pub dir:  ${PUB_DIR}"
 	@echo "  data dir: ${REGISTRY_DATA}"
 	@echo
-	@echo "  pre		- 准备 var data 目录"
-	@echo "  start		- start registry"
-	@echo "  stop		- stop registry"
-	@echo "  restart	- restart registry"
-	@echo "  check		- check registry"
+	@cat $(MAKEFILE_LIST) | grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s \033[0m%s\n", $$1, $$2}'
 
-h: help
+h: help		## help
 
 pre:	## prepare
 	mkdir -p ${REGISTRY_DATA}

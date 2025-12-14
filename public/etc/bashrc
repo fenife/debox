@@ -1,0 +1,20 @@
+
+## user define envs ##
+BASE_DIR=/wine
+PUB_DIR=${BASE_DIR}/debox/public
+DFS_DIR=${BASE_DIR}/debox/var/dfs/files
+
+alias jpub="cd ${PUB_DIR}"
+alias jdfs="cd ${DFS_DIR}"
+
+export BASE_DIR=${BASE_DIR}
+export PUB_DIR=${PUB_DIR}
+export DFS_DIR=${DFS_DIR}
+
+export REGISTRY_URL=local.registry.io:9000
+export DFS_PUB_URL=http://192.168.2.160:9060/files
+export DFS_PRIV_URL=http://192.168.2.160:9060/files
+
+alias dps="docker ps -a --format 'table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'"
+alias dls="docker image ls"
+alias dlt="docker image ls | sort -nr"

@@ -9,17 +9,14 @@ DUFS_PORT = 9060
 # dfs 里有部分配置文件是要编辑的，放当前目录下
 DUFS_DATA = ${PUB_DIR}/var/dfs
 
-help:
+help:		## help
 	@echo "usage:"
 	@echo "  pub dir:  ${PUB_DIR}"
 	@echo "  data dir: ${DUFS_DATA}"
 	@echo
-	@echo "  pre		- 准备 var data 目录"
-	@echo "  start		- start dufs"
-	@echo "  stop		- stop dufs"
-	@echo "  restart	- restart dufs"
+	@cat $(MAKEFILE_LIST) | grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s \033[0m%s\n", $$1, $$2}'
 
-h: help
+h: help		## help
 
 pre:	## prepare
 	mkdir -p ${DUFS_DATA}/files
@@ -45,6 +42,6 @@ stop:		## stop dufs
 	docker stop $(DUFS_NAME)
 	docker rm $(DUFS_NAME)
 
-restart: stop start
+restart: stop start		## restart
 
 
