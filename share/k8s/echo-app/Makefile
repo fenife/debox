@@ -1,8 +1,7 @@
 
-include $(INC_DIR)/Makefile.common
+include $(INC_DIR)/Makefile.inc
 
-ECHO_APP_IMAGE=echo-app:latest
-REGISTER_ECHO_APP_IMAGE=register.dev.local:5000/echo-app:latest
+ECHO_APP_IMAGE=$(REGISTRY_URL)/devel/echo-app:latest
 ECHO_APP_NAME=echo-app
 CLUSTER_NAME=local
 
@@ -13,11 +12,17 @@ CLUSTER_NAME=local
 build: 	## docker build image
 	docker build -t $(ECHO_APP_IMAGE) ./echo-go
 
+bash: 	## container bash
+	docker run --rm -it \
+	--name $(ECHO_APP_NAME) --hostname $(ECHO_APP_NAME) \
+	--entrypoint /bin/bash \
+	$(ECHO_APP_IMAGE)
+
 start: 	## docker start echo-app
 	docker run --rm -it \
 	--name $(ECHO_APP_NAME) --hostname $(ECHO_APP_NAME) \
 	-p 6000:6000 \
-	$(ECHO_APP_NAME)
+	$(ECHO_APP_IMAGE)
 
 stop:	## docker stop echo-app
 	docker stop $(ECHO_APP_NAME)
@@ -26,15 +31,8 @@ stop:	## docker stop echo-app
 enter:	## docker attach echo-app container
 	docker exec -it $(ECHO_APP_NAME) bash
 
-tag:		## tag image 
-	docker tag $(ECHO_APP_IMAGE) $(REGISTER_ECHO_APP_IMAGE)
-
-# kind load docker-image $(REGISTER_ECHO_APP_IMAGE) --name $(CLUSTER_NAME)
-load: 	## load image to kind
-	kind load docker-image $(ECHO_APP_IMAGE) --name $(CLUSTER_NAME)
-
-push: tag		## push image to local registry
-	docker push $(REGISTER_ECHO_APP_IMAGE)
+push: 	## push image to local registry
+	docker push $(ECHO_APP_IMAGE)
 
 ############################################################
 # echo-app k8s
