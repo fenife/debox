@@ -13,7 +13,7 @@ DFS_PRIV_URL=http://local.dfs.io:9060/files
 
 .PHONY: help h pre
 
-help:
+help: 	## help
 	@echo "usage:"
 	@echo "  cur dir:       ${CUR_DIR}"
 	@echo "  bin dir:       ${BIN_DIR}"
@@ -23,29 +23,11 @@ help:
 	@echo "  dfs pub url:   ${DFS_PUB_URL}"
 	@echo "  dfs priv url:  ${DFS_PRIV_URL}"
 	@echo
-	@echo "  pre             - 准备目录"
-	@echo "  ls              - 查看目录"
-	@echo "  dl              - 下载配置"
-	@echo "  unzip           - 解压配置"
-	@echo "  dl-clean        - 清除下载的配置"
-	@echo
-	@echo "  pre-clean-yum"
-	@echo "  cp-bin"
-	@echo "  ln"
-	@echo "  cp-conf"
-	@echo "  cat-conf"
-	@echo "  cp-svc"
-	@echo "  cat-svc"
-	@echo "  add-group"
-	@echo "  enable"
-	@echo "  restart"
-	@echo "  stop"
-	@echo "  status"
-	@echo "  usermod"
-	@echo "  clean-all"
+	@cat $(MAKEFILE_LIST) | grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s \033[0m%s\n", $$1, $$2}'
+
 	@echo
 
-h: help
+h: help		## help
 
 #------------------------------------------------------------
 # function
@@ -68,46 +50,46 @@ endef
 # prepare
 #------------------------------------------------------------
 
-pre:
+pre:		## prepare
 	mkdir -p ${DL_DIR}	
 	mkdir -p ${BIN_DIR}
 
-ls:
+ls:		## ls dir
 	$(call _ls_dir,${DL_DIR})
 	$(call _ls_dir,${BIN_DIR})
 	$(call _ls_dir,/etc/docker)
 
-dl: pre
+dl: pre		## download
 	curl -o ${DL_DIR}/docker-conf.zip $(DFS_PUB_URL)/configs/docker/?zip
 	curl -o ${DL_DIR}/${DOCKER_TAR} $(DFS_PUB_URL)/pkgs/docker/${DOCKER_TAR}
 
-unzip:
+unzip:		## unzip
 	cd ${DL_DIR}; unzip docker-conf.zip
 	@echo
 	cd ${DL_DIR}; tar -xzvf ${DOCKER_TAR}
 	@echo
 	ls -alh ${DL_DIR}
 
-dl-clean:
+dl-clean:		## download clean
 	rm -rf ${DL_DIR}
 
 #------------------------------------------------------------
 # setup
 #------------------------------------------------------------
 
-pre-clean-yum:
+pre-clean-yum:		## pre clean yum
 	sudo yum remove docker-ce-crictl
 	sudo yum remove docker-ce
 	sudo yum remove containerd
 	@echo
 	sudo rpm -qa | grep docker
 
-cp-bin:
+cp-bin:			## cp bin
 	cp ${DL_DIR}/docker/* ${BIN_DIR}/
 	@echo
 	ls -alh ${BIN_DIR}
 
-ln:
+ln:		## ln
 	sudo ln -s ${BIN_DIR}/docker ${USR_BIN_DIR}/docker
 	sudo ln -s ${BIN_DIR}/dockerd ${USR_BIN_DIR}/dockerd
 	sudo ln -s ${BIN_DIR}/containerd ${USR_BIN_DIR}/containerd
@@ -115,44 +97,44 @@ ln:
 	sudo ln -s ${BIN_DIR}/docker-proxy ${USR_BIN_DIR}/docker-proxy
 	sudo ln -s ${BIN_DIR}/docker-init ${USR_BIN_DIR}/docker-init
 
-cp-conf:
+cp-conf:		## copy config
 	sudo mkdir -p /etc/docker
 	sudo cp ${DL_DIR}/daemon.json /etc/docker/
 
-cat-conf:
+cat-conf:		## cat config
 	cat /etc/docker/daemon.json
 
-cp-svc:
+cp-svc:			## copy service
 	sudo cp ${DL_DIR}/docker.service /usr/lib/systemd/system/docker.service
 
-cat-svc:
+cat-svc:		## cat service
 	cat /usr/lib/systemd/system/docker.service
 
-add-group:
+add-group:		## add docker group
 	sudo groupadd docker
 
-enable:
+enable:			## enable service
 	sudo systemctl enable docker.service
 	@echo
 	sudo systemctl status docker.service | cat
 
-restart:
+restart:		## restart
 	sudo systemctl daemon-reload
 	sudo systemctl restart docker
 
-stop:
+stop:			## stop
 	sudo systemctl stop docker
 
-status:
+status:			## status
 	sudo systemctl status docker.service | cat
 	@echo
 	docker info
 
-usermod:
+usermod:		## add user to docker group
 	sudo usermod -aG docker ${USER}
 	groups ${USER}
 
-clean-all:
+clean-all:		## clean all
 	-sudo rm ${USR_BIN_DIR}/docker
 	-sudo rm ${USR_BIN_DIR}/dockerd
 	-sudo rm ${USR_BIN_DIR}/containerd

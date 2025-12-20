@@ -49,53 +49,53 @@ pre:	## pre
 	@echo
 	mkdir -p ${BAK_DIR}	
 
-ls:
+ls:		## ls
 	$(call _ls_dir,${DL_DIR})
 	$(call _ls_dir,${BAK_DIR})
 
-dl: pre
+dl: pre		## download configs
 	curl -o ${DL_DIR}/configs.zip ${DFS_PRIV_URL}/configs/home/?zip
 	@echo
 	curl -o ${DL_DIR}/ohmyzsh.zip ${DFS_PUB_URL}/pkgs/zsh/ohmyzsh-master.zip
 
-unzip:
+unzip:		## unzip
 	cd ${DL_DIR}; unzip ${DL_DIR}/configs.zip
 
-dl-clean:
+dl-clean:		## clean downloads
 	rm -rf ${DL_DIR}
 
 #------------------------------------------------------------
 # setup
 #------------------------------------------------------------
 
-setup-bash:
+setup-bash:		## setup bash
 	echo "source ${RC_DIR}/ext.bashrc" >> ${HOME}/.bashrc
 	cp ${DL_DIR}/.inputrc ${HOME}/
 
-setup-vscode:
+setup-vscode:		## setup vscode
 	mkdir -p ${HOME}/.ssh
 	cat ${DL_DIR}/ssh/id_rsa_feng.pub >> ${HOME}/.ssh/authorized_keys
 	chmod 600 ${HOME}/.ssh/auth_keys
 	chmod 700 ${HOME}/.ssh
 
-setup-git:
+setup-git:		## setup git
 	cp ${DL_DIR}/.gitconfig ${HOME}/
 
-setup-pip:
+setup-pip:		## setup pip
 	mkdir -p ${HOME}/.pip
 	cp ${DL_DIR}/pip.conf ${HOME}/.pip
 	@echo
 	ls ${HOME}/.pip
 
-setup-zsh-yum:
+setup-zsh-yum:		## setup zsh yum
 	sudo yum install zsh
 	sudo usermod -s /usr/bin/zsh $USER
 
-setup-zsh-apt:
+setup-zsh-apt:		## setup zsh apt
 	sudo apt install zsh
 	sudo usermod -s /usr/bin/zsh $USER
 
-setup-ohmyzsh:
+setup-ohmyzsh:		## setup ohmyzsh
 	cd ${DL_DIR}; unzip -q ${DL_DIR}/ohmyzsh.zip
 	mv ${DL_DIR}/ohmyzsh-master ${HOME}/.oh-my-zsh
 	cp ${HOME}/.oh-my-zsh/templates/zshrc.zsh-template ${HOME}/.zshrc
@@ -103,18 +103,18 @@ setup-ohmyzsh:
 	sed -i "s/robbyrussell/ys/" ${HOME}/.zshrc
 
 # robbyrussell, ys, crcandy
-setup-zsh-theme:
+setup-zsh-theme:		## setup zsh theme
 	sed -i '/^ZSH_THEME=/c\\ZSH_THEME="crcandy"' ~/.zshrc
 
-rm-ohmyzsh:
+rm-ohmyzsh:		## rm ohmyzsh
 	rm -rf ${HOME}/.oh-my-zsh
 
-proxy:
+proxy:		## proxy
 	export HTTP_PROXY=http://feng-win:7890
 	export HTTPS_PROXY=http://feng-win:7890
 	export ALL_PROXY=socks5://feng-win:7890
 
-noproxy:
+noproxy:	## noproxy
 	export HTTP_PROXY=
 	export HTTPS_PROXY=
 	export ALL_PROXY=
