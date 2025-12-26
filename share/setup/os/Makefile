@@ -4,10 +4,10 @@ CUR_DIR := $(shell pwd)
 
 DL_DIR=${BASE_DIR}/tmp/downloads/configs
 BAK_DIR=${BASE_DIR}/bak/configs
-RC_DIR=${BASE_DIR}/debox/share/rc/
+RC_DIR=${BASE_DIR}/debox/share/rc
 
-DFS_PUB_URL=http://local.dfs.io:9060/files
-DFS_PRIV_URL=http://local.dfs.io:9060/files
+DFS_PUB_URL ?= http://local.dfs.io:9060/files
+DFS_PRIV_URL ?= http://local.dfs.io:9060/files
 
 .PHONY: help h pre
 
@@ -75,7 +75,7 @@ setup-bash:		## setup bash
 setup-vscode:		## setup vscode
 	mkdir -p ${HOME}/.ssh
 	cat ${DL_DIR}/ssh/id_rsa_feng.pub >> ${HOME}/.ssh/authorized_keys
-	chmod 600 ${HOME}/.ssh/auth_keys
+	chmod 600 ${HOME}/.ssh/authorized_keys
 	chmod 700 ${HOME}/.ssh
 
 setup-git:		## setup git
@@ -89,17 +89,18 @@ setup-pip:		## setup pip
 
 setup-zsh-yum:		## setup zsh yum
 	sudo yum install zsh
-	sudo usermod -s /usr/bin/zsh $USER
+	sudo usermod -s /bin/zsh ${USER}
 
 setup-zsh-apt:		## setup zsh apt
 	sudo apt install zsh
-	sudo usermod -s /usr/bin/zsh $USER
+	sudo usermod -s /bin/zsh ${USER}
 
 setup-ohmyzsh:		## setup ohmyzsh
 	cd ${DL_DIR}; unzip -q ${DL_DIR}/ohmyzsh.zip
 	mv ${DL_DIR}/ohmyzsh-master ${HOME}/.oh-my-zsh
 	cp ${HOME}/.oh-my-zsh/templates/zshrc.zsh-template ${HOME}/.zshrc
 	echo "\nsource ${RC_DIR}/ext.zshrc\n" | tee -a ${HOME}/.zshrc
+	echo "\nsource ${RC_DIR}/ext.bashrc\n" | tee -a ${HOME}/.zshrc
 	sed -i "s/robbyrussell/ys/" ${HOME}/.zshrc
 
 # robbyrussell, ys, crcandy

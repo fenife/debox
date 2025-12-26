@@ -8,8 +8,8 @@ DOCKER_TAR=docker-20.10.20.tgz
 
 RC_DIR=${BASE_DIR}/debox/share/rc/
 
-DFS_PUB_URL=http://local.dfs.io:9060/files
-DFS_PRIV_URL=http://local.dfs.io:9060/files
+DFS_PUB_URL ?= http://local.dfs.io:9060/files
+DFS_PRIV_URL ?= http://local.dfs.io:9060/files
 
 .PHONY: help h pre
 
