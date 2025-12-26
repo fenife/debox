@@ -20,9 +20,7 @@ help:		## help
 h: help		## help
 
 pre:
-	if [ -f $(MYSQL_DATA_DIR) ]; then set -x; rm $(MYSQL_DATA_DIR); fi
-	@echo
-	ls -alh $(MYSQL_DATA_DIR)
+	mkdir -p $(MYSQL_DATA_DIR)
 
 pull:		## pull mysql
 	docker pull $(MYSQL_IMAGE)
