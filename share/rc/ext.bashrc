@@ -50,8 +50,8 @@ export INC_DIR=${INC_DIR}
 export DFS_DIR=${DFS_DIR}
 
 export REGISTRY_URL=local.registry.io:9000
-export DFS_PUB_URL=http://192.168.50.20:9060/files
-export DFS_PRIV_URL=http://192.168.50.20:9060/files
+export DFS_PUB_URL=http://192.168.200.20:9060/files
+export DFS_PRIV_URL=http://192.168.200.20:9060/files
 
 export PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
 export PATH=$PATH:${HOME}/.local/bin:${SHARE_DIR}/bin

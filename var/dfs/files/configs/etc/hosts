@@ -2,12 +2,12 @@
 ## user define host ##
 192.168.2.150   feng-win
 
-192.168.50.10   feng-fnos feng-nas
+192.168.200.136   feng-fnos feng-nas
 
-192.168.50.20   feng-dev dev.local ubt-main
-192.168.50.21   ubt-node1
-192.168.50.22   ubt-node2
+192.168.200.20   feng-dev dev.local ubt-main
+192.168.200.21   ubt-node1
+192.168.200.22   ubt-node2
 
-192.168.50.20   local.dfs.io
-192.168.50.20   local.registry.io
+192.168.200.20   local.dfs.io
+192.168.200.20   local.registry.io
 
