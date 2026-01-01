@@ -35,6 +35,7 @@ ARG DFS_PRIV_URL="http://localhost:9060/files"
 ARG DFS_PUB_URL="http://localhost:9060/files"
 ARG DFS_CONF_URL="${DFS_PRIV_URL}/configs"
 ARG DFS_REPO_URL="${DFS_PRIV_URL}/configs/os/ubuntu22/repo"
+ENV HOME /root
 
 #------------------------------------------------------------
 # golang
@@ -67,5 +68,28 @@ RUN echo "Install config ..." \
     && curl -sSL --output ${HOME_DIR}/.inputrc "${DFS_CONF_URL}/home/.inputrc" \
     && curl -sSL --output ${HOME_DIR}/.gitconfig "${DFS_CONF_URL}/home/.gitconfig" \
     && curl -sSL --output ${HOME_DIR}/.pip/pip.conf "${DFS_CONF_URL}/home/pip.conf"
+
+#------------------------------------------------------------
+# fzf and bat
+ARG FZF_VER=fzf-0.67.0
+RUN echo "Install fzf ..." \
+	&& mkdir -p /tmp/fzf \
+	&& cd /tmp/fzf && curl -sSLO "${DFS_PUB_URL}/pkgs/fzf/${FZF_VER}-linux_amd64.tar.gz" \
+	&& tar -xzf /tmp/fzf/${FZF_VER}-linux_amd64.tar.gz -C /usr/local/bin \
+	&& cd /tmp/fzf && curl -sSLO "${DFS_PUB_URL}/pkgs/fzf/${FZF_VER}.tar.gz" \
+	&& cd /tmp/fzf && tar -xzf /tmp/fzf/${FZF_VER}.tar.gz \
+	&& mv /tmp/fzf/${FZF_VER} ${HOME}/.fzf \
+	&& ${HOME}/.fzf/install \
+	&& rm -rf /tmp/fzf
+
+ARG BAT_VER=bat-v0.26.0-x86_64-unknown-linux-musl
+RUN echo "Install bat ..." \
+	&& mkdir -p /tmp/bat \
+	&& cd /tmp/bat && curl -sSLO "${DFS_PUB_URL}/pkgs/bat/${BAT_VER}.tar.gz" \
+	&& cd /tmp/bat && tar -xzf /tmp/bat/${BAT_VER}.tar.gz \
+	&& cp /tmp/bat/${BAT_VER}/bat /usr/local/bin \
+	&& rm -rf /tmp/bat
+
+WORKDIR ${HOME}
 
 CMD ["/bin/bash"]
