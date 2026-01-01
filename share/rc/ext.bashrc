@@ -54,7 +54,7 @@ export DFS_PUB_URL=http://192.168.200.20:9060/files
 export DFS_PRIV_URL=http://192.168.200.20:9060/files
 
 export PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
-export PATH=$PATH:${HOME}/.local/bin:${SHARE_DIR}/bin
+export PATH=$PATH:${HOME}/.local/bin:${SHARE_DIR}/bin:${BASE_DIR}/bin
 
 export GOPATH=$HOME/go
 export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
@@ -100,3 +100,6 @@ alias sicode="source $VENV_DIR/icode/bin/activate"
 # run service
 alias rswebox="make -f ${APP_DIR}/webox/Makefile"
 
+############################################################
+# fzf and bat
+alias fzfc="fzfc.sh"

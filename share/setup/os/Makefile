@@ -1,5 +1,5 @@
 
-BASE_DIR=/wine
+BASE_DIR ?= /wine
 CUR_DIR := $(shell pwd)
 
 DL_DIR=${BASE_DIR}/tmp/downloads/configs
@@ -119,3 +119,29 @@ noproxy:	## noproxy
 	export HTTP_PROXY=
 	export HTTPS_PROXY=
 	export ALL_PROXY=
+
+
+############################################################
+# fzf and bat
+############################################################
+FZF_VER = fzf-0.67.0
+setup-fzf:		## setup fzf
+	mkdir -p /tmp/fzf
+	cd /tmp/fzf && curl -sSLO "${DFS_PUB_URL}/pkgs/fzf/${FZF_VER}-linux_amd64.tar.gz"
+	tar -xzf /tmp/fzf/${FZF_VER}-linux_amd64.tar.gz -C ${BASE_DIR}/bin
+
+setup-fzf-config:		## setup fzf config
+	mkdir -p /tmp/fzf
+	cd /tmp/fzf && curl -sSLO "${DFS_PUB_URL}/pkgs/fzf/${FZF_VER}.tar.gz"
+	cd /tmp/fzf && tar -xzf /tmp/fzf/${FZF_VER}.tar.gz
+	mv /tmp/fzf/${FZF_VER} ${HOME}/.fzf
+	${HOME}/.fzf/install
+	rm -rf /tmp/fzf
+
+BAT_VER = bat-v0.26.0-x86_64-unknown-linux-musl
+setup-bat:		## setup bat
+	mkdir -p /tmp/bat
+	cd /tmp/bat && curl -sSLO "${DFS_PUB_URL}/pkgs/bat/${BAT_VER}.tar.gz"
+	cd /tmp/bat && tar -xzf /tmp/bat/${BAT_VER}.tar.gz
+	cp /tmp/bat/${BAT_VER}/bat ${BASE_DIR}/bin
+	rm -rf /tmp/bat
