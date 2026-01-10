@@ -1,6 +1,6 @@
 include $(INC_DIR)/Makefile.inc
 
-SERVER_GO_IMAGE=$(IMAGE_ME_NS)/server-go:latest
+SERVER_GO_IMAGE=$(REGISTRY_URL)/devel/server-go:latest
 SERVER_GO_NAME=server-go
 SERVER_GO_CODE_DIR=$(ICODE_DIR)/server-go
 
