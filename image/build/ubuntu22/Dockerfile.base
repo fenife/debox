@@ -46,7 +46,7 @@ RUN echo "Install golang ..." \
     curl -sSL --output /tmp/${GO_VER}.tar.gz "${DFS_PUB_URL}/pkgs/go/${GO_VER}.tar.gz" \
     && tar -zxf /tmp/${GO_VER}.tar.gz -C /usr/local \
     && rm -rf /tmp/${GO_VER}*
-ENV PATH="$PATH:/usr/local/go/bin"
+ENV PATH="$PATH:/usr/local/go/bin:${HOME}/go/bin"
 # RUN go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/ \
 RUN go env -w GOPROXY=https://goproxy.cn,direct \
     && go env -w GO111MODULE=on \
