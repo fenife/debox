@@ -1,11 +1,11 @@
 include $(INC_DIR)/Makefile.inc
 
-WEBOX_IMAGE=$(REGISTRY_URL)/devel/webox-v1:latest
-WEBOX_NAME=webox-v1
-WEBOX_CODE_DIR=$(ICODE_DIR)/webox
+WEBOX_IMAGE=$(REGISTRY_URL)/devel/webox-v2:latest
+WEBOX_NAME=webox-v2
+WEBOX_CODE_DIR=$(ICODE_DIR)/webox_v2
 WEBOX_LOG_DIR=/wine/var/log/webox
 WEBOX_VENV_DIR=/wine/venv/icode
-
+WEBOX_PORT=8012
 
 ############################################################
 # venv and prepare
@@ -32,7 +32,7 @@ start: 		## docker start container
 	docker run --rm -it \
 	--name $(WEBOX_NAME) --hostname $(WEBOX_NAME) \
 	--add-host="dev.local:$(HOST_IP)"  \
-	-p 8010:8010 \
+	-p $(WEBOX_PORT):$(WEBOX_PORT) \
 	-v $(SHARE_DIR):$(SHARE_DIR) \
 	-v $(ICODE_DIR):$(ICODE_DIR) \
 	-v $(VENV_DIR):$(VENV_DIR) \
@@ -52,5 +52,5 @@ at:		## attach to container
 dev: 		## start service
 	cd $(WEBOX_CODE_DIR); \
 	$(WEBOX_VENV_DIR)/bin/python3 -m streamlit \
-	run main.py --server.port 8010
+	run main.py --server.port $(WEBOX_PORT)
 
