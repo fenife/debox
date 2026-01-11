@@ -24,6 +24,7 @@ pages = {
     # ],
     "user": [
         st.Page("pages/user/user_detail.py", title="user detail"),
+        st.Page("pages/user/user_create.py", title="user create"),
         st.Page("pages/user/user_update.py", title="user update"),
     ],
     "post": [
