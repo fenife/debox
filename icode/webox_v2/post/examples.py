@@ -57,7 +57,7 @@ cate_list = [cate1, cate2, cate3]
 post_list = [post1, post2, post3, post4, post5, post6, post7, post8, post9]
 
 for u in user_list:
-    u.posts = [u.id == p.user_id for p in post_list]
+    u.posts = [p for p in post_list if u.id == p.user_id]
 
 for c in cate_list:
-    c.posts = [c.id == p.cate_id for p in post_list]
+    c.posts = [p for p in post_list if c.id == p.cate_id]

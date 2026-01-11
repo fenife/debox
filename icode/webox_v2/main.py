@@ -19,12 +19,15 @@ logging.basicConfig(
 st.set_page_config(layout="wide")
 
 pages = {
-    "main": [
-        st.Page("pages/main.py", title="main"),
+    # "main": [
+    #     st.Page("pages/main.py", title="main page"),
+    # ],
+    "user": [
+        st.Page("pages/user/user_detail.py", title="user"),
     ],
     "post": [
-        st.Page("pages/post_list.py", title="post list"),
-        st.Page("pages/post_detail.py", title="post detail"),
+        st.Page("pages/post/post_list.py", title="post list"),
+        st.Page("pages/post/post_detail.py", title="post detail"),
     ],
     "category": [
     ],

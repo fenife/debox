@@ -1,5 +1,6 @@
 import sys
 import logging
+import pandas as pd
 import streamlit as st
 from page.page import Page
 from post import examples as exm
@@ -8,28 +9,37 @@ logger = logging.getLogger(__name__)
 
 class UserDetailPage(Page):
     def title(self):
-        return "post detail"
+        return "user detail"
+
+    def get_user(self):
+        user_ids = st.query_params.get_all("user_id")
+        user_id = int(user_ids[0]) if user_ids else None
+        default_user_idx = 0
+        users = [None] + exm.user_list
+        if user_id:
+            for _user in exm.user_list:
+                if user_id == _user.id:
+                    logger.info("user_id: %s, user.id: %s, name: %s", user_id, _user.id, _user.name)
+                    default_user_idx = exm.user_list.index(_user) + 1
+        
+        user = st.selectbox(label="select user", options=users, index=default_user_idx) 
+        return user
+    
+    def write_posts(self, posts):
+        _post_list = [p.to_dict() for p in posts]
+        df = pd.DataFrame(_post_list)
+        st.dataframe(df)
 
     def write(self):
         # 页面渲染代码
-        st.write(st.query_params.to_dict())
-        post_ids = st.query_params.get_all("post_id")
-        post_id = None
-        if post_ids:
-            post_id = int(post_ids[0])
-        _post = None
-        for p in exm.post_list:
-            if p.id == post_id:
-                _post = p
-                break
-
-        if not _post:
-            st.info("post is empty")
+        st.write("query_params: ", str(st.query_params.to_dict()))
+        user = self.get_user()
+        if not user:
             return
+        st.write("user name: ", user.name)
+        self.write_posts(user.posts)
 
-        st.write(_post.title)
 
+user_detail_page = UserDetailPage('user_detail_page')
 
-post_detail_page = PostDetailPage('post_detail_page')
-
-post_detail_page.write()
+user_detail_page.write()
