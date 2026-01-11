@@ -3,6 +3,7 @@ import logging
 import pandas as pd
 import streamlit as st
 from page.page import Page
+from view.user import UserDetailView
 from post import examples as exm
 
 logger = logging.getLogger(__name__)
@@ -36,8 +37,9 @@ class UserDetailPage(Page):
         user = self.get_user()
         if not user:
             return
-        st.write("user name: ", user.name)
-        self.write_posts(user.posts)
+        
+        uv = UserDetailView(user)
+        uv.write()
 
 
 user_detail_page = UserDetailPage('user_detail_page')

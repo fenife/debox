@@ -23,7 +23,8 @@ pages = {
     #     st.Page("pages/main.py", title="main page"),
     # ],
     "user": [
-        st.Page("pages/user/user_detail.py", title="user"),
+        st.Page("pages/user/user_detail.py", title="user detail"),
+        st.Page("pages/user/user_update.py", title="user update"),
     ],
     "post": [
         st.Page("pages/post/post_list.py", title="post list"),

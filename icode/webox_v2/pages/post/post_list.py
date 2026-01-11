@@ -16,9 +16,8 @@ class PostListPage(Page):
         return "post list"
 
     def write(self):
-        ptable = PostTableView(exm.post_list)
-        ptable.write_title()
-        ptable.write_data()
+        pv = PostTableView(exm.post_list)
+        pv.write()
 
         st.write(exm.post1.to_dict())
         st.write(exm.post1.user.to_dict())

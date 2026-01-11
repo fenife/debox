@@ -10,6 +10,32 @@ class ModelBase(Base):
     def to_dict(self):
         return {col.name: getattr(self, col.name) for col in self.__table__.columns}
 
+class User(ModelBase):
+    __tablename__ = "user"
+    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
+    name = sa.Column(sa.String(255), nullable=False, comment="username")
+    nickname = sa.Column(sa.String(255), nullable=False, comment="nickname")
+
+    cates = []
+    posts = []
+
+    def __repr__(self):
+        s = "<User>-{id}-{n}".format(id=self.id, n=self.name)
+        return s
+
+class Category(ModelBase):
+    __tablename__ = "category"
+    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
+    name = sa.Column(sa.String(255), nullable=False, comment="category name")
+    user_id = sa.Column(sa.Integer, sa.ForeignKey("user.id"), nullable=False, comment="发布用户ID")
+
+    user = None
+    posts = []
+
+    def __repr__(self):
+        s = "<Category>-{id}-{n}".format(id=self.id, n=self.name)
+        return s
+
 class Post(ModelBase):
     __tablename__ = "post"
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True, comment="id")
@@ -40,45 +66,6 @@ class Post(ModelBase):
         p.cate = None
         return p
 
-class User(ModelBase):
-    __tablename__ = "user"
-    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
-    name = sa.Column(sa.String(255), nullable=False, comment="username")
-    nickname = sa.Column(sa.String(255), nullable=False, comment="nickname")
-
-    posts = []
-
-    def __repr__(self):
-        s = "<User>-{id}-{n}".format(id=self.id, n=self.name)
-        return s
-
-    @classmethod
-    def empty(cls):
-        u = cls()
-        u.id = None
-        u.name = None
-        u.nickname = None
-        u.posts = []
-        return u
-
-class Category(ModelBase):
-    __tablename__ = "category"
-    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
-    name = sa.Column(sa.String(255), nullable=False, comment="category name")
-
-    posts = []
-
-    def __repr__(self):
-        s = "<Category>-{id}-{n}".format(id=self.id, n=self.name)
-        return s
-
-    @classmethod
-    def empty(cls):
-        c = cls()
-        c.id = None
-        c.name = None
-        c.posts = []
-        return c
 
 # 建表+会话
 # engine = sa.create_engine("sqlite:///./blog.db", echo=True)
