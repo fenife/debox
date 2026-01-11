@@ -5,13 +5,12 @@ from page.page import Page
 
 logger = logging.getLogger(__name__)
 
-class ArticleUpdatePage(Page):
-
+class PostCreatePage(Page):
     def title(self):
-        return "article update"
-    
+        return "post create"
+
     def write(self):
         # 页面渲染代码
-        st.write("article update page")
+        st.write("post create page")
 
-article_update_page = ArticleUpdatePage('article_update_page')
+post_create_page = PostCreatePage('post_create_page')
