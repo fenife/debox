@@ -28,6 +28,8 @@ pages = {
     "post": [
         st.Page("pages/post/post_list.py", title="post list"),
         st.Page("pages/post/post_detail.py", title="post detail"),
+        st.Page("pages/post/post_create.py", title="post create"),
+        st.Page("pages/post/post_update.py", title="post update"),
     ],
     "category": [
     ],

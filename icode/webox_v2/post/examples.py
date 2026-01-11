@@ -1,11 +1,11 @@
 
 from post.mo import User, Category, Post
 
-user1 = User(id=1, name="zhangsan", nickname="张三")
-user2 = User(id=2, name="lisi", nickname="李四")
-user3 = User(id=3, name="wangwu", nickname="王五")
-user4 = User(id=4, name="zhaoliu", nickname="赵六")
-user5 = User(id=5, name="admin", nickname="系统管理员")
+user1 = User(id=1, name="admin", nickname="系统管理员")
+user2 = User(id=2, name="test", nickname="测试员")
+user3 = User(id=3, name="zhangsan", nickname="张三")
+user4 = User(id=4, name="lisi", nickname="李四")
+user5 = User(id=5, name="wangwu", nickname="王五")
 
 cate1 = Category(id=1, name="Python编程")
 cate2 = Category(id=2, name="SQLAlchemy教程")
@@ -40,7 +40,7 @@ post7 = Post(id=7, user_id=4, cate_id=1, user=user4, cate=cate1,
              title="Python装饰器",
              title_en="Python Decorator Usage",
              content="装饰器可以在不修改原函数代码的情况下，为函数增加额外功能")
-post8 = Post(id=8, user_id=5, cate_id=3, user=user5, cate=cate3,
+post8 = Post(id=8, user_id=1, cate_id=3, user=user1, cate=cate3,
              title="开发工具",
              title_en="Developer Tools Recommend",
              content="VSCode这些工具可以极大提升开发效率")
