@@ -19,27 +19,12 @@ class PostListPage(Page):
         pv = PostTableView(exm.post_list)
         pv.write()
 
-        st.write(exm.post1.to_dict())
-        st.write(exm.post1.user.to_dict())
-        st.write(exm.post1.cate.to_dict())
+        st.write("info:")
+        _post = exm.post_list[0]
+        st.write(_post.to_dict())
+        st.write(_post.user.to_dict())
+        st.write(_post.cate.to_dict())
 
-    def on_click(self, post):
-        return st.page_link("pages/post_detail.py", label="detail", query_params={"post_id": post.id})
-
-    def write2(self):
-        _post_list = []
-        for p in exm.post_list:
-            d = p.to_dict() 
-            _post_list.append(d)
-
-        df = pd.DataFrame(_post_list)
-        df['detail'] = df.apply(lambda x: self.on_click(x), axis=1)
-
-        st.dataframe(df)
-
-        st.write(exm.post1.to_dict())
-        st.write(exm.post1.user.to_dict())
-        st.write(exm.post1.cate.to_dict())
 
 post_list_page = PostListPage('post_list_page')
 
