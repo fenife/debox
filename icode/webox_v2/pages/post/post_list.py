@@ -2,7 +2,7 @@ import sys
 import logging 
 import pandas as pd
 import streamlit as st
-from page.page import Page
+from common.page import Page
 from post import examples as exm
 from view.post import PostTableView
 

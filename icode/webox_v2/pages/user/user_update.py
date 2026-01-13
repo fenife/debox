@@ -1,7 +1,7 @@
 import sys
 import logging
 import streamlit as st
-from page.page import Page
+from common.page import Page
 
 logger = logging.getLogger(__name__)
 

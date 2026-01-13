@@ -2,7 +2,7 @@ import sys
 import logging
 import streamlit as st
 
-# from page.page import Page
+# from common.page import Page
 # from page.post_create import post_create_page
 # from page.post_list import post_list_page
 # from page.post_detail import post_detail_page
