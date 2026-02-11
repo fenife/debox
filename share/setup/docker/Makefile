@@ -3,7 +3,7 @@ CUR_DIR := $(shell pwd)
 BASE_DIR=/wine
 USR_BIN_DIR=/usr/bin
 BIN_DIR=${BASE_DIR}/bin
-DL_DIR=${BASE_DIR}/tmp/downloads/dockers
+DL_DIR=/tmp/dockers
 DOCKER_TAR=docker-20.10.20.tgz
 
 RC_DIR=${BASE_DIR}/debox/share/rc/
@@ -60,8 +60,9 @@ ls:		## ls dir
 	$(call _ls_dir,/etc/docker)
 
 dl: pre		## download
-	curl -o ${DL_DIR}/docker-conf.zip $(DFS_PUB_URL)/configs/docker/?zip
-	curl -o ${DL_DIR}/${DOCKER_TAR} $(DFS_PUB_URL)/pkgs/docker/${DOCKER_TAR}
+	# curl -o ${DL_DIR}/docker-conf.zip $(DFS_PUB_URL)/configs/docker/?zip
+	# curl -o ${DL_DIR}/${DOCKER_TAR} $(DFS_PUB_URL)/pkgs/docker/${DOCKER_TAR}
+	cp ${DFS_DIR}/configs/docker/* ${DL_DIR}
 
 unzip:		## unzip
 	cd ${DL_DIR}; unzip docker-conf.zip
