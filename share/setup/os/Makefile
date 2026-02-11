@@ -2,7 +2,7 @@
 BASE_DIR ?= /wine
 CUR_DIR := $(shell pwd)
 
-DL_DIR=${BASE_DIR}/tmp/downloads/configs
+DL_DIR=/tmp/configs
 BAK_DIR=${BASE_DIR}/bak/configs
 RC_DIR=${BASE_DIR}/debox/share/rc
 
@@ -86,6 +86,9 @@ setup-pip:		## setup pip
 	cp ${DL_DIR}/pip.conf ${HOME}/.pip
 	@echo
 	ls ${HOME}/.pip
+
+setup-sudoer:	## setup sudoer
+	sudo cp ${DFS_DIR}/configs/home/sudoers /etc/sudoers.d/
 
 setup-zsh-yum:		## setup zsh yum
 	sudo yum install zsh

@@ -1,0 +1,11 @@
+## Allow root to run any commands anywhere
+# root    ALL=(ALL)       ALL
+feng    ALL=(ALL)       ALL
+
+## Allows people in group wheel to run all commands
+# %wheel        ALL=(ALL)       ALL
+
+## Same thing without a password
+## NOPASSWD的冒号后有个空格
+%wheel  ALL=(ALL)       NOPASSWD: ALL
+%feng   ALL=(ALL)       NOPASSWD: ALL
