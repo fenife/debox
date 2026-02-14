@@ -14,7 +14,9 @@ RUN apt install -y openssh-client psmisc sysstat strace lsof hostname
 RUN apt install -y iproute2 net-tools telnet ncat tcpdump ethtool 
 RUN apt install -y iptables ipset iputils-ping
 RUN apt install -y python2.7 python3-pip
-RUN apt install -y mysql-client redis 
+RUN apt install -y mysql-client redis
+RUN apt install -y dumb-init locales lsb-release procps
+RUN rm -rf /var/lib/apt/lists/*
 
 # 时区
 ENV TZ "Asia/Shanghai"
@@ -36,6 +38,11 @@ ENV PATH="$PATH:/usr/local/go/bin:${HOME}/go/bin"
 RUN go env -w GOPROXY=https://goproxy.cn,direct \
     && go env -w GO111MODULE=on \
     && go env -w GOSUMDB='off'
+
+# install golang dlv gopls staticcheck
+RUN go install honnef.co/go/tools/cmd/staticcheck@v0.7.0
+RUN go install golang.org/x/tools/gopls@v0.21.1
+RUN go install github.com/go-delve/delve/cmd/dlv@v1.26.0
 
 #------------------------------------------------------------
 # pip2
@@ -71,6 +78,11 @@ RUN echo "Install bat ..." \
 	&& cd /tmp/bat && tar -xzf /tmp/bat/${BAT_VER}.tar.gz \
 	&& cp /tmp/bat/${BAT_VER}/bat /usr/local/bin \
 	&& rm -rf /tmp/bat
+
+# https://wiki.debian.org/Locale#Manually
+RUN sed -i "s/# en_US.UTF-8/en_US.UTF-8/" /etc/locale.gen \
+    && locale-gen
+ENV LANG=en_US.UTF-8
 
 WORKDIR ${HOME}
 
