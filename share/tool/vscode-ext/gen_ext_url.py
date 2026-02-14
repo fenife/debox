@@ -24,14 +24,15 @@ def _gen_vsix_url(vsix_info: str) -> str:
     version = lines[lines.index("Version") + 1]
     return f"https://marketplace.visualstudio.com/_apis/public/gallery/publishers/{publisher}/vsextensions/{name}/{version}/vspackage"
 
-def gen_vsix_url(ident, ver) -> str:
+def gen_vsix_url(ident, ver, arch) -> str:
     """生成VSIX文件下载URL的简化版本"""
     publisher, name = ident.split('.')
     version = ver
     platform = 'linux-x64'
     url = f"https://marketplace.visualstudio.com/_apis/public/gallery/publishers/{publisher}/vsextensions/{name}/{version}/vspackage"
 
-    url += "?targetPlatform={platform}"
+    if arch:
+        url += f"?targetPlatform={arch}"
 
     print(f"VSIX: {ident}")
     print(f"{url}")
@@ -54,8 +55,17 @@ if __name__ == '__main__':
         # ["ms-python.python", "2021.12.1559732655"],
         # ["ms-ceintl.vscode-language-pack-zh-hans", "1.102.2025071609"],
         # ["golang.go", "0.52.2"],
-        ["maattdd.gitless", "11.7.2"],
+        # ["maattdd.gitless", "11.7.2"],
+        ["ms-python.python", "2025.10.0", "linux-x64"],
     ]
 
     for v in vsix_list:
-        gen_vsix_url(v[0], v[1])
+        gen_vsix_url(v[0], v[1], v[2])
+
+
+# golang.go-0.52.2
+# maattdd.gitless-11.7.2
+# ms-ceintl.vscode-language-pack-zh-hans-1.102.0-universal
+# ms-python.debugpy-2025.18.0-linux-x64
+# ms-python.python-2026.0.0-universal
+# vscodevim.vim-1.32.4
