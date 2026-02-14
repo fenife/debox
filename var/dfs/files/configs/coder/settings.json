@@ -1,15 +1,9 @@
 // /C:/Users/<user>/AppData/Roaming/Code/User/settings.json
+// ${HOME}/.local/share/code-server/User/settings.json
 
 {
     "editor.mouseWheelZoom": true,
     "update.mode": "none",
-    "remote.SSH.remotePlatform": {
-        "feng-dev": "linux",
-        "node2": "linux",
-        "ubt-main": "linux",
-        "ubt-origin": "linux",
-        "ubt-node1": "linux"
-    },
     "workbench.secondarySideBar.defaultVisibility": "hidden",
     "workbench.tree.indent": 10,
     "security.workspace.trust.untrustedFiles": "open",
@@ -26,6 +20,9 @@
         "<C-p>": false,
         "<C-h>": false,
         "<C-r>": false,
+        "<C-e>": false,
+        "<C-i>": false,
+        "<C-l>": false,
     },
     "workbench.iconTheme": "material-icon-theme",
     "workbench.colorTheme": "Default Dark+",
@@ -49,4 +46,10 @@
     "vscode-office.viewAbsoluteLocal": true,
     "vscode-office.workspacePathAsImageBasePath": true,
     "vscode-office.quickOpen": true,
+    "accessibility.signalOptions.volume": 0,
+    "editor.accessibilitySupport": "off",
+    "accessibility.signals.chatEditModifiedFile": {
+        "sound": "off"
+    },
+    "window.menuBarVisibility": "classic",
 }

@@ -1,0 +1,6 @@
+# /home/<user>/.config/code-server/config.yaml
+
+bind-addr: 0.0.0.0:9090
+auth: password
+password: 123
+cert: false
