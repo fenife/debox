@@ -24,6 +24,17 @@ class ExRadioWidget(object):
         res = ex_val or val
         return res
 
+    @st.fragment
+    def write2(self):
+        with st.container(horizontal=True):
+            _ival = st.text_input(label=self.label, key=self.key + "ex", value=None)
+            _rval = st.radio(label=self.label + "val", index=None, options=self.options, 
+                       key= self.key + "val",
+                       horizontal=True, label_visibility="hidden")
+            st.space("stretch")
+        val = _rval or _ival
+        return val
+
 
 class UserCreatePage(Page):
     def title(self):
@@ -66,7 +77,8 @@ class UserCreatePage(Page):
         # user_id = c1.radio(label="user_id_%s" % idx, options=[1,2,3, "other"], horizontal=True)
         # user_id_ex = c2.number_input(label="ex_user_id_%s" % idx, value=None, placeholder="user id")
 
-        cate_id = ExRadioWidget(spec=[1,8], label="cate id", key="cate_id_%s" % idx, options=[1,2,3]).write()
+        options = [i for i in range(30)]
+        cate_id = ExRadioWidget(spec=[1,8], label="cate id", key="cate_id_%s" % idx, options=options).write()
         # c1, c2 = st.columns([1, 9])
         # cate_id_ex = c1.number_input(
         #     label="cate id", key="ex cate id %s" % idx, value=None)
