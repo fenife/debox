@@ -18,3 +18,4 @@ export DFS_PRIV_URL=http://192.168.2.160:9060/files
 alias dps="docker ps -a --format 'table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'"
 alias dls="docker image ls"
 alias dlt="docker image ls | sort -nr"
+alias rscoder="make -f ${PUB_DIR}/srv/coder/Makefile"

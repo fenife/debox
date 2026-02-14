@@ -100,6 +100,8 @@ alias sicode="source $VENV_DIR/icode/bin/activate"
 # run service
 alias rswebox="make -f ${APP_DIR}/webox/Makefile"
 
+alias rscoder="make -f ${PUB_DIR}/srv/coder/Makefile"
+
 ############################################################
 # fzf and bat
 alias fzfc="fzfc.sh"
