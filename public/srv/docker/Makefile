@@ -1,6 +1,8 @@
 
 CUR_DIR := $(shell pwd)
-BASE_DIR=/wine
+PUB_DIR := $(shell readlink -f $(CUR_DIR)/../..)
+BASE_DIR := /wine
+
 USR_BIN_DIR=/usr/bin
 BIN_DIR=${BASE_DIR}/bin
 DL_DIR=/tmp/dockers
@@ -8,20 +10,16 @@ DOCKER_TAR=docker-20.10.20.tgz
 
 RC_DIR=${BASE_DIR}/debox/share/rc/
 
-DFS_PUB_URL ?= http://local.dfs.io:9060/files
-DFS_PRIV_URL ?= http://local.dfs.io:9060/files
-
 .PHONY: help h pre
 
 help: 	## help
 	@echo "usage:"
 	@echo "  cur dir:       ${CUR_DIR}"
+	@echo "  pub dir:       ${PUB_DIR}"
 	@echo "  bin dir:       ${BIN_DIR}"
 	@echo "  download dir:  ${DL_DIR}"
 	@echo "  rc dir:        ${RC_DIR}"
 	@echo "  docker file:   ${DOCKER_TAR}"
-	@echo "  dfs pub url:   ${DFS_PUB_URL}"
-	@echo "  dfs priv url:  ${DFS_PRIV_URL}"
 	@echo
 	@cat $(MAKEFILE_LIST) | grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s \033[0m%s\n", $$1, $$2}'
 
@@ -60,13 +58,10 @@ ls:		## ls dir
 	$(call _ls_dir,/etc/docker)
 
 dl: pre		## download
-	# curl -o ${DL_DIR}/docker-conf.zip $(DFS_PUB_URL)/configs/docker/?zip
-	# curl -o ${DL_DIR}/${DOCKER_TAR} $(DFS_PUB_URL)/pkgs/docker/${DOCKER_TAR}
-	cp ${DFS_DIR}/configs/docker/* ${DL_DIR}
+	cp ${PUB_DIR}/etc/docker/* ${DL_DIR}/
+	cp ${DFS_DIR}/pkgs/docker/${DOCKER_TAR} ${DL_DIR}/
 
 unzip:		## unzip
-	cd ${DL_DIR}; unzip docker-conf.zip
-	@echo
 	cd ${DL_DIR}; tar -xzvf ${DOCKER_TAR}
 	@echo
 	ls -alh ${DL_DIR}
