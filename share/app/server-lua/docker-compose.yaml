@@ -1,0 +1,20 @@
+version: '3.8'  # 适配你的 docker 20.10.20
+
+services:
+  server-lua:
+    image: ${REGISTRY_URL}/devel/server-lua:latest
+    container_name: server-lua
+    hostname: server-lua
+    
+    # 端口映射 -p 8030:80
+    ports:
+      - "8030:80"
+    
+    # 目录挂载 -v
+    volumes:
+      - ${SHARE_DIR}:${SHARE_DIR}
+      - ${SERVER_LUA_CODE_DIR}:/data/server-lua
+    
+    # hosts 映射 --add-host
+    extra_hosts:
+      - "dev.local:${HOST_IP}"
