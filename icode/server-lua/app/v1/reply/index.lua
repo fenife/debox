@@ -12,7 +12,7 @@ local function handle ()
     end
 
     if action == "b" then
-        reply.say_error(errors.UNKNOWN_ERR)
+        reply.say_error(errors.INTERNAL_ERR)
     end
 
     if action == "c" then

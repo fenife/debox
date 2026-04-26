@@ -5,25 +5,31 @@ local errors = require("utils.errors")
 local _M = {}
 
 function _M._say_const_err(err, detail)
-    local _unknown_err = errors.PARAM_INVALID
+    local err = err
 
     if not err then
         ngx.log(ngx.ERR, "error to output is nil")
-        err = _unknown_err
+        err = errors.INTERNAL_ERR
     end
     if not typeutil.is_tab(err) then
         ngx.log(ngx.ERR, "error to output is not a table, type: ", type(err))
-        err = _unknown_err
+        err = errors.INTERNAL_ERR
     end
 
-    local _status = err.status or _unknown_err.status
+    if not (err.status and err.code and err.message) then
+        ngx.log(ngx.ERR, "undefined table error, status: ", err.status,
+            ", code: ", err.code, " message: ", err.message)
+        err = errors.INTERNAL_ERR
+    end
+
+    local _status = err.status
     local result = {
-        code = err.code or _unknown_err.code,
-        message = err.message or _unknown_err.message,
+        code = err.code,
+        message = err.message,
         data = {},
         detail = detail,
     }
-    ngx.log(ngx.INFO, "say error, status: ", _status, "result: ", cjson.encode(result))
+    ngx.log(ngx.INFO, "reply resp, status: ", _status, ", result: ", cjson.encode(result))
     ngx.status = _status
     ngx.say(cjson.encode(result))
     ngx.exit(_status)
@@ -35,11 +41,9 @@ function _M.say_error(err)
     end
 
     if typeutil.is_str(err) then
-        local emsg = err
-        ngx.log(ngx.INFO, "error mg: ", emsg)
-        _M._say_const_err(errors.UNKNOWN_ERR, emsg)
+        ngx.log(ngx.INFO, "error msg: ", err)
+        _M._say_const_err(errors.UNDEFINE_ERR, err)
     end
-
 end
 
 function _M.say_ok(data)
@@ -51,7 +55,7 @@ function _M.say_ok(data)
         data = data or {},
     }
     local ok, res = pcall(cjson.encode, result)
-    ngx.log(ngx.INFO, "say ok, status: ", _status, "result: ", cjson.encode(result))
+    ngx.log(ngx.INFO, "reply resp, status: ", _status, "result: ", cjson.encode(result))
 
     ngx.status = _status
     ngx.say(res)
