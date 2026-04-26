@@ -4,6 +4,57 @@ local errors = require("utils.errors")
 
 local _M = {}
 
+
+function _M._valid_detail(detail)
+    if detail or typeutil.is_str(detail) then
+        return detail
+    else
+        ngx.log(ngx.ERR, "reply detail is invalid, type: ", type(detail))
+        return nil
+    end
+end
+
+function _M._valid_status(status)
+    if status and typeutil.is_num(status) then
+        return status
+    else
+        ngx.log(ngx.ERR, "reply status is invalid, type: ", type(status))
+        _M.say_internal_err()
+    end
+end
+
+function _M.say_internal_err(detail)
+    local _detail = _M._valid_detail(detail)
+    local _err = errors.INTERNAL_ERR
+    local _status = _err.status
+    local _result = cjson.encode({
+        code = _err.code,
+        message = _err.message,
+        detail = _detail,
+        data = {},
+    })
+    ngx.log(ngx.INFO, "reply resp, status: ", _status, ", result: ", _result)
+    ngx.status = _status
+    ngx.say(_result)
+    ngx.exit(_status)
+end
+
+function _M._say_result(status, result, detail)
+    local _detail = _M._valid_detail(detail)
+    -- ngx exit if failed
+    local _status = _M._valid_status(status)
+
+    local ok, _result = pcall(cjson.encode, result)
+    if not ok then
+        ngx.log(ngx.ERR, "encode reply result error: ", _result)
+        _M.say_internal_err()
+    end
+    ngx.log(ngx.INFO, "reply resp, status: ", _status, "result: ", _result)
+    ngx.status = _status
+    ngx.say(_result)
+    ngx.exit(_status)
+end
+
 function _M._say_const_err(err, detail)
     local err = err
 
