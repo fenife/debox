@@ -39,8 +39,7 @@ function _M.say_internal_err(detail)
     ngx.exit(_status)
 end
 
-function _M._say_result(status, result, detail)
-    local _detail = _M._valid_detail(detail)
+function _M._say_result(status, result)
     -- ngx exit if failed
     local _status = _M._valid_status(status)
 
@@ -56,61 +55,51 @@ function _M._say_result(status, result, detail)
 end
 
 function _M._say_const_err(err, detail)
-    local err = err
-
     if not err then
         ngx.log(ngx.ERR, "error to output is nil")
-        err = errors.INTERNAL_ERR
+        _M.say_internal_err(detail)
     end
     if not typeutil.is_tab(err) then
         ngx.log(ngx.ERR, "error to output is not a table, type: ", type(err))
-        err = errors.INTERNAL_ERR
+        _M.say_internal_err(detail)
     end
 
     if not (err.status and err.code and err.message) then
         ngx.log(ngx.ERR, "undefined table error, status: ", err.status,
             ", code: ", err.code, " message: ", err.message)
-        err = errors.INTERNAL_ERR
+        _M.say_internal_err(detail)
     end
 
-    local _status = err.status
+    local status = err.status
     local result = {
         code = err.code,
         message = err.message,
         data = {},
         detail = detail,
     }
-    ngx.log(ngx.INFO, "reply resp, status: ", _status, ", result: ", cjson.encode(result))
-    ngx.status = _status
-    ngx.say(cjson.encode(result))
-    ngx.exit(_status)
+    _M._say_result(status, result)
 end
 
 function _M.say_error(err)
-    if typeutil.is_tab(err) then
-        _M._say_const_err(err)
-    end
-
+    local _err = err
+    local _detail = nil
     if typeutil.is_str(err) then
-        ngx.log(ngx.INFO, "error msg: ", err)
-        _M._say_const_err(errors.UNDEFINE_ERR, err)
+        ngx.log(ngx.INFO, "undefined error msg: ", err)
+        _err = errors.UNDEFINE_ERR
+        _detail = err
     end
+    _M._say_const_err(_err, _detail)
 end
 
 function _M.say_ok(data)
-    local _status = errors.OK.status
+    local status = errors.OK.status
     local result = {
         code = errors.OK.code,
         message = errors.OK.message,
         detail = cjson.NULL,
         data = data or {},
     }
-    local ok, res = pcall(cjson.encode, result)
-    ngx.log(ngx.INFO, "reply resp, status: ", _status, "result: ", cjson.encode(result))
-
-    ngx.status = _status
-    ngx.say(res)
-    ngx.exit(_status)
+    _M._say_result(status, result)
 end
 
 return _M

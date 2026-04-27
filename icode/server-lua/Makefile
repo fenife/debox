@@ -46,7 +46,7 @@ t:	test
 ### log:		tail log
 .PHONY: log
 log:
-	tail -f ${SERVER_LUA_LOG_DIR}/app_error.log
+	tail -f ${SERVER_LUA_LOG_DIR}/app_error.log -n 30
 
 ### help:		show Makefile rules
 .PHONY: help
